@@ -1,0 +1,2911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Run Setup — Prediction</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined" rel="stylesheet">
+<style>
+@import url('https://cdn.jsdelivr.net/npm/geist@1/dist/fonts/geist-sans/style.css');
+@import url('https://cdn.jsdelivr.net/npm/geist@1/dist/fonts/geist-mono/style.css');
+
+:root {
+  --color-key-primary: #578cff;
+  --color-key-error: #ff5359;
+  --color-key-success: #05a831;
+  --color-key-warning: #e96d00;
+  --color-border: #aaabb1;
+  --color-border-subtle: #2e3035;
+  --color-surface-0: #111318;
+  --color-surface-1: #191c20;
+  --color-surface-2: #37393e;
+  --color-surface-canvas: #111318;
+  --color-on-surface: #ffffff;
+  --color-on-surface-subtle: #aaabb1;
+  --color-container-surface: #1d2024;
+  --color-container-surface-high: #32353a;
+  --color-container-surface-low: #0c0e13;
+  --color-container-primary: #006efe;
+  --color-state-hover: #ffffff14;
+  --color-state-selected: rgba(255, 255, 255, 0.16);
+  --color-state-active: #00000029;
+  --color-elevation-4-shadow: rgba(0, 0, 0, 0.48);
+}
+html.light {
+  --color-key-primary: #006efe;
+  --color-border: #45474c;
+  --color-border-subtle: #d6d7dd;
+  --color-surface-0: #ffffff;
+  --color-surface-1: #ffffff;
+  --color-surface-2: #ffffff;
+  --color-surface-canvas: #f9f9ff;
+  --color-on-surface: #111318;
+  --color-on-surface-subtle: #5c5e64;
+  --color-container-surface: #f9f9ff;
+  --color-container-surface-high: #e1e2e9;
+  --color-container-surface-low: #ffffff;
+  --color-state-hover: #2e36460a;
+  --color-state-selected: #2e36461f;
+  --color-state-active: #2e36460a;
+  --color-elevation-4-shadow: rgba(0, 0, 0, 0.12);
+}
+
+* { box-sizing: border-box; scrollbar-width: thin; scrollbar-color: #525252 transparent; }
+*::-webkit-scrollbar { width: 4px; height: 4px; }
+*::-webkit-scrollbar-thumb { background: #525252; border-radius: 9999px; }
+
+body {
+  font-family: 'Geist', sans-serif; background: var(--color-surface-canvas);
+  color: var(--color-on-surface); font-size: 13px; line-height: 16px; margin: 0;
+}
+.mi { font-family: 'Material Icons Outlined'; font-style: normal; line-height: 1; -webkit-font-feature-settings: 'liga'; }
+
+.app { height: 100vh; display: flex; }
+
+/* ============================= SIDEBAR (left) ============================= */
+.sidebar { width: 372px; flex-shrink: 0; height: 100%; display: flex; flex-direction: column; background: var(--color-surface-1); border-right: 1px solid var(--color-border-subtle); }
+
+.sb-header { height: 48px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 10px 0 16px; border-bottom: 1px solid var(--color-border-subtle); }
+.sb-header .ttl-wrap { flex: 1; min-width: 0; }
+.sb-header .ttl { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+.sb-header .ttl-sub { font-size: 11px; color: var(--color-on-surface-subtle); margin-top: 1px; }
+.sb-icon { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; color: var(--color-on-surface-subtle); cursor: pointer; border: none; background: transparent; transition: background 120ms, color 120ms; }
+.sb-icon:hover { background: var(--color-state-hover); color: var(--color-on-surface); }
+.sb-icon .mi { font-size: 18px; }
+
+/* tree */
+.tree { flex: 1; min-height: 0; overflow-y: auto; padding: 10px 10px 16px; }
+.tnode-row { position: relative; display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 8px 0 4px; border-radius: 6px; cursor: pointer; transition: background 120ms; user-select: none; }
+.tnode-row:hover { background: var(--color-state-hover); }
+.tnode-row.sel { background: var(--color-state-selected); box-shadow: inset 2px 0 0 var(--color-key-primary); }
+.tnode-row.disabled { opacity: .36; }
+.tnode-row.root { height: 36px; }
+.tnode-row.root .tlabel { font-weight: 600; }
+.tnode-row.root .ticon { color: var(--color-on-surface); }
+.caret { width: 18px; height: 18px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--color-on-surface-subtle); border-radius: 3px; }
+.caret.spacer { visibility: hidden; }
+.caret .mi { font-size: 18px; }
+.tnode-row .ticon { font-size: 18px; flex-shrink: 0; color: var(--color-on-surface-subtle); }
+.tnode-row.sel .ticon, .tnode-row.sel .tlabel { color: var(--color-key-primary); }
+.tnode-row.accent .tlabel { color: var(--color-key-primary); }
+.tlabel { flex: 1; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tbadge { font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--color-on-surface-subtle); background: var(--color-container-surface); border-radius: 4px; padding: 1px 6px; flex-shrink: 0; }
+.tsummary { margin-left: auto; padding-left: 8px; font-family: 'Geist Mono', monospace; font-size: 10.5px; color: var(--color-on-surface-subtle); white-space: nowrap; flex-shrink: 0; }
+.tnode-row.sel .tsummary { color: var(--color-key-primary); }
+.tsummary.unset { color: var(--color-key-warning); opacity: .85; }
+.tadd { font-size: 18px; color: var(--color-on-surface-subtle); opacity: 0; flex-shrink: 0; border-radius: 4px; padding: 2px; }
+.tnode-row:hover .tadd { opacity: 1; }
+.tnode-row .tadd:hover { color: var(--color-on-surface); background: var(--color-state-hover); }
+.tchildren { margin-left: 17px; border-left: 1px solid var(--color-border-subtle); padding-left: 5px; }
+
+/* ---- runs list (top-level sidebar) ---- */
+.runs-list { flex: 1; min-height: 0; overflow-y: auto; padding: 8px 8px 14px; display: flex; flex-direction: column; gap: 4px; }
+.run-item { border-radius: 8px; }
+.run-item.open { background: var(--color-surface-0); box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.run-row { display: flex; align-items: center; gap: 9px; padding: 8px 8px; border-radius: 8px; cursor: pointer; transition: background 120ms; }
+.run-row:hover { background: var(--color-state-hover); }
+.run-item.open > .run-row { background: transparent; }
+.run-check { width: 18px; height: 18px; flex-shrink: 0; border-radius: 5px; border: none; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; padding: 0; transition: background 120ms; }
+.run-check:hover { box-shadow: inset 0 0 0 1px var(--color-on-surface-subtle); }
+.run-check.on { background: #0F62FE; box-shadow: inset 0 0 0 1px var(--color-key-primary); }
+.run-check .mi { font-size: 14px; }
+.run-swatch { width: 4px; align-self: stretch; border-radius: 2px; flex-shrink: 0; }
+.run-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.run-line1 { display: flex; align-items: center; gap: 6px; }
+.run-name { flex: 1; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.run-line2 { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.run-chip { display: inline-flex; align-items: center; gap: 4px; font-family: 'Geist Mono', monospace; font-size: 10px; padding: 1px 6px; border-radius: 4px; background: var(--color-container-surface); color: var(--color-on-surface-subtle); white-space: nowrap; flex-shrink: 0; }
+.run-chip.sweep { color: var(--color-key-primary); box-shadow: inset 0 0 0 1px var(--color-key-primary); background: transparent; }
+.run-chip .mi { font-size: 12px; }
+.run-sub { font-size: 11px; color: var(--color-on-surface-subtle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.run-caret { font-size: 18px; color: var(--color-on-surface-subtle); flex-shrink: 0; }
+.run-del { opacity: 0; background: none; border: none; color: var(--color-on-surface-subtle); cursor: pointer; display: inline-flex; align-items: center; padding: 2px; border-radius: 4px; flex-shrink: 0; transition: opacity 120ms, color 120ms, background 120ms; }
+.run-row:hover .run-del { opacity: 1; }
+.run-del:hover { background: var(--color-state-hover); color: var(--color-key-error); }
+.run-del .mi { font-size: 17px; }
+.run-setup { padding: 0 8px 6px; }
+.run-setup .tree { flex: none; min-height: 0; overflow: visible; padding: 2px 0 4px; }
+.run-add-btn { margin-top: 6px; height: 34px; border-radius: 6px; border: 1px dashed var(--color-border); background: transparent; color: var(--color-on-surface-subtle); font-family: 'Geist', sans-serif; font-size: 12.5px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: background 120ms, color 120ms; }
+.run-add-btn:hover { background: var(--color-state-hover); color: var(--color-on-surface); }
+.run-add-btn .mi { font-size: 18px; }
+.sweep-incs { display: flex; flex-direction: column; gap: 7px; padding: 8px; margin-bottom: 6px; border-radius: 6px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.sweep-incs-head { display: flex; align-items: center; gap: 8px; width: 100%; padding: 3px 4px; border: none; background: transparent; cursor: pointer; font-family: 'Geist', sans-serif; text-align: left; border-radius: 4px; transition: background 120ms; }
+.sweep-incs-head:hover { background: var(--color-state-hover); }
+.sweep-incs-chev { font-size: 18px; color: var(--color-on-surface-subtle); transition: transform 140ms; flex-shrink: 0; }
+.sweep-incs-chev.open { transform: rotate(180deg); }
+.sweep-incs-head-txt { flex: 1; min-width: 0; }
+.sweep-incs-count { font-size: 10.5px; color: var(--color-key-primary); white-space: nowrap; flex-shrink: 0; }
+.sweep-incs-sub { font-size: 10.5px; color: var(--color-on-surface-subtle); margin-top: 2px; }
+.inc-row { display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 7px; border-radius: 4px; cursor: pointer; transition: background 120ms; }
+.inc-row:hover { background: var(--color-state-hover); }
+.inc-row.selected { background: var(--color-state-selected); }
+.inc-row .label { flex: 1; font-size: 12px; font-family: 'Geist Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inc-swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+.sweep-incs-hint { display: flex; align-items: flex-start; gap: 6px; font-size: 10.5px; line-height: 14px; color: var(--color-on-surface-subtle); }
+.sweep-incs-hint .mi { font-size: 14px; flex-shrink: 0; color: var(--color-key-primary); }
+
+/* run-level sweep mode control */
+.sweep-control { display: flex; flex-direction: column; gap: 8px; padding: 9px; margin: 2px 0 8px; border-radius: 6px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.predict-ctx { font-size: 11px; color: var(--color-on-surface-subtle); margin-bottom: 8px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.predict-disabled { opacity: .32; cursor: default; }
+.predict-disabled:hover { background: #0F62FE; }
+
+/* config inspector dock */
+.config-dock { flex-shrink: 0; border-top: 1px solid var(--color-border-subtle); background: var(--color-surface-0); display: flex; flex-direction: column; max-height: 68%; }
+.cfg-header { display: flex; align-items: center; gap: 10px; padding: 12px 10px 10px 14px; }
+.cfg-chip { width: 30px; height: 30px; border-radius: 7px; background: var(--color-container-surface); display: inline-flex; align-items: center; justify-content: center; color: var(--color-key-primary); flex-shrink: 0; }
+.cfg-chip .mi { font-size: 18px; }
+.cfg-titles { flex: 1; min-width: 0; }
+.cfg-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cfg-caption { font-size: 11px; color: var(--color-on-surface-subtle); margin-top: 1px; }
+.cfg-body { padding: 2px 14px 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+
+/* form primitives (unified) */
+.fld { display: flex; flex-direction: column; gap: 6px; }
+.fld-label { font-size: 11px; font-weight: 600; color: var(--color-on-surface-subtle); text-transform: uppercase; letter-spacing: .04em; }
+.fld-label .req { color: var(--color-key-error); margin-left: 3px; }
+.input { height: 32px; border-radius: 4px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); color: var(--color-on-surface); font-family: 'Geist', sans-serif; font-size: 13px; padding: 0 10px; outline: none; border: none; width: 100%; }
+.input:focus { box-shadow: inset 0 0 0 1px var(--color-key-primary); }
+.input-row { display: flex; gap: 6px; }
+.fake-select { display: flex; align-items: center; justify-content: space-between; height: 32px; padding: 0 8px 0 10px; border-radius: 4px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); font-size: 13px; cursor: pointer; transition: box-shadow 120ms; }
+.fake-select:hover { box-shadow: inset 0 0 0 1px var(--color-border); }
+.fake-select .mi { font-size: 18px; color: var(--color-on-surface-subtle); }
+.unit { display: inline-flex; align-items: center; padding: 0 10px; height: 32px; border-radius: 4px; background: var(--color-container-surface); box-shadow: inset 0 0 0 1px var(--color-border-subtle); font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--color-on-surface-subtle); flex-shrink: 0; }
+.btn-sm { height: 32px; padding: 0 12px; border-radius: 4px; border: none; background: var(--color-container-surface); color: var(--color-on-surface); box-shadow: inset 0 0 0 1px var(--color-border-subtle); font-family: 'Geist', sans-serif; font-size: 13px; cursor: pointer; white-space: nowrap; transition: background 120ms; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.btn-sm:hover { background: var(--color-state-hover); }
+.btn-sm .mi { font-size: 18px; }
+
+.seg { display: flex; gap: 4px; }
+.seg-btn { flex: 1; height: 32px; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: 600; background: var(--color-container-surface); color: var(--color-on-surface); box-shadow: inset 0 0 0 1px var(--color-border-subtle); transition: background 120ms; }
+.seg-btn:hover { background: var(--color-state-hover); }
+.seg-btn.sel { background: #0F62FE; color: #fff; box-shadow: inset 0 0 0 1px var(--color-key-primary); }
+.lib-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.lib-pill { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 9px; border-radius: 4px; border: none; cursor: pointer; font-family: 'Geist', sans-serif; font-size: 12px; background: var(--color-container-surface); color: var(--color-on-surface-subtle); box-shadow: inset 0 0 0 1px var(--color-border-subtle); white-space: nowrap; transition: background 120ms, color 120ms; }
+.lib-pill:hover { background: var(--color-state-hover); color: var(--color-on-surface); }
+.lib-pill.sel { background: var(--color-state-selected); color: var(--color-on-surface); box-shadow: inset 0 0 0 1px var(--color-key-primary); }
+.lib-pill.add { background: transparent; }
+.lib-pill .mi { font-size: 15px; }
+.lib-count { font-family: 'Geist Mono', monospace; font-size: 10px; opacity: 0.75; }
+
+.toggle-field { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 10px; border-radius: 6px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.toggle-field .tf-label { font-size: 13px; }
+.toggle-field .tf-sub { font-size: 11px; color: var(--color-on-surface-subtle); margin-top: 2px; }
+
+.info { display: flex; gap: 8px; font-size: 11px; color: var(--color-on-surface-subtle); line-height: 16px; }
+.info .mi { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+.readouts { display: flex; flex-direction: column; gap: 7px; border-radius: 6px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); padding: 9px 10px; }
+.ro-row { display: flex; justify-content: space-between; font-size: 12px; }
+.ro-row .k { color: var(--color-on-surface-subtle); }
+.ro-row .v { font-family: 'Geist Mono', monospace; }
+
+.sub-head { font-size: 11px; font-weight: 600; color: var(--color-on-surface-subtle); text-transform: uppercase; letter-spacing: .04em; }
+
+.predict-bar { flex-shrink: 0; padding: 12px 14px; border-top: 1px solid var(--color-border-subtle); background: var(--color-surface-1); }
+.predict { width: 100%; height: 42px; border-radius: 4px; border: none; background: #0F62FE; color: #fff; font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: inset 0 0 0 1px var(--color-key-primary); transition: background 120ms; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.predict:hover { background: #226EFE; }
+.predict .mi { font-size: 20px; }
+.predict-secondary { background: transparent; color: var(--color-on-surface); box-shadow: inset 0 0 0 1px var(--color-border, var(--color-border-subtle)); }
+.predict-secondary:hover { background: var(--color-state-hover, rgba(255,255,255,0.05)); }
+
+/* ============================= MAIN (right) ============================= */
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.navbar { height: 48px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0 12px; background: var(--color-surface-1); border-bottom: 1px solid var(--color-border-subtle); }
+.navbar .spacer { flex: 1; }
+.brand { font-size: 13px; font-weight: 600; letter-spacing: -0.01em; margin-right: 4px; }
+.brand-sub { font-size: 13px; color: var(--color-on-surface-subtle); margin-right: 10px; }
+.stage { flex: 1; min-height: 0; position: relative; overflow: hidden; }
+
+.nav-trigger { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 8px; border-radius: 4px; border: none; background: transparent; color: var(--color-on-surface); font-family: 'Geist', sans-serif; font-size: 13px; cursor: pointer; transition: background 120ms; white-space: nowrap; }
+.nav-trigger:hover { background: var(--color-state-hover); }
+.nav-trigger.open { background: var(--color-state-selected); }
+.nav-trigger .mi { font-size: 18px; color: var(--color-on-surface-subtle); }
+.nav-trigger.accent { box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.nav-trigger .swatch-dot { width: 14px; height: 14px; border-radius: 3px; box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.menu-wrap { position: relative; }
+
+.panel { background: var(--color-surface-1); border: 1px solid var(--color-border-subtle); border-radius: 8px; box-shadow: 0 8px 16px 0 var(--color-elevation-4-shadow); z-index: 50; padding: 12px; animation: fadeIn 130ms ease; display: flex; flex-direction: column; gap: 12px; }
+.panel.dropdown { position: absolute; top: 40px; right: 0; }
+.panel.dropdown-left { position: absolute; top: 40px; left: 0; right: auto; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(.97) translateY(-4px); } to { opacity: 1; transform: none; } }
+
+.panel-title { font-size: 13px; font-weight: 600; }
+.panel-sub { font-size: 11px; color: var(--color-on-surface-subtle); line-height: 16px; }
+.section-label { font-size: 11px; font-weight: 600; color: var(--color-on-surface-subtle); text-transform: uppercase; letter-spacing: .04em; }
+.divider { height: 1px; background: var(--color-border-subtle); margin: 2px 0; }
+
+.row { display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 8px; border-radius: 4px; cursor: pointer; transition: background 120ms; user-select: none; }
+.row:hover { background: var(--color-state-hover); }
+.row.selected { background: var(--color-state-selected); }
+.row .radio { width: 14px; height: 14px; border-radius: 9999px; flex-shrink: 0; border: 1.5px solid var(--color-on-surface-subtle); position: relative; }
+.row.selected .radio { border-color: var(--color-key-primary); }
+.row.selected .radio::after { content: ''; position: absolute; inset: 2.5px; border-radius: 9999px; background: var(--color-key-primary); }
+.row .label { flex: 1; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .row-del { opacity: 0; background: none; border: none; color: var(--color-on-surface-subtle); cursor: pointer; display: inline-flex; align-items: center; padding: 2px; border-radius: 4px; flex-shrink: 0; }
+.row:hover .row-del { opacity: 1; }
+.row .row-del:hover { background: var(--color-state-hover); color: var(--color-key-error); }
+.row .row-del .mi { font-size: 18px; }
+.list-box { border: 1px solid var(--color-border-subtle); border-radius: 6px; padding: 4px; background: var(--color-container-surface-low); max-height: 168px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+.list-empty { font-size: 12px; color: var(--color-on-surface-subtle); text-align: center; padding: 14px 8px; }
+
+.cm-swatch { width: 30px; height: 14px; border-radius: 3px; box-shadow: inset 0 0 0 1px var(--color-border-subtle); flex-shrink: 0; }
+.cm-units { font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--color-on-surface-subtle); }
+
+.btn { display: inline-flex; align-items: center; justify-content: space-between; gap: 6px; height: 32px; padding: 0 12px; border-radius: 4px; border: none; width: 100%; font-family: 'Geist', sans-serif; font-size: 13px; cursor: pointer; transition: background 120ms; }
+.btn .mi { font-size: 18px; }
+.btn-secondary { background: var(--color-container-surface); color: var(--color-on-surface); box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.btn-secondary:hover { background: var(--color-state-hover); }
+.btn-primary { background: #0F62FE; color: #fff; box-shadow: inset 0 0 0 1px var(--color-key-primary); justify-content: center; }
+.btn-primary:hover { background: #226EFE; }
+.btn:disabled { opacity: .32; pointer-events: none; }
+
+.name-row { display: flex; gap: 6px; }
+.name-input { flex: 1; height: 32px; border-radius: 4px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); color: var(--color-on-surface); font-family: 'Geist', sans-serif; font-size: 13px; padding: 0 10px; outline: none; border: none; }
+.name-input:focus { box-shadow: inset 0 0 0 1px var(--color-key-primary); }
+
+.lib-row { display: flex; align-items: center; gap: 6px; }
+.select { flex: 1; display: flex; align-items: center; justify-content: space-between; height: 32px; padding: 0 10px; border-radius: 4px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); font-size: 13px; cursor: pointer; }
+.select .mi { font-size: 18px; color: var(--color-on-surface-subtle); }
+.icon-btn { width: 32px; height: 32px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; background: var(--color-container-surface); box-shadow: inset 0 0 0 1px var(--color-border-subtle); cursor: pointer; border: none; color: var(--color-on-surface); transition: background 120ms; }
+.icon-btn:hover { background: var(--color-state-hover); }
+.icon-btn .mi { font-size: 18px; }
+
+.locked { border: 1px dashed var(--color-border-subtle); border-radius: 6px; padding: 14px 12px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; background: var(--color-container-surface-low); }
+.locked .head { display: flex; gap: 8px; align-items: flex-start; }
+.locked .mi { font-size: 20px; color: var(--color-on-surface-subtle); flex-shrink: 0; }
+.locked p { margin: 0; font-size: 12px; color: var(--color-on-surface-subtle); line-height: 17px; }
+
+.readout { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--color-on-surface-subtle); font-family: 'Geist Mono', monospace; padding: 0 2px; }
+.readout .dot { width: 6px; height: 6px; border-radius: 9999px; background: var(--color-key-success); }
+.active-box { border-radius: 6px; padding: 8px 10px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); display: flex; align-items: center; gap: 8px; }
+.active-box .nm { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.active-box .stats { font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--color-on-surface-subtle); flex: 1; }
+.chip-btn { font-size: 11px; color: var(--color-key-primary); cursor: pointer; background: none; border: none; }
+
+.ann { display: flex; flex-direction: column; gap: 10px; }
+.toggle-row { display: flex; align-items: center; justify-content: space-between; }
+
+/* shared switch */
+.switch { width: 34px; height: 18px; border-radius: 9999px; background: var(--color-container-surface-high); position: relative; cursor: pointer; transition: background 140ms; flex-shrink: 0; box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.switch.on { background: var(--color-container-primary); box-shadow: none; }
+.switch .knob { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 9999px; background: #fff; transition: left 140ms; }
+.switch.on .knob { left: 18px; }
+
+.ann-body { display: flex; flex-direction: column; gap: 8px; }
+.ann-body.disabled { opacity: .4; pointer-events: none; }
+.check-row { display: flex; align-items: center; gap: 8px; height: 26px; cursor: pointer; user-select: none; }
+.check { width: 15px; height: 15px; border-radius: 3px; flex-shrink: 0; box-shadow: inset 0 0 0 1.5px var(--color-on-surface-subtle); display: inline-flex; align-items: center; justify-content: center; }
+.check.on { background: var(--color-container-primary); box-shadow: none; }
+.check.on .mi { font-size: 13px; color: #fff; }
+.check-row .ck-label { font-size: 13px; flex: 1; }
+.check-row .ck-val { font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--color-on-surface-subtle); }
+
+/* viewport */
+.viewport { position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, #20242c 0%, var(--color-surface-canvas) 72%); cursor: grab; }
+.viewport.grabbing { cursor: grabbing; }
+.viewport svg { width: 100%; height: 100%; display: block; pointer-events: none; }
+
+.cam-ctrl { position: absolute; right: 16px; top: 16px; display: flex; gap: 6px; }
+.cam-ctrl .icon-btn { background: var(--color-surface-1); }
+
+.legend { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: var(--color-surface-1); border: 1px solid var(--color-border-subtle); border-radius: 8px; padding: 10px; box-shadow: 0 8px 16px var(--color-elevation-4-shadow); display: flex; flex-direction: column; gap: 8px; }
+.legend .lg-ttl { font-size: 11px; font-weight: 600; }
+.legend .lg-ttl span { color: var(--color-on-surface-subtle); font-weight: 400; }
+.legend .lg-body { display: flex; gap: 8px; height: 120px; }
+.legend .lg-bar { width: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.legend .lg-ticks { display: flex; flex-direction: column; justify-content: space-between; font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--color-on-surface-subtle); }
+
+.tools { position: absolute; left: 16px; bottom: 16px; display: flex; gap: 6px; }
+.tool { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 4px; background: var(--color-surface-1); box-shadow: inset 0 0 0 1px var(--color-border-subtle); color: var(--color-on-surface); font-size: 12px; cursor: pointer; border: none; transition: background 120ms; }
+.tool:hover { background: var(--color-state-hover); }
+.tool.active { background: var(--color-container-primary); box-shadow: none; color: #fff; }
+.tool .mi { font-size: 18px; }
+.hint { position: absolute; right: 16px; bottom: 16px; font-size: 11px; color: var(--color-on-surface-subtle); max-width: 240px; text-align: right; line-height: 16px; }
+
+/* side-by-side compare view (replaces the single viewport when ≥2 runs are checked) */
+.compare-view { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--color-surface-canvas); }
+.cmp-head { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--color-border-subtle); background: var(--color-surface-0); }
+.cmp-title { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600; }
+.cmp-title .mi { font-size: 18px; }
+.cmp-sub { font-size: 11px; color: var(--color-on-surface-subtle); }
+.cmp-mon-pick { display: inline-flex; align-items: center; gap: 7px; margin-left: auto; }
+.cmp-mon-label { font-size: 11px; color: var(--color-on-surface-subtle); text-transform: uppercase; letter-spacing: 0.04em; }
+.cmp-select-wrap { position: relative; display: inline-flex; align-items: center; }
+.cmp-select-wrap .mi { position: absolute; right: 6px; pointer-events: none; color: var(--color-on-surface-subtle); font-size: 18px; }
+.cmp-select { appearance: none; -webkit-appearance: none; height: 30px; padding: 0 28px 0 10px; border-radius: 4px; border: none; background: var(--color-container-surface); color: var(--color-on-surface); box-shadow: inset 0 0 0 1px var(--color-border-subtle); font-family: 'Geist', sans-serif; font-size: 12px; cursor: pointer; }
+.cmp-select:hover { background: var(--color-state-hover); }
+.cmp-select:focus { outline: none; box-shadow: var(--color-state-focus, 0 0 0 2px rgba(87,140,255,.4)), inset 0 0 0 1px var(--color-key-primary); }
+.cmp-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+.cmp-section-label { font-size: 11px; color: var(--color-on-surface-subtle); text-transform: uppercase; letter-spacing: 0.04em; }
+.cmp-panels { display: grid; gap: 12px; }
+.cmp-panel { display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; background: var(--color-surface-0); }
+.cmp-panel-head { display: flex; align-items: center; gap: 8px; padding: 8px 10px; }
+.cmp-panel-name { font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cmp-viewport-wrap { position: relative; height: 220px; background: radial-gradient(circle at 50% 42%, #20242c 0%, var(--color-surface-canvas) 72%); }
+.cmp-panel-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 7px 10px; font-size: 11px; color: var(--color-on-surface-subtle); border-top: 1px solid var(--color-border-subtle); }
+.cmp-panel-val { font-family: 'Geist Mono', monospace; font-size: 14px; font-weight: 600; }
+.cmp-charts { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; }
+.cmp-chart-col { flex: 1 1 340px; min-width: 300px; }
+.cmp-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--color-on-surface-subtle); font-size: 13px; text-align: center; padding: 24px; }
+.cmp-empty .mi { font-size: 26px; }
+.cmp-legend-inline { display: inline-flex; align-items: center; gap: 7px; margin-left: auto; font-size: 11px; color: var(--color-on-surface-subtle); }
+.cmp-legend-bar { width: 96px; height: 8px; border-radius: 2px; box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.cmp-hint { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--color-on-surface-subtle); padding: 4px 2px 0; }
+.cmp-hint .mi { font-size: 15px; color: var(--color-key-primary); }
+.cmp-hint b { color: var(--color-on-surface); font-weight: 600; }
+.run-chip.cfd { color: var(--color-key-warning, #F5A623); box-shadow: inset 0 0 0 1px var(--color-key-warning, #F5A623); background: transparent; }
+.cmp-mode-seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: 4px; background: var(--color-container-surface); box-shadow: inset 0 0 0 1px var(--color-border-subtle); margin-left: auto; }
+.cmp-mode-btn { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 9px; border: none; border-radius: 3px; background: transparent; color: var(--color-on-surface-subtle); font-family: 'Geist', sans-serif; font-size: 11.5px; cursor: pointer; }
+.cmp-mode-btn .mi { font-size: 15px; }
+.cmp-mode-btn.sel { background: var(--color-surface-0); color: var(--color-on-surface); box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.cmp-mode-btn:disabled { opacity: 0.32; cursor: default; }
+.cmp-ab { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 4px; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.cmp-ab.delta { background: var(--color-key-primary); }
+.cmp-delta-title { display: flex; align-items: center; gap: 7px; padding: 9px 10px; font-size: 12px; font-weight: 600; border-bottom: 1px solid var(--color-border-subtle); }
+.cmp-delta-title .mi { font-size: 16px; color: var(--color-key-primary); }
+.select-native { position: relative; display: inline-flex; align-items: center; }
+.select-native select { appearance: none; -webkit-appearance: none; height: 28px; padding: 0 28px 0 10px; border-radius: 4px; background: var(--color-container-surface); color: var(--color-on-surface); border: none; box-shadow: inset 0 0 0 1px var(--color-border-subtle); font-family: 'Geist', sans-serif; font-size: 12px; cursor: pointer; width: 100%; }
+.select-native select:hover { background: var(--color-state-hover); }
+.select-native select:focus { outline: none; box-shadow: inset 0 0 0 1px var(--color-key-primary); }
+.select-native > .mi { position: absolute; right: 7px; pointer-events: none; font-size: 16px; color: var(--color-on-surface-subtle); }
+.select-native option { background: var(--color-surface-1); color: var(--color-on-surface); }
+.delta-diff-body { padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+.delta-diff-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.dd-stat { display: flex; flex-direction: column; gap: 3px; padding: 7px 9px; border-radius: 5px; background: var(--color-container-surface); box-shadow: inset 0 0 0 1px var(--color-border-subtle); min-width: 0; }
+.dd-k { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; color: var(--color-on-surface-subtle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dd-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.dd-v { font-family: 'Geist Mono', monospace; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.delta-diff-cap { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--color-on-surface-subtle); }
+.delta-diff-cap .mi { font-size: 15px; color: var(--color-key-primary); }
+.delta-diff-cap b { color: var(--color-on-surface); font-weight: 600; }
+.cmp-ghost-key { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--color-on-surface-subtle); }
+.gk-solid { width: 14px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.gk-dash { width: 16px; height: 0; border-top: 2px dashed currentColor; flex-shrink: 0; }
+
+.slicer { position: absolute; left: 16px; bottom: 60px; width: 300px; max-height: calc(100% - 90px); overflow-y: auto; }
+.axis-group { display: flex; gap: 4px; }
+.axis-btn { flex: 1; height: 28px; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: 600; background: var(--color-container-surface); color: var(--color-on-surface); box-shadow: inset 0 0 0 1px var(--color-border-subtle); transition: background 120ms; }
+.axis-btn:hover { background: var(--color-state-hover); }
+.axis-btn.sel { background: #0F62FE; color: #fff; box-shadow: inset 0 0 0 1px var(--color-key-primary); }
+.slider-block { display: flex; flex-direction: column; gap: 4px; }
+.slider-head { display: flex; align-items: center; justify-content: space-between; }
+.slider-head .lbl { font-size: 12px; }
+.slider-head .val { font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--color-on-surface-subtle); }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 9999px; background: var(--color-container-surface-high); outline: none; margin: 6px 0; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 9999px; background: var(--color-key-primary); cursor: pointer; box-shadow: 0 0 0 3px rgba(87,140,255,.2); }
+input[type=range]:disabled { opacity: .4; }
+.dual { display: flex; gap: 8px; }
+.dual .slider-block { flex: 1; }
+.sub-label { font-size: 11px; color: var(--color-on-surface-subtle); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useRef, useEffect } = React;
+
+function Icon({ name, className, style }) { return <span className={'mi' + (className ? ' ' + className : '')} style={style}>{name}</span>; }
+
+/* ====================================================================== */
+/* GEOMETRY VIEWER DOMAIN                                                  */
+/* ====================================================================== */
+const AXES = ['x', 'y', 'z'];
+const BOUNDS = { x: [0, 200], y: [0, 120], z: [0, 160] };
+const AXIS_IDX = { x: 0, y: 1, z: 2 };
+const CENTER = [100, 60, 80];
+const orthosOf = (axis) => AXES.filter((a) => a !== axis);
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+function extractCustomMonitorLocation(axis, slicePos, ranges, flipNormal) {
+  try {
+    const [ortho1, ortho2] = orthosOf(axis);
+    const o1 = ranges[ortho1], o2 = ranges[ortho2];
+    const normal = [0, 0, 0];
+    normal[AXIS_IDX[axis]] = flipNormal ? -1 : 1;
+    const makeVertex = (v1, v2) => {
+      const pt = [0, 0, 0];
+      pt[AXIS_IDX[axis]] = slicePos;
+      pt[AXIS_IDX[ortho1]] = v1;
+      pt[AXIS_IDX[ortho2]] = v2;
+      return pt;
+    };
+    return {
+      normal,
+      vertices: [
+        makeVertex(o1[0], o2[0]),
+        makeVertex(o1[1], o2[0]),
+        makeVertex(o1[1], o2[1]),
+        makeVertex(o1[0], o2[1]),
+      ],
+    };
+  } catch (err) {
+    console.error('[extractCustomMonitorLocation] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+
+function computeNormalArrow(axis, slicePos, ranges, flipNormal) {
+  const [ortho1, ortho2] = orthosOf(axis);
+  const o1 = ranges[ortho1], o2 = ranges[ortho2];
+  const cx = (o1[0] + o1[1]) * 0.5, cy = (o2[0] + o2[1]) * 0.5;
+  const center = [0, 0, 0];
+  center[AXIS_IDX[axis]] = slicePos;
+  center[AXIS_IDX[ortho1]] = cx;
+  center[AXIS_IDX[ortho2]] = cy;
+  const len = Math.max(Math.abs(o1[1] - o1[0]), Math.abs(o2[1] - o2[0])) * 0.25;
+  const end = [...center];
+  end[AXIS_IDX[axis]] = slicePos + (flipNormal ? -1 : 1) * len;
+  return { start: center, end };
+}
+
+const COLORMAPS = [
+  { id: 'temperature', name: 'Temperature', field: 'Temperature', units: 'K',  min: 388, max: 412, stops: ['#30123b', '#3396ff', '#07c2ac', '#dc9e17', '#ff3d00'] },
+  { id: 'pressure',    name: 'Pressure',    field: 'Pressure',    units: 'kPa', min: 98,  max: 104, stops: ['#3396ff', '#9bd0ff', '#f1f1f1', '#ffb0a0', '#d41344'] },
+  { id: 'velocity',    name: 'Velocity',    field: 'Velocity',    units: 'm/s', min: 0,   max: 18,  stops: ['#440154', '#3b528b', '#21918c', '#5ec962', '#fde725'] },
+  // Diverging map for A−B difference fields (delta view). Deliberately uses a
+  // teal↔magenta ramp — hues none of the physical field maps use at their
+  // extremes — so a delta field never reads as Temperature/Pressure/Velocity.
+  { id: 'delta',       name: 'Δ Difference', field: 'Δ',          units: '',    min: -4,  max: 4,   stops: ['#0E8C7E', '#7FC9C0', '#ECECEF', '#EFA6CB', '#C2148A'] },
+];
+const cmById = (id) => COLORMAPS.find((c) => c.id === id) || COLORMAPS[0];
+const gradCss = (stops, dir) => `linear-gradient(${dir}, ${stops.join(', ')})`;
+
+const CX = 400, CY = 300;
+function rotVec(px, py, pz, cam) {
+  const ca = Math.cos(cam.az), sa = Math.sin(cam.az);
+  const x1 = px * ca - py * sa, y1 = px * sa + py * ca, z1 = pz;
+  const ce = Math.cos(cam.el), se = Math.sin(cam.el);
+  const y2 = y1 * ce - z1 * se, z2 = y1 * se + z1 * ce;
+  return [x1, y2, z2];
+}
+function pp(world, cam) {
+  const [rx, ry, rz] = rotVec(world[0] - CENTER[0], world[1] - CENTER[1], world[2] - CENTER[2], cam);
+  return { x: CX + rx * cam.zoom, y: CY - rz * cam.zoom, d: ry };
+}
+const DEFAULT_CAM = { az: -0.72, el: 0.5, zoom: 1.7 };
+
+const FACES = [
+  { n: [-1, 0, 0], c: [[0,0,0],[0,1,0],[0,1,1],[0,0,1]] },
+  { n: [ 1, 0, 0], c: [[1,0,0],[1,1,0],[1,1,1],[1,0,1]] },
+  { n: [0, -1, 0], c: [[0,0,0],[1,0,0],[1,0,1],[0,0,1]] },
+  { n: [0,  1, 0], c: [[0,1,0],[1,1,0],[1,1,1],[0,1,1]] },
+  { n: [0, 0, -1], c: [[0,0,0],[1,0,0],[1,1,0],[0,1,0]] },
+  { n: [0, 0,  1], c: [[0,0,1],[1,0,1],[1,1,1],[0,1,1]] },
+];
+const cwc = (ci) => [BOUNDS.x[ci[0]], BOUNDS.y[ci[1]], BOUNDS.z[ci[2]]];
+const ALL_CORNERS = [];
+for (const xi of [0,1]) for (const yi of [0,1]) for (const zi of [0,1]) ALL_CORNERS.push([xi,yi,zi]);
+const LIGHT = (() => { const v = [-0.4, -0.5, 0.75]; const m = Math.hypot(...v); return v.map((n) => n / m); })();
+
+function Viewport({ slice, ann, cam, setCam, colorMap, sliceLabel, warp, ghosts }) {
+  const drag = useRef(null);
+  const [grabbing, setGrabbing] = useState(false);
+  const cm = cmById(colorMap);
+
+  const onDown = (e) => { drag.current = { x: e.clientX, y: e.clientY }; setGrabbing(true); };
+  const onMove = (e) => {
+    if (!drag.current) return;
+    const dx = e.clientX - drag.current.x, dy = e.clientY - drag.current.y;
+    drag.current = { x: e.clientX, y: e.clientY };
+    setCam((c) => ({ ...c, az: c.az - dx * 0.01, el: clamp(c.el + dy * 0.01, -1.45, 1.45) }));
+  };
+  const onUp = () => { drag.current = null; setGrabbing(false); };
+  const onWheel = (e) => { setCam((c) => ({ ...c, zoom: clamp(c.zoom * (1 - e.deltaY * 0.0012), 0.5, 4) })); };
+
+  try {
+    // The primary geometry can be warped (e.g. to show run B's distorted shape).
+    const proj1 = (ci) => pp(warpPoint(cwc(ci), warp), cam);
+    const proj = ALL_CORNERS.map(proj1);
+    const ys = proj.map((p) => p.y);
+    const minY = Math.min(...ys), maxY = Math.max(...ys);
+
+    const faces = FACES.map((f, i) => {
+      const nr = rotVec(f.n[0], f.n[1], f.n[2], cam);
+      const b = Math.max(0, nr[0] * LIGHT[0] + nr[1] * LIGHT[1] + nr[2] * LIGHT[2]);
+      const shade = 0.3 + 0.7 * b;
+      const pts = f.c.map(proj1);
+      const depth = pts.reduce((s, p) => s + p.d, 0) / pts.length;
+      return { key: i, pts: pts.map((p) => `${p.x},${p.y}`).join(' '), shade, depth };
+    }).sort((a, b) => b.depth - a.depth);
+
+    let quad = null, arrow = null;
+    if (slice.axis) {
+      const loc = extractCustomMonitorLocation(slice.axis, slice.pos[slice.axis], slice.ranges, slice.flip);
+      if (loc) quad = loc.vertices.map((v) => { const p = pp(v, cam); return `${p.x},${p.y}`; }).join(' ');
+      const a = computeNormalArrow(slice.axis, slice.pos[slice.axis], slice.ranges, slice.flip);
+      arrow = { s: pp(a.start, cam), e: pp(a.end, cam) };
+    }
+    const pins = [
+      ann.on && ann.max && { c: '#FF3D00', t: `Max ${cm.max} ${cm.units}`, p: pp([180, 12, 150], cam) },
+      ann.on && ann.min && { c: '#3396FF', t: `Min ${cm.min} ${cm.units}`, p: pp([20, 108, 14], cam) },
+      ann.on && ann.mean && { c: '#70D913', t: `Mean ${Math.round((cm.min + cm.max) / 2)} ${cm.units}`, p: pp([100, 60, 80], cam) },
+    ].filter(Boolean);
+
+    return (
+      <div className={'viewport' + (grabbing ? ' grabbing' : '')}
+        onMouseDown={onDown} onMouseMove={onMove} onMouseUp={onUp} onMouseLeave={onUp} onWheel={onWheel}>
+        <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="var(--color-key-primary)" />
+            </marker>
+            <linearGradient id="fieldGrad" gradientUnits="userSpaceOnUse" x1="0" y1={minY} x2="0" y2={maxY}>
+              {cm.stops.slice().reverse().map((s, i, arr) => (
+                <stop key={i} offset={i / (arr.length - 1)} stopColor={s} />
+              ))}
+            </linearGradient>
+          </defs>
+          {faces.map((f) => (
+            <g key={f.key}>
+              <polygon points={f.pts} fill="url(#fieldGrad)" stroke="#0b0e14" strokeWidth="1" strokeLinejoin="round" />
+              <polygon points={f.pts} fill="#000" opacity={(1 - f.shade) * 0.55} stroke="none" />
+            </g>
+          ))}
+          {/* Ghost geometries: dashed wireframe + corner dots + displacement hints,
+              overlaid on the solid primary to reveal geometric distortion. */}
+          {(ghosts || []).map((gh, gi) => {
+            const gpt = (ci) => pp(warpPoint(cwc(ci), gh.warp), cam);
+            return (
+              <g key={'gh' + gi}>
+                {gh.showDisp && ALL_CORNERS.map((ci, k) => {
+                  const a = proj1(ci), b = gpt(ci);
+                  return <line key={'d' + k} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={gh.color} strokeWidth="0.75" opacity="0.3" />;
+                })}
+                {BOX_EDGES.map((e, k) => {
+                  const a = gpt(e[0]), b = gpt(e[1]);
+                  return <line key={'e' + k} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={gh.color} strokeWidth="1.7" strokeDasharray="5 3" strokeLinecap="round" opacity="0.92" />;
+                })}
+                {ALL_CORNERS.map((ci, k) => { const p = gpt(ci); return <circle key={'c' + k} cx={p.x} cy={p.y} r="2.3" fill={gh.color} opacity="0.95" />; })}
+              </g>
+            );
+          })}
+          {slice.axis && slice.showPlane && quad && (
+            <polygon points={quad} fill="rgba(87,140,255,0.20)" stroke="var(--color-key-primary)" strokeWidth="1.5" strokeDasharray="5 4" />
+          )}
+          {slice.axis && arrow && (
+            <line x1={arrow.s.x} y1={arrow.s.y} x2={arrow.e.x} y2={arrow.e.y}
+                  stroke="var(--color-key-primary)" strokeWidth="2" markerEnd="url(#arrowhead)" />
+          )}
+          {slice.axis && sliceLabel && arrow && (() => {
+            const w = sliceLabel.length * 6.4 + 34;
+            const onRight = arrow.s.x > 470;
+            const tx = clamp(onRight ? arrow.s.x - w - 14 : arrow.s.x + 14, 8, 800 - w - 8);
+            const ty = clamp(arrow.s.y, 20, 580);
+            return (
+              <g>
+                <circle cx={arrow.s.x} cy={arrow.s.y} r="4.5" fill="var(--color-key-primary)" stroke="#0b0e14" strokeWidth="1.5" />
+                <line x1={arrow.s.x} y1={arrow.s.y} x2={tx} y2={ty} stroke="var(--color-key-primary)" strokeWidth="1" opacity="0.5" />
+                <g transform={`translate(${tx},${ty})`}>
+                  <rect x="0" y="-11" width={w} height="22" rx="5" fill="var(--color-surface-1)" stroke="var(--color-key-primary)" strokeWidth="1" />
+                  <circle cx="13" cy="0" r="3.5" fill="var(--color-key-primary)" />
+                  <text x="24" y="4" fontFamily="Geist, sans-serif" fontSize="11.5" fontWeight="600" fill="var(--color-on-surface)">{sliceLabel}</text>
+                </g>
+              </g>
+            );
+          })()}
+          {pins.map((pin, i) => (
+            <g key={i} transform={`translate(${pin.p.x},${pin.p.y})`}>
+              <circle r="3.5" fill={pin.c} />
+              <rect x="8" y="-9" width={pin.t.length * 6.5 + 16} height="18" rx="4" fill="var(--color-surface-1)" stroke="var(--color-border-subtle)" />
+              <circle cx="16" cy="0" r="3.5" fill={pin.c} />
+              <text x="24" y="4" fontFamily="Geist Mono, monospace" fontSize="11" fill="var(--color-on-surface)">{pin.t}</text>
+            </g>
+          ))}
+        </svg>
+      </div>
+    );
+  } catch (err) {
+    console.error('[Viewport] CRASH:', err.message, err.stack);
+    return <div className="viewport" />;
+  }
+}
+
+function Legend({ colorMap }) {
+  const cm = cmById(colorMap);
+  return (
+    <div className="legend" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+      <div className="lg-ttl">{cm.field} <span>· {cm.units}</span></div>
+      <div className="lg-body">
+        <div className="lg-bar" style={{ background: gradCss(cm.stops, 'to top') }} />
+        <div className="lg-ticks">
+          <span>{cm.max}</span>
+          <span>{Math.round((cm.min + cm.max) / 2)}</span>
+          <span>{cm.min}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ColorMapPanel({ colorMap, onSelect }) {
+  try {
+    return (
+      <div className="panel dropdown-left" style={{ width: 280 }} onClick={(e) => e.stopPropagation()}>
+        <div>
+          <div className="panel-title">Color Map</div>
+          <div className="panel-sub">Scalar field imposed on the geometry surface.</div>
+        </div>
+        <div className="list-box">
+          {COLORMAPS.filter((cm) => cm.id !== 'delta').map((cm) => (
+            <div key={cm.id} className={'row' + (colorMap === cm.id ? ' selected' : '')} onClick={() => onSelect(cm.id)}>
+              <span className="radio" />
+              <span className="cm-swatch" style={{ background: gradCss(cm.stops, 'to right') }} />
+              <span className="label">{cm.name}</span>
+              <span className="cm-units">{cm.units}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  } catch (err) {
+    console.error('[ColorMapPanel] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+
+function SlicerPanel({ slice, setSlice, onSaveMonitor }) {
+  try {
+    const { axis } = slice;
+    const setAxis = (a) => setSlice({ ...slice, axis: a });
+    const setPos = (v) => setSlice({ ...slice, pos: { ...slice.pos, [axis]: v } });
+    const setRange = (ax, idx, v) => {
+      const r = [...slice.ranges[ax]];
+      r[idx] = v;
+      if (idx === 0) r[0] = Math.min(r[0], r[1]); else r[1] = Math.max(r[0], r[1]);
+      setSlice({ ...slice, ranges: { ...slice.ranges, [ax]: r } });
+    };
+    const orthos = axis ? orthosOf(axis) : [];
+
+    return (
+      <div className="panel slicer" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+        <div>
+          <div className="panel-title">Slicer</div>
+          <div className="panel-sub">Cut the geometry along an axis, then save the plane as a monitor in this engine's library.</div>
+        </div>
+
+        <div className="slider-block">
+          <span className="sub-label">Axis</span>
+          <div className="axis-group">
+            {[null, 'x', 'y', 'z'].map((a) => (
+              <button key={a ?? 'none'} className={'axis-btn' + (axis === a ? ' sel' : '')} onClick={() => setAxis(a)}>
+                {a ? a.toUpperCase() : 'None'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {axis && (
+          <>
+            <div className="slider-block">
+              <div className="slider-head">
+                <span className="lbl">Slice position</span>
+                <span className="val">{axis.toUpperCase()} @ {Math.round(slice.pos[axis])}mm</span>
+              </div>
+              <input type="range" min={BOUNDS[axis][0]} max={BOUNDS[axis][1]} step="1"
+                value={slice.pos[axis]} onChange={(e) => setPos(+e.target.value)} />
+            </div>
+
+            <div className="divider" />
+            <span className="sub-label">In-plane extent (sampling rectangle)</span>
+            {orthos.map((ax) => (
+              <div className="slider-block" key={ax}>
+                <div className="slider-head">
+                  <span className="lbl">{ax.toUpperCase()} range</span>
+                  <span className="val">{Math.round(slice.ranges[ax][0])}–{Math.round(slice.ranges[ax][1])}mm</span>
+                </div>
+                <div className="dual">
+                  <input type="range" min={BOUNDS[ax][0]} max={BOUNDS[ax][1]} step="1"
+                    value={slice.ranges[ax][0]} onChange={(e) => setRange(ax, 0, +e.target.value)} />
+                  <input type="range" min={BOUNDS[ax][0]} max={BOUNDS[ax][1]} step="1"
+                    value={slice.ranges[ax][1]} onChange={(e) => setRange(ax, 1, +e.target.value)} />
+                </div>
+              </div>
+            ))}
+
+            <div className="divider" />
+            <div className="toggle-row">
+              <span className="lbl">Show plane</span>
+              <div className={'switch' + (slice.showPlane ? ' on' : '')} onClick={() => setSlice({ ...slice, showPlane: !slice.showPlane })}><span className="knob" /></div>
+            </div>
+            <div className="toggle-row">
+              <span className="lbl">Flip normal</span>
+              <div className={'switch' + (slice.flip ? ' on' : '')} onClick={() => setSlice({ ...slice, flip: !slice.flip })}><span className="knob" /></div>
+            </div>
+
+            <button className="btn btn-primary" onClick={onSaveMonitor}>Save as monitor</button>
+          </>
+        )}
+      </div>
+    );
+  } catch (err) {
+    console.error('[SlicerPanel] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+
+function ViewsPanel({ views, libs, selectedView, onApply, onSaveView, onDeleteView, onCreateLib, onDeleteLib, ann, setAnn }) {
+  const [activeLib, setActiveLib] = useState(libs[0] ? libs[0].id : null);
+  const [naming, setNaming] = useState(false);
+  const [nameVal, setNameVal] = useState('');
+  const [libNaming, setLibNaming] = useState(false);
+  const [libNameVal, setLibNameVal] = useState('');
+  const inputRef = useRef(null);
+  const libInputRef = useRef(null);
+  useEffect(() => { if (naming && inputRef.current) inputRef.current.focus(); }, [naming]);
+  useEffect(() => { if (libNaming && libInputRef.current) libInputRef.current.focus(); }, [libNaming]);
+
+  // The active library may have been deleted out from under us — fall back to the first.
+  const curLibId = libs.some((l) => l.id === activeLib) ? activeLib : (libs[0] ? libs[0].id : null);
+  const curLib = libs.find((l) => l.id === curLibId);
+  const libViews = views.filter((v) => v.libId === curLibId);
+
+  const confirmSave = () => {
+    const n = nameVal.trim();
+    if (!n || !curLibId) return;
+    onSaveView(n, curLibId);
+    setNameVal('');
+    setNaming(false);
+  };
+  const confirmLib = () => {
+    const n = libNameVal.trim();
+    if (!n) return;
+    const id = onCreateLib(n);
+    if (id) setActiveLib(id);
+    setLibNameVal('');
+    setLibNaming(false);
+  };
+
+  try {
+    return (
+      <div className="panel dropdown" style={{ width: 320 }} onClick={(e) => e.stopPropagation()}>
+        <div>
+          <div className="panel-title">Views</div>
+          <div className="panel-sub">Saved scene presets — camera, color map & annotations — grouped into libraries.</div>
+        </div>
+
+        <div className="lib-pills">
+          {libs.map((l) => {
+            const n = views.filter((v) => v.libId === l.id).length;
+            return (
+              <button key={l.id} className={'lib-pill' + (l.id === curLibId ? ' sel' : '')}
+                onClick={() => { setActiveLib(l.id); setNaming(false); }}>
+                <Icon name="folder" />{l.name}<span className="lib-count">{n}</span>
+              </button>
+            );
+          })}
+          <button className="lib-pill add" title="New library" onClick={() => { setLibNaming(true); setNaming(false); }}>
+            <Icon name="add" />New
+          </button>
+        </div>
+
+        {libNaming && (
+          <div className="name-row">
+            <input ref={libInputRef} className="name-input" placeholder="Library name" value={libNameVal}
+              onChange={(e) => setLibNameVal(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') confirmLib(); if (e.key === 'Escape') { setLibNaming(false); setLibNameVal(''); } }} />
+            <button className="icon-btn" title="Create library" onClick={confirmLib}><Icon name="check" /></button>
+            <button className="icon-btn" title="Cancel" onClick={() => { setLibNaming(false); setLibNameVal(''); }}><Icon name="close" /></button>
+          </div>
+        )}
+
+        <div className="list-box">
+          {libViews.length === 0 && <div className="list-empty">No views in this library yet</div>}
+          {libViews.map((v) => (
+            <div key={v.id} className={'row' + (selectedView === v.id ? ' selected' : '')} onClick={() => onApply(v.id)}>
+              <span className="radio" />
+              <span className="label">{v.name}</span>
+              <button className="row-del" title="Delete view"
+                onClick={(e) => { e.stopPropagation(); onDeleteView(v.id); }}>
+                <Icon name="delete" />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {naming ? (
+          <div className="name-row">
+            <input ref={inputRef} className="name-input" placeholder={curLib ? 'View name → ' + curLib.name : 'View name'} value={nameVal}
+              onChange={(e) => setNameVal(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') confirmSave(); if (e.key === 'Escape') { setNaming(false); setNameVal(''); } }} />
+            <button className="icon-btn" title="Save" onClick={confirmSave}><Icon name="check" /></button>
+            <button className="icon-btn" title="Cancel" onClick={() => { setNaming(false); setNameVal(''); }}><Icon name="close" /></button>
+          </div>
+        ) : (
+          <button className="btn btn-secondary" disabled={!curLibId} onClick={() => { setNaming(true); setLibNaming(false); }}>
+            Save current view<Icon name="add" />
+          </button>
+        )}
+
+        {libs.length > 1 && curLib && (
+          <button onClick={() => onDeleteLib(curLibId)}
+            style={{ background: 'none', border: 'none', color: 'var(--color-key-error)', fontSize: 12, cursor: 'pointer', padding: '2px 0', textAlign: 'left', fontFamily: 'Geist, sans-serif' }}>
+            Delete “{curLib.name}” library{libViews.length ? ' · ' + libViews.length + ' view' + (libViews.length === 1 ? '' : 's') : ''}
+          </button>
+        )}
+
+        <div className="divider" />
+        <div className="ann">
+          <div className="toggle-row">
+            <div>
+              <div className="section-label">Annotations</div>
+              <div className="panel-sub" style={{ marginTop: 2 }}>Value labels pinned on the geometry</div>
+            </div>
+            <div className={'switch' + (ann.on ? ' on' : '')} onClick={() => setAnn({ ...ann, on: !ann.on })}><span className="knob" /></div>
+          </div>
+          <div className={'ann-body' + (ann.on ? '' : ' disabled')}>
+            {[{ key: 'max', label: 'Max', val: 'inlet edge' },
+              { key: 'min', label: 'Min', val: 'outlet face' },
+              { key: 'mean', label: 'Mean', val: 'volume avg' }].map((c) => (
+              <div key={c.key} className="check-row" onClick={() => setAnn({ ...ann, [c.key]: !ann[c.key] })}>
+                <span className={'check' + (ann[c.key] ? ' on' : '')}>{ann[c.key] && <Icon name="check" />}</span>
+                <span className="ck-label">{c.label}</span><span className="ck-val">{c.val}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  } catch (err) {
+    console.error('[ViewsPanel] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+
+const MON_GROUPS = [
+  { id: 'cfd-mon', label: 'Flow · CFD' },
+  { id: 'fea-results', label: 'Structural · FEA' },
+];
+function MonitorsPanel({ slice, monitorsByGroup, engineType, selected, onSelect, onCreate, onOpenSlicer, runs, compareSel }) {
+  // Compare mode overlays the selected runs (geometries) at this monitor. Sweep
+  // runs are excluded from the picker for now — comparison is run-to-run.
+  const allRuns = runs || RUNS;
+  const singleRuns = allRuns.filter((r) => !runIsSweep(r));
+  const baseRun = allRuns.find((r) => r.isBaseline) || allRuns[0];
+  const [compare, setCompare] = useState(false);
+  // Seed the run selection from the sidebar's compare checkboxes (so the navbar
+  // inspector stays consistent with the list); fall back to all single runs.
+  // A selected sweep expands into one line per increment in the plot below.
+  const [runSel, setRunSel] = useState(() => {
+    const seed = (compareSel && compareSel.size) ? allRuns.filter((r) => compareSel.has(r.id)) : singleRuns;
+    const s = new Set(seed.map((r) => r.id));
+    if (baseRun) s.add(baseRun.id); // reference run is always shown
+    return s;
+  });
+  try {
+    const inEngine = (m) => (m.engineId || engineType) === engineType;
+    const grouped = MON_GROUPS.map((g) => ({ ...g, list: (monitorsByGroup[g.id] || []).filter(inEngine) }));
+    const total = grouped.reduce((s, g) => s + g.list.length, 0);
+    const sliceActive = !!slice.axis;
+    let selM = null;
+    grouped.forEach((g) => g.list.forEach((m) => { if (m.id === selected) selM = m; }));
+    const toggleRun = (id) => {
+      if (baseRun && id === baseRun.id) return; // reference run is always shown
+      setRunSel((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+    };
+    return (
+      <div className="panel dropdown" style={{ width: 460, maxHeight: '88vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
+        <div>
+          <div className="panel-title">Monitors</div>
+          <div className="panel-sub">Measured field results per monitor. Select one to view its statistics, slice profile and run-to-run comparison — and locate it on the geometry.</div>
+        </div>
+        <div className="lib-row">
+          <div className="select"><Icon name="bolt" style={{ fontSize: 16 }} /><span>{engineType.toUpperCase()} platform library</span></div>
+          <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--color-on-surface-subtle)' }}>{total} monitor{total === 1 ? '' : 's'}</span>
+        </div>
+        {total === 0 ? (
+          <div className="locked">
+            <div className="head"><Icon name="content_cut" /><p>No monitors yet for {engineType.toUpperCase()}. Cut the geometry with the Slice tool, then save the plane as a monitor.</p></div>
+            <button className="btn btn-secondary" onClick={onOpenSlicer}>Open Slicer<Icon name="content_cut" /></button>
+          </div>
+        ) : grouped.map((g) => g.list.length ? (
+          <div key={g.id}>
+            <div className="section-label">{g.label}</div>
+            <div className="list-box">
+              {g.list.map((m) => (
+                <div key={m.id} className={'row' + (selected === m.id ? ' selected' : '')} onClick={() => onSelect(m.id)}>
+                  <Icon name="place" style={{ fontSize: 17, color: selected === m.id ? 'var(--color-key-primary)' : 'var(--color-on-surface-subtle)' }} />
+                  <span className="label">{m.label}</span>
+                  <span className="cm-units">{m.field}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null)}
+
+        {selM && (() => {
+          const { vis, units, L, dec } = monitorVis(selM);
+          const baseVals = genSeries(selM.id + ':' + (baseRun ? baseRun.id : 'baseline'), vis, 60);
+          const baseStats = seriesStats(baseVals);
+          const selectedRuns = allRuns.filter((r) => runSel.has(r.id));
+          // Expand any selected sweep into one distinctly-coloured line per increment;
+          // single runs contribute a single line. (P3-1/P3-2: a sweep is many lines, not one.)
+          const lines = [], statRows = [];
+          selectedRuns.forEach((r) => {
+            if (runIsSweep(r)) {
+              incrementRuns(r).forEach((ir) => {
+                const vals = genSeries(selM.id + ':' + ir.id, vis, 60);
+                lines.push({ name: ir.shortName, color: ir.color, vals });
+                statRows.push({ name: ir.shortName, color: ir.color, stats: seriesStats(vals) });
+              });
+            } else {
+              const vals = genSeries(selM.id + ':' + r.id, vis, 60);
+              lines.push({ name: r.name, color: r.color, vals });
+              statRows.push({ name: r.name, color: r.color, stats: seriesStats(vals) });
+            }
+          });
+          return (
+            <>
+              <div className="divider" />
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Icon name="insights" style={{ fontSize: 17, color: 'var(--color-key-primary)' }} />
+                  <span style={{ fontSize: 13, fontWeight: 600 }}>{selM.label}</span>
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--color-on-surface-subtle)', marginTop: 2 }}>
+                  {selM.field} · {selM.units} · {selM.reduction} · {(selM.axis || 'z').toUpperCase()} @ {selM.pos}mm
+                </div>
+              </div>
+              <div className="seg">
+                <button className={'seg-btn' + (!compare ? ' sel' : '')} onClick={() => setCompare(false)}>This run</button>
+                <button className={'seg-btn' + (compare ? ' sel' : '')} onClick={() => setCompare(true)}>Compare runs</button>
+              </div>
+              {!compare ? (
+                <>
+                  <StatStrip stats={baseStats} units={units} dec={dec} />
+                  <ProfilePlot vis={vis} L={L} units={units} dec={dec} reduction={selM.reduction}
+                    series={[{ name: baseRun ? baseRun.name : 'Baseline', color: baseRun ? baseRun.color : 'var(--color-key-primary)', vals: baseVals }]} />
+                </>
+              ) : (
+                <>
+                  <div style={{ fontSize: 11, color: 'var(--color-on-surface-subtle)' }}>Select runs to overlay at this monitor position · a sweep expands into one line per increment</div>
+                  <div className="list-box" style={{ maxHeight: 200 }}>
+                    {allRuns.map((r) => {
+                      const on = runSel.has(r.id), isBase = baseRun && r.id === baseRun.id, isCfd = r.source === 'cfd', sweep = runIsSweep(r);
+                      const nInc = sweep ? incrementRuns(r).length : 0;
+                      return (
+                        <div key={r.id} className={'row' + (on ? ' selected' : '')} onClick={() => toggleRun(r.id)}
+                          style={isBase ? { cursor: 'default' } : undefined} title={isBase ? 'Reference run — always shown' : undefined}>
+                          <span className={'check' + (on ? ' on' : '')}>{on && <Icon name="check" />}</span>
+                          <span style={{ width: 4, height: 16, borderRadius: 2, background: r.color, opacity: on ? 1 : 0.4, flexShrink: 0 }} />
+                          <span className="label">{r.name}</span>
+                          {sweep
+                            ? <span className="run-chip sweep"><Icon name="tune" />{nInc}</span>
+                            : isCfd
+                              ? <span className="run-chip cfd"><Icon name="dataset" />CFD</span>
+                              : <span className="run-chip"><Icon name="auto_awesome" style={{ fontSize: 11 }} />AI</span>}
+                          {isBase && <span className="run-chip" style={{ flexShrink: 0 }}>base</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {lines.length > 0 ? (
+                    <>
+                      <ProfilePlot vis={vis} L={L} units={units} dec={dec} series={lines} />
+                      <StatTable rows={statRows} units={units} dec={dec} baselineMean={baseStats.mean} />
+                    </>
+                  ) : (
+                    <div className="list-empty">Select at least one run to overlay its profile.</div>
+                  )}
+                </>
+              )}
+            </>
+          );
+        })()}
+
+        {!selM && (<>
+          <div className="divider" />
+          {sliceActive
+            ? <div className="readout"><span className="dot" /> current slice: {slice.axis.toUpperCase()} @ {Math.round(slice.pos[slice.axis])}mm</div>
+            : <div className="readout" style={{ color: 'var(--color-key-warning)' }}><Icon name="info" style={{ fontSize: 14 }} /> no slice active</div>}
+          <button className="btn btn-primary" disabled={!sliceActive} onClick={onCreate}>Save current slice as new monitor</button>
+        </>)}
+      </div>
+    );
+  } catch (err) {
+    console.error('[MonitorsPanel] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+
+function NavTrigger({ label, open, accent, onClick, leading }) {
+  return (
+    <button className={'nav-trigger' + (open ? ' open' : '') + (accent ? ' accent' : '')} onClick={onClick}>
+      {leading}{label}<Icon name={open ? 'arrow_drop_up' : 'arrow_drop_down'} />
+    </button>
+  );
+}
+
+/* ====================================================================== */
+/* RUN-SETUP SIDEBAR                                                      */
+/* ====================================================================== */
+const TREE = [
+  { id: 'geo', label: 'Geometry', icon: 'view_in_ar', type: 'geometry', children: [
+    { id: 'geo-file', label: 'ASM-Housing_v3.2.stp', icon: 'description', type: 'geometry-file' },
+  ]},
+  { id: 'setup', label: 'Setup', icon: 'tune', type: 'group', children: [
+    { id: 'engine', label: 'Engine classification', icon: 'category', type: 'engine' },
+    { id: 'parts', label: 'Parts', icon: 'account_tree', type: 'parts', badge: '2', children: [
+      { id: 'part-housing', label: 'Housing', icon: 'view_in_ar', type: 'part', children: [
+        { id: 'mat-housing', label: 'Material · Al 6061-T6', icon: 'layers', type: 'material' },
+        { id: 'param-housing', label: 'Parametric changes', icon: 'straighten', type: 'parametric' },
+        { id: 'hole-housing', label: 'Transfer hole tuning', icon: 'adjust', type: 'holetuning' },
+      ]},
+      { id: 'part-cover', label: 'Cover', icon: 'view_in_ar', type: 'part', children: [
+        { id: 'mat-cover', label: 'Material · Steel 4140', icon: 'layers', type: 'material' },
+      ]},
+    ]},
+  ]},
+  { id: 'physics', label: 'Physics analyses', icon: 'hub', type: 'physics-root', addable: true, children: [
+    { id: 'cfd', label: 'CFD — Cooling', icon: 'air', type: 'analysis', toggleable: true, children: [
+      { id: 'cfd-model', label: 'Data source', icon: 'dataset', type: 'aimodel' },
+      { id: 'cfd-bc', label: 'Boundary conditions', icon: 'line_axis', type: 'bc-group', badge: '6', children: [
+        { id: 'bc-pump',   label: 'Pump flow rate',         icon: 'water_drop',        type: 'bc', bcKind: 'flow' },
+        { id: 'bc-aux',    label: 'Auxiliary flow rate',    icon: 'waves',             type: 'bc', bcKind: 'flow' },
+        { id: 'bc-thermo', label: 'Thermostat',             icon: 'device_thermostat', type: 'bc', bcKind: 'thermostat' },
+        { id: 'bc-rad',    label: 'Radiator restriction',   icon: 'filter_alt',        type: 'bc', bcKind: 'restriction' },
+        { id: 'bc-egr',    label: 'EGR cooler restriction', icon: 'filter_alt',        type: 'bc', bcKind: 'restriction' },
+        { id: 'bc-oil',    label: 'Oil cooler restriction', icon: 'filter_alt',        type: 'bc', bcKind: 'restriction' },
+      ]},
+      { id: 'cfd-mon', label: 'Results monitoring', icon: 'insights', type: 'monitoring', addable: true },
+    ]},
+    { id: 'fea', label: 'FEA — Structural', icon: 'engineering', type: 'analysis', toggleable: true, children: [
+      { id: 'fea-model', label: 'Data source', icon: 'dataset', type: 'aimodel' },
+      { id: 'fea-loads', label: 'Loads & constraints', icon: 'compress', type: 'loads' },
+      { id: 'fea-analyses', label: 'Analyses', icon: 'tune', type: 'fea-analyses', children: [
+        { id: 'fea-thermal', label: 'Thermal', icon: 'device_thermostat', type: 'subanalysis', toggleable: true },
+        { id: 'fea-mech', label: 'Mechanical', icon: 'build', type: 'subanalysis', toggleable: true },
+        { id: 'fea-fatigue', label: 'Fatigue', icon: 'timeline', type: 'subanalysis', toggleable: true },
+      ]},
+      { id: 'fea-results', label: 'Results monitoring', icon: 'insights', type: 'monitoring', addable: true, children: [
+        { id: 'stress', label: 'Stress', icon: 'bolt', type: 'stress-group', children: [
+          { id: 'stress-asm', label: 'Assembly stress', icon: 'grain', type: 'stress' },
+          { id: 'stress-thermal', label: 'Thermal stress', icon: 'device_thermostat', type: 'stress' },
+          { id: 'stress-mech', label: 'Mechanical stress', icon: 'build', type: 'stress' },
+        ]},
+      ]},
+    ]},
+  ]},
+];
+
+const DEFAULT_EXPANDED = new Set([
+  'geo', 'setup', 'parts', 'part-housing', 'physics', 'cfd', 'cfd-bc', 'cfd-mon',
+  'fea', 'fea-analyses', 'fea-results', 'stress',
+]);
+
+const TYPE_CAPTION = {
+  'geometry': 'Assembly input', 'geometry-file': 'Assembly input',
+  'engine': 'Setup', 'group': 'Setup', 'parts': 'Setup',
+  'part': 'Part definition', 'material': 'Part definition', 'parametric': 'Part definition', 'holetuning': 'Part definition',
+  'physics-root': 'Physics', 'analysis': 'Physics analysis', 'aimodel': 'Data source',
+  'bc-group': 'Boundary conditions', 'bc': 'Boundary condition',
+  'monitoring': 'Results monitoring', 'monitor-lib': 'Monitor library', 'monitor': 'Monitor',
+  'fea-analyses': 'FEA analyses', 'subanalysis': 'FEA analysis',
+  'stress-group': 'Results monitoring', 'stress': 'Stress result', 'loads': 'FEA inputs',
+};
+
+function TreeNode({ node, depth, expanded, toggleExpand, selected, onSelect, enabled, toggleEnabled, disabled, monitorsByGroup, onAddMonitor, engineType, bcSummaryById }) {
+  try {
+    const dynMons = (node.type === 'monitoring' && monitorsByGroup && monitorsByGroup[node.id])
+      ? monitorsByGroup[node.id].filter((m) => (m.engineId || engineType) === engineType) : [];
+    const monNodes = dynMons.map((m) => ({ id: m.id, label: m.label, icon: 'timeline', type: 'monitor' }));
+    const allChildren = [...(node.children || []), ...monNodes];
+    const hasChildren = allChildren.length > 0;
+    const isOpen = expanded.has(node.id);
+    const isToggle = !!node.toggleable;
+    const isOn = enabled[node.id] !== false;
+    const childDisabled = disabled || (isToggle && !isOn);
+    const accent = node.type === 'physics-root' || node.type === 'analysis';
+    const isRoot = depth === 0;
+    const badge = node.type === 'monitoring' ? (dynMons.length ? String(dynMons.length) : null) : node.badge;
+
+    return (
+      <div className="tnode">
+        <div className={'tnode-row' + (selected === node.id ? ' sel' : '') + (disabled ? ' disabled' : '') + (accent ? ' accent' : '') + (isRoot ? ' root' : '')}
+          onClick={() => onSelect(node.id)}>
+          {hasChildren ? (
+            <span className="caret" onClick={(e) => { e.stopPropagation(); toggleExpand(node.id); }}>
+              <Icon name={isOpen ? 'expand_more' : 'chevron_right'} />
+            </span>
+          ) : <span className="caret spacer" />}
+          <Icon name={node.icon} className="ticon" />
+          <span className="tlabel">{node.label}</span>
+          {node.type === 'bc' && bcSummaryById && bcSummaryById[node.id] && (
+            <span className={'tsummary' + (bcSummaryById[node.id] === 'no curve' ? ' unset' : '')}>{bcSummaryById[node.id]}</span>
+          )}
+          {badge && <span className="tbadge">{badge}</span>}
+          {node.addable && (
+            <Icon name="add" className="tadd" title="New monitor"
+              onClick={(e) => { e.stopPropagation(); onAddMonitor && onAddMonitor(node.id); }} />
+          )}
+          {isToggle && (
+            <div className={'switch' + (isOn ? ' on' : '')} onClick={(e) => { e.stopPropagation(); toggleEnabled(node.id); }}>
+              <span className="knob" />
+            </div>
+          )}
+        </div>
+        {hasChildren && isOpen && (
+          <div className="tchildren">
+            {allChildren.map((c) => (
+              <TreeNode key={c.id} node={c} depth={depth + 1} expanded={expanded} toggleExpand={toggleExpand}
+                selected={selected} onSelect={onSelect} enabled={enabled} toggleEnabled={toggleEnabled} disabled={childDisabled}
+                monitorsByGroup={monitorsByGroup} onAddMonitor={onAddMonitor} engineType={engineType} bcSummaryById={bcSummaryById} />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  } catch (err) {
+    console.error('[TreeNode] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+
+// convergence sparkline (deterministic per monitor id)
+
+/* ---------------------------------------------------------------------- *
+ * RUN MODEL                                                              *
+ * Each run is a self-contained prediction: its own engine, enabled       *
+ * analyses and boundary-condition config. A run is either a single-point *
+ * inference or a parametric sweep (kind='sweep'). Monitors are shared at  *
+ * the engine-library level — runs are *compared* at those monitors.      *
+ * ---------------------------------------------------------------------- */
+
+// Categorical run colors (Kinetic palette) for comparison overlays.
+const RUN_COLORS = ['#3396FF', '#EB22A1', '#DC9E17', '#07C2AC', '#6922E4', '#70D913', '#F1829A', '#057886'];
+
+// Factory: a fresh CFD boundary-condition config, with optional overrides.
+function makeBcConfig(overrides) {
+  try {
+    const base = {
+      'bc-pump':   { kind: 'flow', mode: 'single', value: 7.42, min: 6.0, max: 9.0, steps: 7 },
+      'bc-aux':    { kind: 'flow', mode: 'single', value: 2.10, min: 1.2, max: 3.0, steps: 5 },
+      'bc-thermo': { kind: 'thermostat', on: true },
+      'bc-rad':    { kind: 'restriction', fileName: 'radiator_dp_curve.csv', curve: sampleCurve(0.18) },
+      'bc-egr':    { kind: 'restriction', fileName: null, curve: null },
+      'bc-oil':    { kind: 'restriction', fileName: 'oil_cooler_dp.csv', curve: sampleCurve(0.42) },
+    };
+    if (overrides) for (const k of Object.keys(overrides)) base[k] = { ...base[k], ...overrides[k] };
+    return base;
+  } catch (err) { console.error('[makeBcConfig] CRASH:', err.message, err.stack); return {}; }
+}
+const defaultEnabled = () => ({ cfd: true, fea: true, 'fea-thermal': true, 'fea-mech': true, 'fea-fatigue': false });
+
+// Evenly-spaced sweep increments from a range + step count.
+function incrementsOf(min, max, steps) {
+  try {
+    const n = Math.max(2, Math.round(steps));
+    const out = [];
+    for (let i = 0; i < n; i++) out.push(+(min + (i / (n - 1)) * (max - min)).toFixed(2));
+    return out;
+  } catch (err) { console.error('[incrementsOf] CRASH:', err.message, err.stack); return [min, max]; }
+}
+
+/* Prediction runs in the project — the source of truth for the sidebar list
+ * and every comparison surface. */
+const INITIAL_RUNS = [
+  { id: 'baseline', name: 'Baseline', color: RUN_COLORS[0], isBaseline: true, engineType: 'e40', status: 'predicted',
+    source: 'ai', kind: 'single', sweep: null, enabled: defaultEnabled(), bcConfig: makeBcConfig() },
+  { id: 'run-cfd', name: 'CFD validation · baseline', color: RUN_COLORS[5], engineType: 'e40', status: 'imported',
+    source: 'cfd', cfd: { fileName: 'cfd_baseline_e40.vtu', field: 'Temperature', importedAt: '2026-05-20', cells: '4.2M' },
+    kind: 'single', sweep: null, enabled: defaultEnabled(), bcConfig: makeBcConfig() },
+  { id: 'run-pump', name: 'Rev-B · higher pump', color: RUN_COLORS[1], engineType: 'e40', status: 'predicted',
+    kind: 'single', sweep: null, enabled: defaultEnabled(), bcConfig: makeBcConfig({ 'bc-pump': { value: 8.60 } }) },
+  { id: 'run-thermo', name: 'Rev-C · thermostat off', color: RUN_COLORS[2], engineType: 'e40', status: 'ready',
+    kind: 'single', sweep: null, enabled: defaultEnabled(), bcConfig: makeBcConfig({ 'bc-thermo': { on: false } }) },
+  { id: 'run-sweep', name: 'Pump flow study', color: RUN_COLORS[3], engineType: 'e40', status: 'predicted',
+    kind: 'sweep', sweep: { param: 'Pump flow rate', bcId: 'bc-pump', units: 'l/s', min: 6.0, max: 9.0, steps: 7 },
+    enabled: defaultEnabled(), bcConfig: makeBcConfig({ 'bc-pump': { mode: 'sweep' } }) },
+  { id: 'run-egr', name: 'EGR-restricted variant', color: RUN_COLORS[4], engineType: 'e40', status: 'draft',
+    kind: 'single', sweep: null, enabled: defaultEnabled(), bcConfig: makeBcConfig({ 'bc-egr': { fileName: 'egr_dp.csv', curve: sampleCurve(0.30) } }) },
+];
+
+// Back-compat alias for surfaces not yet threaded to live state.
+const RUNS = INITIAL_RUNS;
+
+// Flow boundary conditions that can drive a parametric sweep. A run becomes a
+// sweep purely by setting one of these to "sweep" mode in its own setup — there
+// is no separate sweep toggle. Sweep-ness is therefore *derived* from bcConfig.
+const SWEEPABLE_BCS = [
+  { id: 'bc-pump', param: 'Pump flow rate', units: 'l/s' },
+  { id: 'bc-aux', param: 'Auxiliary flow rate', units: 'l/s' },
+];
+
+// The first flow BC a run has set to sweep mode, normalized to a range, or null.
+function runSweepBc(run) {
+  try {
+    if (!run || !run.bcConfig) return null;
+    for (const sb of SWEEPABLE_BCS) {
+      const cfg = run.bcConfig[sb.id];
+      if (cfg && cfg.mode === 'sweep') return { bcId: sb.id, param: sb.param, units: sb.units, min: cfg.min, max: cfg.max, steps: cfg.steps };
+    }
+    return null;
+  } catch (err) { console.error('[runSweepBc] CRASH:', err.message, err.stack); return null; }
+}
+const runIsSweep = (run) => !!runSweepBc(run);
+
+// A plot-ready sweep descriptor derived from whichever flow BC is in sweep mode.
+function runSweepDescriptor(run) {
+  try {
+    const sb = runSweepBc(run);
+    if (!sb) return null;
+    return { id: run.id + ':sweep', name: run.name, param: sb.param, units: sb.units, bc: sb.bcId,
+      baseColor: run.color, min: sb.min, max: sb.max, steps: sb.steps, increments: incrementsOf(sb.min, sb.max, sb.steps) };
+  } catch (err) { console.error('[runSweepDescriptor] CRASH:', err.message, err.stack); return null; }
+}
+
+// Short range summary for a sweep run, e.g. "6–9 l/s · 7".
+function sweepSummary(run) {
+  try {
+    const sb = runSweepBc(run);
+    if (!sb) return null;
+    const f = (n) => (Math.round(n * 100) / 100).toString();
+    return `${f(sb.min)}–${f(sb.max)} ${sb.units} · ${Math.max(2, Math.round(sb.steps))}`;
+  } catch (err) { console.error('[sweepSummary] CRASH:', err.message, err.stack); return null; }
+}
+
+/* Deterministic field-vs-location series for a (monitor, run) pair. */
+function genSeries(seedStr, vis, N) {
+  N = N || 60;
+  let seed = 9; for (const ch of String(seedStr)) seed = (seed * 31 + ch.charCodeAt(0)) & 0x7fffffff;
+  const rand = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return (seed % 1000) / 1000; };
+  const c1 = 0.22 + rand() * 0.5, w1 = 0.09 + rand() * 0.13, a1 = (rand() * 0.55 + 0.30) * (rand() > 0.5 ? 1 : -1);
+  const c2 = 0.20 + rand() * 0.6, w2 = 0.07 + rand() * 0.10, a2 = (rand() * 0.35 + 0.15) * (rand() > 0.5 ? 1 : -1);
+  const vals = [];
+  for (let i = 0; i < N; i++) {
+    const t = i / (N - 1);
+    let f = 0.5 + a1 * Math.exp(-(((t - c1) / w1) ** 2)) + a2 * Math.exp(-(((t - c2) / w2) ** 2));
+    f += (rand() - 0.5) * 0.04;
+    f *= 0.55 + 0.45 * Math.sin(Math.PI * t);
+    f = Math.max(0.04, Math.min(0.96, f));
+    vals.push(vis.min + (vis.max - vis.min) * f);
+  }
+  return vals;
+}
+
+/* Summary statistics over a sampled series. */
+function seriesStats(vals) {
+  const s = [...vals].sort((a, b) => a - b);
+  const n = s.length;
+  const mean = vals.reduce((a, b) => a + b, 0) / n;
+  const median = n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
+  return { min: s[0], max: s[n - 1], mean, median };
+}
+
+/* Physical range + plot colour per field — used to scale the slice profile. */
+const FIELD_VIS = {
+  'Pressure':    { min: 98,  max: 104, units: 'kPa', color: '#3396ff' },
+  'Velocity':    { min: 0,   max: 18,  units: 'm/s', color: '#07c2ac' },
+  'Temperature': { min: 388, max: 412, units: 'K',   color: '#dc9e17' },
+  'von Mises':   { min: 0,   max: 320, units: 'MPa', color: '#d41344' },
+};
+
+/* Resolve a monitor's field range, units and in-plane length for plotting. */
+function monitorVis(m) {
+  const vis = FIELD_VIS[m.field] || { min: 0, max: 100, units: m.units || '', color: 'var(--color-key-primary)' };
+  const units = m.units || vis.units;
+  const L = parseInt(String(m.extent || '200').match(/(\d+)/)?.[1] || '200', 10); // in-plane length (mm)
+  const dec = (vis.max - vis.min) < 10 ? 1 : 0;
+  return { vis, units, L, dec };
+}
+
+/* ---- Boundary-condition sweeps -------------------------------------- */
+/* A sweep is a set of inference runs, one per parameter increment, grouped
+   under a single sweep object (derived live from a run via
+   runSweepDescriptor). Member series are deterministic per
+   (monitor, sweep, increment). */
+
+/* Ordered multi-hue ramp for sweep increments. Each increment gets a distinct
+   hue (so a 7-step sweep never reads as one colour) while the cool→warm
+   progression still conveys sweep order. Anchors deliberately avoid the
+   baseline blue (#3396FF) so increments stay distinguishable from it. */
+const SWEEP_RAMP_STOPS = ['#07C2AC', '#2FB54E', '#DC9E17', '#E0631C', '#D41344', '#EB22A1'];
+function sweepRamp(t) {
+  const stops = SWEEP_RAMP_STOPS;
+  const x = Math.max(0, Math.min(1, t)) * (stops.length - 1);
+  const i = Math.min(stops.length - 2, Math.floor(x));
+  const f = x - i;
+  const hx = (s) => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16)];
+  const a = hx(stops[i]), b = hx(stops[i + 1]);
+  const mix = (j) => Math.round(a[j] + (b[j] - a[j]) * f);
+  return `rgb(${mix(0)},${mix(1)},${mix(2)})`;
+}
+
+/* Per-position min / max / median envelope across all increments of a sweep. */
+function sweepBand(selM, vis, sweep) {
+  const series = sweep.increments.map((v, i) => genSeries(selM.id + ':' + sweep.id + '#' + i, vis, 60));
+  const N = series[0].length;
+  const upper = [], lower = [], median = [];
+  for (let i = 0; i < N; i++) {
+    const col = series.map((s) => s[i]).sort((a, b) => a - b);
+    upper.push(col[col.length - 1]); lower.push(col[0]);
+    median.push(col.length % 2 ? col[(col.length - 1) / 2] : (col[col.length / 2 - 1] + col[col.length / 2]) / 2);
+  }
+  return { series, upper, lower, median };
+}
+
+/* ---- Sweep increments as selectable single-point operands ----------- */
+/* A sweep can be "expanded" so each parameter increment behaves like an
+   individual single-point run, addressable by `${run.id}#${i}`. These synthetic
+   runs are the things you delta against — you cannot delta a whole sweep, only a
+   chosen inference point within it. Each increment gets a distinct hue from an
+   ordered multi-hue ramp (sweepRamp) so they stay readable when overplotted. */
+function incrementRuns(run) {
+  try {
+    const sb = runSweepBc(run);
+    if (!sb) return [];
+    const incs = incrementsOf(sb.min, sb.max, sb.steps);
+    const n = incs.length;
+    const baseCfg = (run.bcConfig && run.bcConfig[sb.bcId]) || {};
+    return incs.map((v, i) => ({
+      id: run.id + '#' + i,
+      name: `${run.name} · ${v} ${sb.units}`,
+      shortName: `${v} ${sb.units}`,
+      color: sweepRamp(n <= 1 ? 0 : i / (n - 1)),
+      engineType: run.engineType,
+      status: run.status,
+      source: run.source || 'ai',
+      cfd: run.cfd || null,
+      kind: 'single', sweep: null,
+      // Pin the swept BC to this increment's value (mode != 'sweep') so the
+      // increment reads as a genuine single inference point, not a sweep.
+      bcConfig: { ...run.bcConfig, [sb.bcId]: { ...baseCfg, mode: 'value', value: v } },
+      isIncrement: true, parentSweepId: run.id, incIndex: i, incValue: v, incUnits: sb.units,
+    }));
+  } catch (err) { console.error('[incrementRuns] CRASH:', err.message, err.stack); return []; }
+}
+
+/* Resolve a (possibly synthetic increment) id to a run-like object. */
+function resolveRunId(runs, id) {
+  try {
+    const direct = (runs || []).find((r) => r.id === id);
+    if (direct) return direct;
+    const h = String(id).indexOf('#');
+    if (h > 0) {
+      const parent = (runs || []).find((r) => r.id === id.slice(0, h));
+      if (parent) return incrementRuns(parent).find((ir) => ir.id === id) || null;
+    }
+    return null;
+  } catch (err) { console.error('[resolveRunId] CRASH:', err.message, err.stack); return null; }
+}
+const isIncrementId = (id) => typeof id === 'string' && id.indexOf('#') > 0;
+
+/* A delta needs exactly two SINGLE-POINT operands. A whole sweep is not one —
+   pick an increment instead. Returns { ok, ops:[A,B] } or { ok:false, reason }. */
+function deltaOperands(runs, runSel) {
+  try {
+    const ids = [...(runSel || [])];
+    if (ids.length !== 2) return { ok: false, reason: ids.length < 2 ? 'Select two runs to take a delta' : 'A delta compares exactly two — deselect down to two' };
+    const ops = ids.map((id) => resolveRunId(runs, id)).filter(Boolean);
+    if (ops.length !== 2) return { ok: false, reason: 'Unable to resolve the selected runs' };
+    if (ops.some((o) => runIsSweep(o))) return { ok: false, reason: 'Can’t delta a whole sweep — open it and pick a single inference point' };
+    return { ok: true, ops };
+  } catch (err) { console.error('[deltaOperands] CRASH:', err.message, err.stack); return { ok: false, reason: 'error' }; }
+}
+
+/* ---- Geometric distortion (overlay / ghost visualisation) ----------- */
+/* A small, deterministic affine warp per run, so overlaying two runs' geometries
+   shows a believable distortion driven by run set-up. Seeded by run id → stable
+   across renders. */
+function runWarp(seedStr) {
+  try {
+    let s = 7; for (const ch of String(seedStr)) s = (s * 31 + ch.charCodeAt(0)) & 0x7fffffff;
+    const rnd = () => { s = (s * 1103515245 + 12345) & 0x7fffffff; return (s % 1000) / 1000; };
+    const sp = (amp) => (rnd() - 0.5) * 2 * amp;
+    return { sx: 1 + sp(0.05), sy: 1 + sp(0.05), sz: 1 + sp(0.05),
+      shxy: sp(0.06), shxz: sp(0.05), shyz: sp(0.05),
+      tx: sp(8), ty: sp(5), tz: sp(6) };
+  } catch (err) { console.error('[runWarp] CRASH:', err.message, err.stack); return null; }
+}
+/* Apply a warp to a world-space point (about the geometry CENTER). */
+function warpPoint(world, w) {
+  if (!w) return world;
+  const x = world[0] - CENTER[0], y = world[1] - CENTER[1], z = world[2] - CENTER[2];
+  return [
+    CENTER[0] + w.sx * x + w.shxy * y + w.shxz * z + w.tx,
+    CENTER[1] + w.sy * y + w.shyz * z + w.ty,
+    CENTER[2] + w.sz * z + w.tz,
+  ];
+}
+/* The 12 cube edges as corner-index pairs (corners adjacent ⇔ they share 2 of 3
+   coords). Used to draw a wireframe ghost of the geometry. */
+const BOX_EDGES = (() => {
+  const adj = (a, b) => a.filter((v, i) => v === b[i]).length === 2;
+  const E = [];
+  for (let i = 0; i < ALL_CORNERS.length; i++)
+    for (let j = i + 1; j < ALL_CORNERS.length; j++)
+      if (adj(ALL_CORNERS[i], ALL_CORNERS[j])) E.push([ALL_CORNERS[i], ALL_CORNERS[j]]);
+  return E;
+})();
+
+/* ---- Restriction curves (ΔP vs coolant flow rate) ------------------- */
+/* Parse a two-column CSV (flow rate, pressure drop) into [{q, dp}] sorted by q. */
+function parseCsvCurve(text) {
+  try {
+    const rows = String(text).trim().split(/\r?\n/);
+    const out = [];
+    for (const row of rows) {
+      const cells = row.split(/[,;\t]/).map((s) => s.trim());
+      const q = parseFloat(cells[0]), dp = parseFloat(cells[1]);
+      if (!isNaN(q) && !isNaN(dp)) out.push({ q, dp });
+    }
+    out.sort((a, b) => a.q - b.q);
+    return out;
+  } catch (err) {
+    console.error('[parseCsvCurve] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+/* Monotonic ~quadratic system-resistance curve: ΔP ≈ k·q² + linear term. */
+function sampleCurve(k) {
+  const pts = [];
+  for (let i = 0; i <= 8; i++) { const q = 1 + i * (11 / 8); pts.push({ q: +q.toFixed(2), dp: +(k * q * q + 0.6 * q).toFixed(2) }); }
+  return pts;
+}
+
+/* One-line summary of a BC config, shown beside the name in the sidebar tree. */
+function bcSummary(cfg) {
+  if (!cfg) return null;
+  const f = (n) => (Math.round(n * 100) / 100).toString();
+  if (cfg.kind === 'flow') {
+    return cfg.mode === 'sweep' ? `${f(cfg.min)}–${f(cfg.max)} l/s · ${cfg.steps} steps` : `${f(cfg.value)} l/s`;
+  }
+  if (cfg.kind === 'thermostat') return cfg.on ? 'On' : 'Off';
+  if (cfg.kind === 'restriction') return cfg.curve ? `curve · ${cfg.curve.length} pts` : 'no curve';
+  return null;
+}
+
+/* Field-value-vs-position profile across a slice.
+   series = [{ name, color, vals }]. A single run draws an area fill + reduction
+   marker; multiple runs overlay one coloured line each with a legend. */
+function ProfilePlot({ vis, L, units, series, dec, reduction, band, diff }) {
+  // Legend hover index → emphasise that line, dim the rest (multi-line readability).
+  const [hover, setHover] = React.useState(null);
+  try {
+    // Defensive: drop any falsy entries so every s.color / s.vals access below
+    // is safe even if a caller passes a sparse/partial series array.
+    series = (series || []).filter(Boolean);
+    const single = !band && !diff && series.length === 1;
+    // Per-line emphasis driven by legend hover: hovered line thickens, others fade.
+    const emph = (k) => ({
+      width: hover === k ? 2.75 : 1.5,
+      opacity: hover == null ? 1 : (hover === k ? 1 : 0.16),
+    });
+    const ref = series[0] ? series[0].vals : (band ? band.median : []);
+    const N = ref.length;
+    let vmin = Infinity, vmax = -Infinity;
+    const scan = (arr) => arr.forEach((v) => { if (v < vmin) vmin = v; if (v > vmax) vmax = v; });
+    series.forEach((s) => scan(s.vals));
+    if (band) { scan(band.upper); scan(band.lower); }
+    const areaColor = series[0] ? series[0].color : (band ? band.color : 'var(--color-key-primary)');
+    const pad = (vmax - vmin) * 0.18 || 1;
+    const ymin = Math.max(vis.min >= 0 ? 0 : -Infinity, vmin - pad), ymax = vmax + pad;
+    const d = dec != null ? dec : ((ymax - ymin) < 10 ? 1 : 0);
+    const VW = 360, VH = 168, left = 46, right = 350, top = 12, bottom = 138;
+    const X = (i) => left + (i / (N - 1)) * (right - left);
+    const Y = (v) => bottom - ((v - ymin) / (ymax - ymin)) * (bottom - top);
+    const poly = (vals) => vals.map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
+    const hTicks = Array.from({ length: 5 }, (_, k) => ymin + (k / 4) * (ymax - ymin));
+    const vTicks = Array.from({ length: 5 }, (_, k) => (k / 4) * L);
+    let redVal = null;
+    if (single) {
+      const st = seriesStats(series[0].vals);
+      redVal = /max|peak/i.test(reduction || '') ? st.max : /min/i.test(reduction || '') ? st.min : st.mean;
+    }
+
+    return (
+      <div style={{ borderRadius: 6, background: 'var(--color-container-surface-low)', boxShadow: 'inset 0 0 0 1px var(--color-border-subtle)', padding: '8px 10px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--color-on-surface-subtle)', marginBottom: 4 }}>
+          <span>Field value across slice</span>
+          <span>{vmin.toFixed(d)}–{vmax.toFixed(d)} {units}</span>
+        </div>
+        <svg viewBox={`0 0 ${VW} ${VH}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
+          <defs>
+            <linearGradient id="pp-area" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={areaColor} stopOpacity="0.26" />
+              <stop offset="100%" stopColor={areaColor} stopOpacity="0.02" />
+            </linearGradient>
+          </defs>
+          {hTicks.map((v, k) => (
+            <g key={'h' + k}>
+              <line x1={left} y1={Y(v)} x2={right} y2={Y(v)} stroke="var(--color-border-subtle)" strokeWidth="0.5" />
+              <text x={left - 5} y={Y(v) + 3} textAnchor="end" fontSize="8" fill="var(--color-on-surface-subtle)" fontFamily="Geist Mono, monospace">{v.toFixed(d)}</text>
+            </g>
+          ))}
+          {vTicks.map((xv, k) => (
+            <text key={'v' + k} x={left + (k / 4) * (right - left)} y={bottom + 13} textAnchor="middle" fontSize="8" fill="var(--color-on-surface-subtle)" fontFamily="Geist Mono, monospace">{Math.round(xv)}</text>
+          ))}
+          {band && (() => {
+            const up = band.upper.map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`);
+            const lo = band.lower.map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`);
+            return (
+              <g>
+                <polygon points={[...up, ...lo.reverse()].join(' ')} fill={band.color} fillOpacity="0.16" />
+                <polyline points={poly(band.upper)} fill="none" stroke={band.color} strokeWidth="0.75" strokeOpacity="0.55" strokeDasharray="3 2" />
+                <polyline points={poly(band.lower)} fill="none" stroke={band.color} strokeWidth="0.75" strokeOpacity="0.55" strokeDasharray="3 2" />
+                <polyline points={poly(band.median)} fill="none" stroke={band.color} strokeWidth="1.9" strokeLinejoin="round" />
+              </g>
+            );
+          })()}
+          {diff && series[0] && (() => {
+            const y0 = clamp(Y(0), top, bottom);
+            return (
+              <g>
+                <polygon points={`${X(0).toFixed(1)},${y0} ${poly(series[0].vals)} ${X(N - 1).toFixed(1)},${y0}`} fill="url(#pp-area)" />
+                <line x1={left} y1={y0} x2={right} y2={y0} stroke="var(--color-on-surface-subtle)" strokeWidth="0.75" strokeDasharray="2 2" opacity="0.7" />
+                <text x={left - 5} y={y0 + 3} textAnchor="end" fontSize="8" fill="var(--color-on-surface-subtle)" fontFamily="Geist Mono, monospace">0</text>
+              </g>
+            );
+          })()}
+          {single && <polygon points={`${X(0).toFixed(1)},${bottom} ${poly(series[0].vals)} ${X(N - 1).toFixed(1)},${bottom}`} fill="url(#pp-area)" />}
+          {single && redVal != null && (
+            <g>
+              <line x1={left} y1={Y(redVal)} x2={right} y2={Y(redVal)} stroke={series[0].color} strokeWidth="0.75" strokeDasharray="3 2" opacity="0.7" />
+              <text x={right - 2} y={Y(redVal) - 3} textAnchor="end" fontSize="8" fill={series[0].color} fontFamily="Geist Mono, monospace">{(reduction || 'avg').replace(/-weighted avg/i, ' avg')} {redVal.toFixed(d)}</text>
+            </g>
+          )}
+          {series.map((s, k) => (
+            <polyline key={'p' + k} points={poly(s.vals)} fill="none" stroke={s.color}
+              strokeWidth={emph(k).width} strokeOpacity={emph(k).opacity} strokeLinejoin="round"
+              style={{ transition: 'stroke-width 120ms, stroke-opacity 120ms' }} />
+          ))}
+          <text x={(left + right) / 2} y={VH - 2} textAnchor="middle" fontSize="8.5" fill="var(--color-on-surface-subtle)">Position along slice (mm)</text>
+        </svg>
+        {!single && series.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 14px', marginTop: 6 }}>
+            {series.map((s, k) => (
+              <span key={'lg' + k} onMouseEnter={() => setHover(k)} onMouseLeave={() => setHover(null)}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, cursor: 'pointer', color: 'var(--color-on-surface)', opacity: hover == null || hover === k ? 1 : 0.4, transition: 'opacity 120ms' }}>
+                <span style={{ width: 12, height: hover === k ? 4 : 2.5, borderRadius: 2, background: s.color, transition: 'height 120ms' }} />{s.name}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  } catch (err) {
+    console.error('[ProfilePlot] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+
+/* Four-tile summary — Min / Max / Mean / Median for a single run. */
+function StatStrip({ stats, units, dec }) {
+  const d = dec != null ? dec : 1;
+  const tiles = [['Min', stats.min], ['Max', stats.max], ['Mean', stats.mean], ['Median', stats.median]];
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 6 }}>
+      {tiles.map(([k, v]) => (
+        <div key={k} style={{ borderRadius: 6, background: 'var(--color-container-surface-low)', boxShadow: 'inset 0 0 0 1px var(--color-border-subtle)', padding: '7px 9px' }}>
+          <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--color-on-surface-subtle)' }}>{k}</div>
+          <div style={{ fontFamily: 'Geist Mono, monospace', fontSize: 15, fontWeight: 600, marginTop: 2 }}>{v.toFixed(d)}</div>
+          <div style={{ fontSize: 10, color: 'var(--color-on-surface-subtle)' }}>{units}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* Per-run statistics table with Δ-vs-baseline on the mean (row 0 = baseline). */
+function StatTable({ rows, units, dec, baselineMean }) {
+  const d = dec != null ? dec : 1;
+  const cell = { padding: '5px 8px', fontFamily: 'Geist Mono, monospace', fontSize: 11.5, textAlign: 'right' };
+  const head = { padding: '5px 8px', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--color-on-surface-subtle)', textAlign: 'right', fontWeight: 500, position: 'sticky', top: 0, background: 'var(--color-container-surface-low)', boxShadow: 'inset 0 -1px 0 var(--color-border-subtle)', zIndex: 1 };
+  return (
+    <div style={{ borderRadius: 6, background: 'var(--color-container-surface-low)', boxShadow: 'inset 0 0 0 1px var(--color-border-subtle)', maxHeight: 240, overflowY: 'auto', flexShrink: 0 }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr>
+            <th style={{ ...head, textAlign: 'left' }}>Run</th>
+            <th style={head}>Min</th><th style={head}>Max</th><th style={head}>Mean</th><th style={head}>Median</th><th style={head}>Δ Mean</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r, i) => {
+            const delta = r.stats.mean - baselineMean;
+            const isBase = i === 0;
+            const dColor = Math.abs(delta) < 1e-9 ? 'var(--color-on-surface-subtle)' : delta > 0 ? 'var(--color-key-success)' : 'var(--color-key-error)';
+            return (
+              <tr key={r.name} style={{ borderBottom: i < rows.length - 1 ? '1px solid var(--color-border-subtle)' : 'none' }}>
+                <td style={{ ...cell, textAlign: 'left' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'Geist, sans-serif' }}>
+                    <span style={{ width: 8, height: 8, borderRadius: 2, background: r.color }} />{r.name}
+                  </span>
+                </td>
+                <td style={cell}>{r.stats.min.toFixed(d)}</td>
+                <td style={cell}>{r.stats.max.toFixed(d)}</td>
+                <td style={cell}>{r.stats.mean.toFixed(d)}</td>
+                <td style={cell}>{r.stats.median.toFixed(d)}</td>
+                <td style={{ ...cell, color: dColor }}>{isBase ? '—' : (delta > 0 ? '+' : '') + delta.toFixed(d)}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function Field({ label, required, children }) {
+  return (
+    <div className="fld">
+      <span className="fld-label">{label}{required && <span className="req">*</span>}</span>
+      {children}
+    </div>
+  );
+}
+/* Editable text input that commits on blur or Enter (keeps local edits snappy). */
+function NameField({ value, onCommit }) {
+  const [v, setV] = useState(value);
+  useEffect(() => { setV(value); }, [value]);
+  const commit = () => { const t = (v || '').trim(); if (t && t !== value) onCommit(t); else setV(value); };
+  return (
+    <input
+      className="input"
+      value={v}
+      onChange={(e) => setV(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); if (e.key === 'Escape') { setV(value); e.currentTarget.blur(); } }}
+    />
+  );
+}
+function FakeSelect({ value }) {
+  return <div className="fake-select"><span>{value}</span><Icon name="arrow_drop_down" /></div>;
+}
+function Info({ children }) {
+  return <div className="info"><Icon name="info" />{children}</div>;
+}
+function Readouts({ rows }) {
+  return (
+    <div className="readouts">
+      {rows.map((r, i) => <div className="ro-row" key={i}><span className="k">{r[0]}</span><span className="v">{r[1]}</span></div>)}
+    </div>
+  );
+}
+function ToggleField({ label, sub, on, onChange }) {
+  return (
+    <div className="toggle-field">
+      <div><div className="tf-label">{label}</div>{sub && <div className="tf-sub">{sub}</div>}</div>
+      <div className={'switch' + (on ? ' on' : '')} onClick={onChange}><span className="knob" /></div>
+    </div>
+  );
+}
+/* Numeric input that commits valid values live (for sweep previews) and snaps on blur. */
+function NumInput({ value, onCommit, int, min, max, step }) {
+  const [v, setV] = useState(String(value));
+  useEffect(() => { setV(String(value)); }, [value]);
+  const clamp = (n) => { if (min != null) n = Math.max(min, n); if (max != null) n = Math.min(max, n); return n; };
+  const parse = (raw) => (int ? parseInt(raw, 10) : parseFloat(raw));
+  return (
+    <input className="input" type="number" step={step || (int ? 1 : 0.1)} value={v}
+      onChange={(e) => { const raw = e.target.value; setV(raw); const n = parse(raw); if (raw !== '' && raw !== '-' && raw !== '.' && !isNaN(n)) onCommit(clamp(n)); }}
+      onBlur={(e) => { const n = parse(e.target.value); if (isNaN(n)) setV(String(value)); else onCommit(clamp(n)); }} />
+  );
+}
+/* Inline preview of the sample points a sweep will evaluate. */
+function SweepPreview({ min, max, steps, units }) {
+  try {
+    const n = Math.max(2, Math.min(24, steps | 0));
+    const vals = Array.from({ length: n }, (_, i) => min + (i / (n - 1)) * (max - min));
+    const VW = 360, VH = 40, left = 10, right = 350, y = 17;
+    const X = (val) => left + ((val - min) / ((max - min) || 1)) * (right - left);
+    const fmt = (x) => (Math.round(x * 100) / 100).toString();
+    return (
+      <div style={{ borderRadius: 6, background: 'var(--color-container-surface-low)', boxShadow: 'inset 0 0 0 1px var(--color-border-subtle)', padding: '8px 10px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--color-on-surface-subtle)', marginBottom: 2 }}>
+          <span>{n} inference runs</span><span>step {fmt((max - min) / (n - 1))} {units}</span>
+        </div>
+        <svg viewBox={`0 0 ${VW} ${VH}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
+          <line x1={left} y1={y} x2={right} y2={y} stroke="var(--color-border-subtle)" strokeWidth="1" />
+          {vals.map((val, i) => <circle key={i} cx={X(val)} cy={y} r="3.2" fill="var(--color-key-primary)" />)}
+          <text x={left} y={VH - 2} textAnchor="start" fontSize="8.5" fill="var(--color-on-surface-subtle)" fontFamily="Geist Mono, monospace">{fmt(min)}</text>
+          <text x={right} y={VH - 2} textAnchor="end" fontSize="8.5" fill="var(--color-on-surface-subtle)" fontFamily="Geist Mono, monospace">{fmt(max)}</text>
+        </svg>
+      </div>
+    );
+  } catch (err) {
+    console.error('[SweepPreview] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+/* Pressure-drop (ΔP) vs coolant flow-rate line plot built from an uploaded curve. */
+function RestrictionPlot({ curve }) {
+  try {
+    const C = '#07c2ac';
+    const qmin = curve[0].q, qmax = curve[curve.length - 1].q;
+    const dpmax = Math.max(...curve.map((p) => p.dp)) * 1.08 || 1;
+    const VW = 360, VH = 176, left = 50, right = 350, top = 12, bottom = 142;
+    const X = (q) => left + ((q - qmin) / ((qmax - qmin) || 1)) * (right - left);
+    const Y = (d) => bottom - (d / dpmax) * (bottom - top);
+    const line = curve.map((p) => `${X(p.q).toFixed(1)},${Y(p.dp).toFixed(1)}`).join(' ');
+    const hTicks = Array.from({ length: 5 }, (_, k) => (k / 4) * dpmax);
+    const vTicks = Array.from({ length: 5 }, (_, k) => qmin + (k / 4) * (qmax - qmin));
+    const fmt = (x) => (Math.round(x * 10) / 10).toString();
+    return (
+      <div style={{ borderRadius: 6, background: 'var(--color-container-surface-low)', boxShadow: 'inset 0 0 0 1px var(--color-border-subtle)', padding: '8px 10px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--color-on-surface-subtle)', marginBottom: 4 }}>
+          <span>Restriction curve · ΔP vs flow</span><span>{fmt(dpmax)} kPa max</span>
+        </div>
+        <svg viewBox={`0 0 ${VW} ${VH}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
+          <defs>
+            <linearGradient id="pp-rest" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={C} stopOpacity="0.26" /><stop offset="100%" stopColor={C} stopOpacity="0.02" />
+            </linearGradient>
+          </defs>
+          {hTicks.map((v, k) => (
+            <g key={'h' + k}>
+              <line x1={left} y1={Y(v)} x2={right} y2={Y(v)} stroke="var(--color-border-subtle)" strokeWidth="0.5" />
+              <text x={left - 5} y={Y(v) + 3} textAnchor="end" fontSize="8" fill="var(--color-on-surface-subtle)" fontFamily="Geist Mono, monospace">{fmt(v)}</text>
+            </g>
+          ))}
+          {vTicks.map((q, k) => (
+            <text key={'v' + k} x={X(q)} y={bottom + 13} textAnchor="middle" fontSize="8" fill="var(--color-on-surface-subtle)" fontFamily="Geist Mono, monospace">{fmt(q)}</text>
+          ))}
+          <polygon points={`${X(qmin).toFixed(1)},${bottom} ${line} ${X(qmax).toFixed(1)},${bottom}`} fill="url(#pp-rest)" />
+          <polyline points={line} fill="none" stroke={C} strokeWidth="1.75" strokeLinejoin="round" />
+          {curve.map((p, k) => <circle key={k} cx={X(p.q)} cy={Y(p.dp)} r="2.4" fill={C} />)}
+          <text x={(left + right) / 2} y={VH - 2} textAnchor="middle" fontSize="8.5" fill="var(--color-on-surface-subtle)">Coolant flow rate (l/s)</text>
+          <text x={11} y={(top + bottom) / 2} textAnchor="middle" fontSize="8.5" fill="var(--color-on-surface-subtle)" transform={`rotate(-90 11 ${(top + bottom) / 2})`}>Pressure drop ΔP (kPa)</text>
+        </svg>
+      </div>
+    );
+  } catch (err) {
+    console.error('[RestrictionPlot] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+
+function findNode(nodes, id) {
+  for (const n of nodes) {
+    if (n.id === id) return n;
+    if (n.children) { const f = findNode(n.children, id); if (f) return f; }
+  }
+  return null;
+}
+
+function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, actions, monitorsByGroup, bcConfig, source, cfd }) {
+  try {
+    const t = node.type;
+    if (t === 'geometry' || t === 'geometry-file') {
+      return (<>
+        <Field label="File" required>
+          <div className="input-row">
+            <input className="input" defaultValue="ASM-Housing_v3.2.stp" />
+            <button className="btn-sm">Replace</button>
+          </div>
+        </Field>
+        <Info>Accepted: .stp · .step · .iges. One assembly file per prediction.</Info>
+      </>);
+    }
+    if (t === 'engine') {
+      return (<>
+        <Field label="Engine type" required>
+          <div className="seg">
+            {['e30', 'e40'].map((e) => (
+              <button key={e} className={'seg-btn' + (engineType === e ? ' sel' : '')} onClick={() => setEngineType(e)}>{e.toUpperCase()}</button>
+            ))}
+          </div>
+        </Field>
+        <Info>Classifies the assembly so the correct surrogate models and material library are loaded. Set before defining parts.</Info>
+      </>);
+    }
+    if (t === 'parts') {
+      return (<>
+        <Readouts rows={[['Parts detected', '2'], ['Assigned materials', '2 / 2']]} />
+        <button className="btn-sm" style={{ width: '100%' }}>Re-detect parts from geometry</button>
+      </>);
+    }
+    if (t === 'part') {
+      return (<>
+        <Field label="Part name"><input className="input" defaultValue={node.label} /></Field>
+        <Field label="Material"><FakeSelect value={node.label === 'Cover' ? 'Steel 4140' : 'Aluminium 6061-T6'} /></Field>
+        <Info>Material is defined per part here, then consumed by FEA thermal & mechanical analyses.</Info>
+      </>);
+    }
+    if (t === 'material') {
+      const steel = node.id === 'mat-cover';
+      return (<>
+        <Field label="Material"><FakeSelect value={steel ? 'Steel 4140' : 'Aluminium 6061-T6'} /></Field>
+        <Readouts rows={steel
+          ? [['Density', '7850 kg/m³'], ['Young’s modulus', '205 GPa'], ['Yield strength', '655 MPa']]
+          : [['Density', '2700 kg/m³'], ['Young’s modulus', '68.9 GPa'], ['Yield strength', '276 MPa']]} />
+        <Info>Drives FEA results. Not used by CFD.</Info>
+      </>);
+    }
+    if (t === 'parametric') {
+      return (<>
+        <Field label="Wall thickness (mm)"><input className="input" defaultValue="4.0" /></Field>
+        <Field label="Fillet radius (mm)"><input className="input" defaultValue="2.5" /></Field>
+      </>);
+    }
+    if (t === 'holetuning') {
+      return (<>
+        <Field label="Hole diameter (mm)"><input className="input" defaultValue="6.0" /></Field>
+        <Field label="Count"><input className="input" defaultValue="8" /></Field>
+      </>);
+    }
+    if (t === 'analysis') {
+      const cfd = node.id === 'cfd';
+      return (<>
+        <ToggleField label={cfd ? 'Run CFD analysis' : 'Run FEA analysis'}
+          sub={cfd ? 'AI surrogate or imported dataset' : 'Independent of CFD — can run on its own'}
+          on={enabled[node.id] !== false} onChange={() => toggleEnabled(node.id)} />
+        {cfd
+          ? <Info>Choose how this run gets its CFD field in <b>Data source</b> below — predict with the AI surrogate, or import a real CFD dataset.</Info>
+          : <Info>FEA does not require a CFD result. Enable any combination of thermal, mechanical and fatigue below.</Info>}
+      </>);
+    }
+    if (t === 'aimodel') {
+      // "Data source" node: a run gets its physics field either from the AI
+      // surrogate (inference) or from an imported real CFD/FEA dataset. The
+      // choice is per-run (`source`); importing keeps everything local.
+      const isFea = node.id === 'fea-model';
+      const datasetNoun = isFea ? 'FEA dataset' : 'CFD dataset';
+      const accept = isFea ? '.vtu,.vtk,.csv' : '.vtu,.vtk,.cgns,.csv';
+      const sampleFile = isFea ? 'fea_results_e40.vtu' : 'cfd_baseline_e40.vtu';
+      const sampleField = isFea ? 'von Mises stress' : 'Temperature';
+      const today = '2026-05-31';
+      const onFile = (e) => {
+        try {
+          const f = e.target.files && e.target.files[0]; if (!f) return;
+          // Field exports are large binary files — register locally (no upload).
+          actions.importCfd({ fileName: f.name, field: sampleField, importedAt: today, cells: '—' });
+          e.target.value = '';
+        } catch (err) { console.error('[aimodel.onFile] CRASH:', err.message, err.stack); }
+      };
+      return (<>
+        <Field label="Data source" required>
+          <div className="seg">
+            <button className={'seg-btn' + (source !== 'cfd' ? ' sel' : '')} onClick={() => actions.setRunSource('ai')}>AI inference</button>
+            <button className={'seg-btn' + (source === 'cfd' ? ' sel' : '')} onClick={() => actions.setRunSource('cfd')}>{datasetNoun}</button>
+          </div>
+        </Field>
+        {source !== 'cfd' ? (<>
+          <Field label="Surrogate model"><FakeSelect value={isFea ? 'FEA Surrogate v2' : 'CFD Surrogate v4'} /></Field>
+          <Field label="Version"><FakeSelect value={isFea ? '2025.4 (stable)' : '2026.1 (stable)'} /></Field>
+          <Readouts rows={[['Validation MAE', isFea ? '3.4%' : '2.1%'], ['Trained on', isFea ? '8.9k runs' : '12.4k runs']]} />
+          <Info>The surrogate predicts the {isFea ? 'structural' : 'flow'} field from the boundary conditions below. Switch to {datasetNoun} to bring in measured / simulated ground truth instead.</Info>
+        </>) : cfd ? (<>
+          <Field label={datasetNoun}>
+            <div className="input-row">
+              <div className="fake-select" style={{ flex: 1, cursor: 'default' }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><Icon name="dataset" style={{ fontSize: 16 }} />{cfd.fileName}</span></div>
+              <label className="btn-sm" style={{ cursor: 'pointer' }}>Replace<input type="file" accept={accept} style={{ display: 'none' }} onChange={onFile} /></label>
+            </div>
+          </Field>
+          <Readouts rows={[['Field', cfd.field || sampleField], ['Imported', cfd.importedAt || today], ['Mesh cells', cfd.cells || '—']]} />
+          <Info>The boundary conditions below are the operating point this dataset was simulated at — they define what this run is compared against. Edit them to record the as-run setup.</Info>
+          <button className="btn-sm" style={{ width: '100%' }} onClick={() => actions.clearCfd()}><Icon name="close" />Remove dataset</button>
+        </>) : (
+          <div className="locked">
+            <div className="head"><Icon name="dataset" /><p>No {datasetNoun} imported. Upload a field export to use real simulation data for this run instead of an AI prediction.</p></div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <label className="btn btn-primary" style={{ cursor: 'pointer', width: 'auto', padding: '0 14px' }}>Upload dataset<input type="file" accept={accept} style={{ display: 'none' }} onChange={onFile} /></label>
+              <button className="btn btn-secondary" style={{ width: 'auto', padding: '0 14px' }} onClick={() => actions.importCfd({ fileName: sampleFile, field: sampleField, importedAt: today, cells: '4.2M' })}>Load sample</button>
+            </div>
+          </div>
+        )}
+      </>);
+    }
+    if (t === 'bc-group') {
+      const bcs = (node.children || []).map((c) => bcSummary(bcConfig[c.id]) ? c.label : null).filter(Boolean);
+      return (<>
+        <Readouts rows={[['Conditions', String((node.children || []).length)], ['Sweeps', String((node.children || []).filter((c) => (bcConfig[c.id] || {}).mode === 'sweep').length)]]} />
+        <Info>Flow-rate conditions can run a single value or a sweep across a range. Restrictions are defined from an uploaded ΔP-vs-flow curve. Each condition shows its current setting beside its name.</Info>
+      </>);
+    }
+    if (t === 'bc') {
+      const cfg = bcConfig[node.id] || {};
+      const setBC = (patch) => actions.setBC(node.id, patch);
+      if (node.bcKind === 'flow') {
+        const sweep = cfg.mode === 'sweep';
+        return (<>
+          <Info>Set the coolant {node.label.toLowerCase()} for this prediction. Choose a single operating point, or sweep a range to see how the engine responds across environments.</Info>
+          <Field label="Inference mode">
+            <div className="seg">
+              <button className={'seg-btn' + (!sweep ? ' sel' : '')} onClick={() => setBC({ mode: 'single' })}>Single point</button>
+              <button className={'seg-btn' + (sweep ? ' sel' : '')} onClick={() => setBC({ mode: 'sweep' })}>Sweep</button>
+            </div>
+          </Field>
+          {!sweep ? (
+            <Field label="Flow rate" required>
+              <div className="input-row"><NumInput value={cfg.value} min={0} step={0.01} onCommit={(v) => setBC({ value: v })} /><span className="unit">l/s</span></div>
+            </Field>
+          ) : (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <Field label="Range min"><div className="input-row"><NumInput value={cfg.min} min={0} step={0.1} onCommit={(v) => setBC({ min: v })} /><span className="unit">l/s</span></div></Field>
+                <Field label="Range max"><div className="input-row"><NumInput value={cfg.max} min={0} step={0.1} onCommit={(v) => setBC({ max: v })} /><span className="unit">l/s</span></div></Field>
+              </div>
+              <Field label="Increments"><div className="input-row"><NumInput value={cfg.steps} int min={2} max={24} onCommit={(v) => setBC({ steps: v })} /><span className="unit">steps</span></div></Field>
+              <SweepPreview min={cfg.min} max={cfg.max} steps={cfg.steps} units="l/s" />
+            </>
+          )}
+          <Field label="Applied surface"><FakeSelect value={node.id === 'bc-pump' ? 'Coolant pump inlet' : 'Auxiliary loop inlet'} /></Field>
+        </>);
+      }
+      if (node.bcKind === 'thermostat') {
+        return (<>
+          <Info>The thermostat gates coolant flow to the radiator loop. It is a discrete state, not a swept parameter.</Info>
+          <ToggleField label="Thermostat" sub={cfg.on ? 'Open — coolant circulates through radiator' : 'Closed — radiator loop bypassed'} on={!!cfg.on} onChange={() => setBC({ on: !cfg.on })} />
+        </>);
+      }
+      // restriction
+      const onFile = (e) => {
+        const f = e.target.files && e.target.files[0]; if (!f) return;
+        const reader = new FileReader();
+        reader.onload = () => { const curve = parseCsvCurve(reader.result); if (curve && curve.length > 1) setBC({ fileName: f.name, curve }); };
+        reader.readAsText(f); e.target.value = '';
+      };
+      return (<>
+        <Info>Upload a CSV of coolant flow rate vs. pressure drop (ΔP). The component’s hydraulic restriction is interpolated from this curve during inference. Two columns: flow rate (l/s), ΔP (kPa).</Info>
+        {cfg.curve ? (<>
+          <Field label="Restriction data">
+            <div className="input-row">
+              <div className="fake-select" style={{ flex: 1, cursor: 'default' }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><Icon name="description" style={{ fontSize: 16 }} />{cfg.fileName || 'curve.csv'}</span></div>
+              <label className="btn-sm" style={{ cursor: 'pointer' }}>Replace<input type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={onFile} /></label>
+            </div>
+          </Field>
+          <RestrictionPlot curve={cfg.curve} />
+          <Readouts rows={[['Points', String(cfg.curve.length)], ['Flow range', `${cfg.curve[0].q.toFixed(1)}–${cfg.curve[cfg.curve.length - 1].q.toFixed(1)} l/s`], ['ΔP at max flow', `${cfg.curve[cfg.curve.length - 1].dp.toFixed(1)} kPa`]]} />
+          <button className="btn-sm" style={{ width: '100%' }} onClick={() => setBC({ fileName: null, curve: null })}><Icon name="close" />Clear curve</button>
+        </>) : (
+          <div className="locked">
+            <div className="head"><Icon name="filter_alt" /><p>No restriction curve for {node.label}. Upload a CSV to define the ΔP-vs-flow relationship.</p></div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <label className="btn btn-primary" style={{ cursor: 'pointer', width: 'auto', padding: '0 14px' }}>Upload CSV<input type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={onFile} /></label>
+              <button className="btn btn-secondary" style={{ width: 'auto', padding: '0 14px' }} onClick={() => setBC({ fileName: 'sample_curve.csv', curve: sampleCurve(0.3) })}>Load sample</button>
+            </div>
+          </div>
+        )}
+      </>);
+    }
+    if (t === 'monitoring') {
+      const mons = (monitorsByGroup && monitorsByGroup[node.id]) || [];
+      return (<>
+        <Info>Each monitor measures a field over a saved slice or probe, sampled across solve iterations. Monitors are scoped to the run’s engine.</Info>
+        <Readouts rows={[['Monitors', String(mons.length)], ['Engine scope', engineType.toUpperCase()]]} />
+        <button className="btn-sm" style={{ width: '100%' }} onClick={() => actions.addMonitor(node.id)}><Icon name="add" />New monitor</button>
+        <button className="btn-sm" style={{ width: '100%' }} onClick={() => actions.openMonitors()}>Open monitors panel</button>
+      </>);
+    }
+    if (t === 'monitor') {
+      const m = node._mon || {};
+      return (<>
+        <Field label="Name" required>
+          <NameField value={m.label} onCommit={(name) => actions.renameMonitor(node._group, m.id, name)} />
+        </Field>
+        <Field label="Field"><FakeSelect value={`${m.field} · ${m.units}`} /></Field>
+        <Field label="Reduction"><FakeSelect value={m.reduction} /></Field>
+        <div className="sub-head">Location</div>
+        <Readouts rows={[
+          ['Slice plane', `${(m.axis || 'z').toUpperCase()} @ ${m.pos}mm`],
+          ['In-plane extent', m.extent],
+          ['Engine scope', (m.engineId || engineType).toUpperCase()],
+        ]} />
+        <button className="btn-sm" style={{ width: '100%' }} onClick={() => actions.locateMonitor(m)}><Icon name="place" />Show location on geometry</button>
+        <Info>This panel defines the monitor request. Measured values, statistics and run-to-run comparison live in the Monitors tab.</Info>
+        <button className="btn-sm btn-primary" style={{ width: '100%' }} onClick={() => actions.openMonitors(m.id)}><Icon name="insights" />View results</button>
+        <button onClick={() => actions.removeMonitor(node._group, m.id)}
+          style={{ background: 'none', border: 'none', color: 'var(--color-key-error)', fontSize: 12, cursor: 'pointer', padding: '2px 0', textAlign: 'left', fontFamily: 'Geist, sans-serif' }}>Remove monitor</button>
+      </>);
+    }
+    if (t === 'fea-analyses') {
+      return (<>
+        <Info>Toggle each physics independently. Any combination can run in a single prediction.</Info>
+        <Readouts rows={[
+          ['Thermal', enabled['fea-thermal'] !== false ? 'On' : 'Off'],
+          ['Mechanical', enabled['fea-mech'] !== false ? 'On' : 'Off'],
+          ['Fatigue', enabled['fea-fatigue'] !== false ? 'On' : 'Off'],
+        ]} />
+      </>);
+    }
+    if (t === 'subanalysis') {
+      const subs = {
+        'fea-thermal': 'Steady-state temperature field across the assembly.',
+        'fea-mech': 'Mechanical loads & constraints driving deformation and stress.',
+        'fea-fatigue': 'Cyclic-life estimate. Requires mechanical (and optionally thermal) results.',
+      };
+      return (<>
+        <ToggleField label={`Run ${node.label.toLowerCase()} analysis`} sub="Independent on/off"
+          on={enabled[node.id] !== false} onChange={() => toggleEnabled(node.id)} />
+        <Info>{subs[node.id]}</Info>
+      </>);
+    }
+    if (t === 'stress-group') {
+      return (<><Info>Stress is reported separately by load source, so it’s clear which case drives the peak.</Info></>);
+    }
+    if (t === 'stress') {
+      const src = {
+        'stress-asm': 'Pre-load from assembly fit & bolt torque only.',
+        'stress-thermal': 'Stress induced by the thermal field (CTE mismatch).',
+        'stress-mech': 'Stress from applied mechanical loads & constraints.',
+      };
+      return (<>
+        <Field label="Quantity"><FakeSelect value="von Mises (max)" /></Field>
+        <Readouts rows={[['Units', 'MPa'], ['Reported', 'Peak + field']]} />
+        <Info>{src[node.id]}</Info>
+      </>);
+    }
+    if (t === 'loads') {
+      return (<>
+        <Field label="Fixed support"><FakeSelect value="Mounting flange" /></Field>
+        <Field label="Applied load"><div className="input-row"><input className="input" defaultValue="1500" /><span className="unit">N</span></div></Field>
+      </>);
+    }
+    return <Info>Select an item in the tree to configure it.</Info>;
+  } catch (err) {
+    console.error('[ConfigBody] CRASH:', err.message, err.stack);
+    return <Info>Could not render configuration.</Info>;
+  }
+}
+
+/* ====================================================================== */
+/* APP                                                                    */
+/* ====================================================================== */
+const DEFAULT_SLICE = {
+  axis: null,
+  pos: { x: 100, y: 60, z: 80 },
+  ranges: { x: [0, 200], y: [0, 120], z: [0, 160] },
+  showPlane: true,
+  flip: false,
+};
+
+// Views are grouped into named libraries. A view always belongs to exactly one
+// library (libId). 'lib-struct' is seeded empty to demonstrate the empty state.
+const SEED_VIEW_LIBS = [
+  { id: 'lib-cfd', name: 'CFD reviews' },
+  { id: 'lib-struct', name: 'Structural' },
+];
+const SEED_VIEWS = [
+  { id: 'v1', libId: 'lib-cfd', name: 'Iso — Temperature', cam: { ...DEFAULT_CAM }, colorMap: 'temperature', ann: { on: false, max: true, min: true, mean: false } },
+  { id: 'v2', libId: 'lib-cfd', name: 'Top-down — Pressure', cam: { az: -0.2, el: 1.3, zoom: 1.9 }, colorMap: 'pressure', ann: { on: true, max: true, min: true, mean: false } },
+  { id: 'v3', libId: 'lib-cfd', name: 'Side — Velocity', cam: { az: -1.55, el: 0.08, zoom: 1.7 }, colorMap: 'velocity', ann: { on: false, max: true, min: true, mean: false } },
+];
+
+/* ====================================================================== */
+/* RUNS LIST                                                              */
+/* ====================================================================== */
+
+// Status glyph + color for a run.
+const RUN_STATUS = {
+  predicted: ['check_circle', 'var(--color-key-success)', 'Predicted'],
+  imported:  ['dataset',      'var(--color-key-warning, #F5A623)', 'Imported CFD dataset'],
+  running:   ['pending',      'var(--color-key-warning)', 'Running'],
+  ready:     ['play_circle',  'var(--color-key-primary)', 'Ready'],
+  draft:     ['radio_button_unchecked', 'var(--color-on-surface-subtle)', 'Draft'],
+};
+function RunStatus({ status }) {
+  const [icon, color] = RUN_STATUS[status] || RUN_STATUS.draft;
+  return <Icon name={icon} style={{ fontSize: 15, color, flexShrink: 0 }} title={(RUN_STATUS[status] || RUN_STATUS.draft)[2]} />;
+}
+
+// A single row in the runs list: compare checkbox + identity + type chip + status + caret.
+function RunRow({ run, open, checked, canDelete, onToggleOpen, onToggleSel, onDelete }) {
+  try {
+    const sb = runSweepBc(run);
+    const isSweep = !!sb;
+    const isCfd = run.source === 'cfd';
+    const nInc = isSweep ? incrementsOf(sb.min, sb.max, sb.steps).length : 0;
+    const sub = isCfd
+      ? `${run.engineType.toUpperCase()} · imported dataset`
+      : isSweep
+        ? `${run.engineType.toUpperCase()} · ${sb.param} · ${sweepSummary(run)}`
+        : `${run.engineType.toUpperCase()} · single point`;
+    return (
+      <div className="run-row" onClick={() => onToggleOpen(run.id)}>
+        <button className={'run-check' + (checked ? ' on' : '')} title="Select for comparison"
+          onClick={(e) => { e.stopPropagation(); onToggleSel(run.id); }}>
+          {checked && <Icon name="check" />}
+        </button>
+        <span className="run-swatch" style={{ background: run.color }} />
+        <div className="run-body">
+          <div className="run-line1">
+            <span className="run-name">{run.name}</span>
+            <RunStatus status={run.status} />
+          </div>
+          <div className="run-line2">
+            {isCfd
+              ? <span className="run-chip cfd"><Icon name="dataset" />CFD</span>
+              : <span className="run-chip"><Icon name="auto_awesome" style={{ fontSize: 11 }} />AI</span>}
+            {isSweep && <span className="run-chip sweep"><Icon name="tune" />Sweep · {nInc}</span>}
+            <span className="run-sub">{sub}</span>
+          </div>
+        </div>
+        {canDelete && onDelete && (
+          <button className="run-del" title="Delete run"
+            onClick={(e) => { e.stopPropagation(); onDelete(run.id); }}>
+            <Icon name="delete" />
+          </button>
+        )}
+        <Icon name={open ? 'expand_more' : 'chevron_right'} className="run-caret" />
+      </div>
+    );
+  } catch (err) {
+    console.error('[RunRow] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+
+/* Sweep accordion body: the swept parameter's increments. A "View as individual
+   runs" toggle promotes each increment to a selectable single-point operand
+   (checkbox bound to the shared runSel), so you can pick one inference point to
+   compare or delta — you can't delta a whole sweep. */
+function SweepIncrements({ run, runSel, onToggleInc }) {
+  // Collapsible dropdown (collapsed by default). Each increment is always an
+  // individually selectable single-point operand — no separate "view as runs" mode.
+  const [open, setOpen] = React.useState(false);
+  try {
+    const sb = runSweepBc(run);
+    if (!sb) return null;
+    const incs = incrementRuns(run);
+    const selCount = incs.filter((ir) => runSel.has(ir.id)).length;
+    return (
+      <div className="sweep-incs">
+        <button className={'sweep-incs-head' + (open ? ' open' : '')} aria-expanded={open}
+          title={open ? 'Hide increments' : 'Show increments'}
+          onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}>
+          <Icon name="expand_more" className={'sweep-incs-chev' + (open ? ' open' : '')} />
+          <div className="sweep-incs-head-txt">
+            <div className="section-label" style={{ margin: 0 }}>Increments · {incs.length}</div>
+            <div className="sweep-incs-sub">{sb.param} · {sb.min}–{sb.max} {sb.units}</div>
+          </div>
+          {selCount > 0 && <span className="sweep-incs-count">{selCount} selected</span>}
+        </button>
+        {open && (
+          <>
+            <div className="list-box" style={{ maxHeight: 168 }}>
+              {incs.map((ir) => {
+                const on = runSel.has(ir.id);
+                return (
+                  <div key={ir.id} className={'inc-row' + (on ? ' selected' : '')}
+                    onClick={(e) => { e.stopPropagation(); onToggleInc(ir.id); }}>
+                    <span className={'check' + (on ? ' on' : '')}>{on && <Icon name="check" />}</span>
+                    <span className="inc-swatch" style={{ background: ir.color }} />
+                    <span className="label">{ir.shortName}</span>
+                    {on && <span className="run-chip" style={{ marginLeft: 'auto', color: 'var(--color-key-primary)', boxShadow: 'inset 0 0 0 1px var(--color-key-primary)', background: 'transparent' }}>delta-ready</span>}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="sweep-incs-hint">
+              <Icon name="call_split" />
+              Each increment is a single inference point. Select one (plus another run) to take a delta.
+            </div>
+          </>
+        )}
+      </div>
+    );
+  } catch (err) {
+    console.error('[SweepIncrements] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+
+// Run-level inference-mode control: single point vs. parametric sweep.
+/* The run-level sweep toggle was removed: a run becomes a sweep simply by      */
+/* setting a flow boundary condition to "sweep" mode in its own setup tree      */
+/* (see the flow-BC config in ConfigBody). Sweep-ness is derived via            */
+/* runSweepBc / runIsSweep, so there is no separate SweepControl component.      */
+
+/* ====================================================================== */
+/* SIDE-BY-SIDE COMPARE VIEW                                              */
+/* Replaces the single viewport when ≥2 runs are checked. Shows a small-  */
+/* multiple 3D panel per selected run at the chosen monitor's slice plane */
+/* (drag any panel to rotate them all in unison), plus an overlaid        */
+/* profile plot and a stat table across every selected run. A sweep run   */
+/* contributes its median envelope as one representative line.            */
+/* ====================================================================== */
+function CompareView({ runs, runSel, colorMap, slice, mode, monitorsByGroup, engineType, onSetMode, onClose }) {
+  const [cam, setCam] = useState({ ...DEFAULT_CAM });
+  const [gridLayout, setGridLayout] = useState('grid');   // 'grid' (side by side) | 'overlay' (superimposed ghosts)
+  const [deltaTab, setDeltaTab] = useState('fields');     // 'fields' (A/B/Δ) | 'distortion' (geometry overlay)
+  const [diffMon, setDiffMon] = useState(null);           // selected monitor id for the delta difference plot
+  try {
+    // Resolve every selected id — including synthetic sweep increments (run#i) —
+    // into a run-like object, preserving selection order.
+    const ordered = [...runSel].map((id) => resolveRunId(runs, id)).filter(Boolean);
+    const cm = cmById(colorMap);
+    const isDelta = mode === 'delta';
+    const dOps = deltaOperands(runs, runSel);
+
+    // Inline element (never an inner component): Grid / Delta switch for the header.
+    const modeToggle = (
+      <div className="cmp-mode-seg">
+        <button className={'cmp-mode-btn' + (!isDelta ? ' sel' : '')} onClick={() => onSetMode && onSetMode('grid')}><Icon name="grid_view" />Grid</button>
+        <button className={'cmp-mode-btn' + (isDelta ? ' sel' : '')} disabled={!dOps.ok}
+          title={dOps.ok ? 'A − B difference field' : dOps.reason}
+          onClick={() => { if (dOps.ok && onSetMode) onSetMode('delta'); }}><Icon name="difference" />Delta</button>
+      </div>
+    );
+
+    if (ordered.length < 2) {
+      return (
+        <div className="compare-view" onClick={(e) => e.stopPropagation()}>
+          <div className="cmp-head">
+            <div className="cmp-title"><Icon name="grid_view" style={{ color: 'var(--color-key-primary)' }} />View predictions</div>
+            <button className="icon-btn" style={{ marginLeft: 'auto' }} title="Close" onClick={onClose}><Icon name="close" /></button>
+          </div>
+          <div className="cmp-empty"><Icon name="grid_view" />Select at least two runs to load their geometries side by side.</div>
+        </div>
+      );
+    }
+
+    /* ----- DELTA MODE: A − B difference field + delta at monitor points ----- */
+    if (isDelta) {
+      if (!dOps.ok) {
+        return (
+          <div className="compare-view" onClick={(e) => e.stopPropagation()}>
+            <div className="cmp-head">
+              <div className="cmp-title"><Icon name="difference" style={{ color: 'var(--color-key-primary)' }} />Delta</div>
+              {modeToggle}
+              <button className="icon-btn" style={{ marginLeft: 'auto' }} title="Close" onClick={onClose}><Icon name="close" /></button>
+            </div>
+            <div className="cmp-empty"><Icon name="difference" />{dOps.reason}.</div>
+          </div>
+        );
+      }
+      // Reference run (B, the subtrahend): prefer CFD ground truth, then the baseline.
+      const ops = dOps.ops;
+      const refIdx = ops.findIndex((r) => r.source === 'cfd');
+      const baseIdx = ops.findIndex((r) => r.isBaseline);
+      const ri = refIdx >= 0 ? refIdx : (baseIdx >= 0 ? baseIdx : 1);
+      const B = ops[ri], A = ops[1 - ri];
+      const dcm = cmById('delta');
+      const mons = ((monitorsByGroup && monitorsByGroup['cfd-mon']) || []).filter((m) => (m.engineId || engineType) === engineType);
+      const rep = (st, red) => /max/i.test(red || '') ? st.max : /min/i.test(red || '') ? st.min : /median/i.test(red || '') ? st.median : st.mean;
+      const rows = mons.map((m) => {
+        const { vis, units, dec } = monitorVis(m);
+        // Round A and B to display precision FIRST, then derive Δ from the rounded
+        // values so the table always reconciles (A − B == Δ as shown).
+        const a = +rep(seriesStats(genSeries(m.id + ':' + A.id, vis, 60)), m.reduction).toFixed(dec);
+        const b = +rep(seriesStats(genSeries(m.id + ':' + B.id, vis, 60)), m.reduction).toFixed(dec);
+        const d = +(a - b).toFixed(dec);
+        const pct = Math.abs(b) > 1e-9 ? (d / b) * 100 : 0;
+        return { id: m.id, label: m.label, field: m.field, units, dec, a, b, d, pct };
+      });
+      // Plain function called directly (inlines elements — not a remounting inner component).
+      const abPanel = (r, tag) => (
+        <div key={r.id} className="cmp-panel" style={{ boxShadow: `inset 0 0 0 1px ${r.color}66` }}>
+          <div className="cmp-panel-head">
+            <span className="cmp-ab" style={{ background: r.color }}>{tag}</span>
+            <span className="cmp-panel-name">{r.name}</span>
+            {r.source === 'cfd'
+              ? <span className="run-chip cfd"><Icon name="dataset" />CFD</span>
+              : <span className="run-chip"><Icon name="auto_awesome" style={{ fontSize: 11 }} />AI</span>}
+          </div>
+          <div className="cmp-viewport-wrap">
+            <Viewport slice={slice} ann={{ on: false }} cam={cam} setCam={setCam} colorMap={colorMap} sliceLabel={null} />
+          </div>
+          <div className="cmp-panel-foot"><span>{(r.engineType || 'e40').toUpperCase()}</span><RunStatus status={r.status} /></div>
+        </div>
+      );
+      // ---- P3-4: monitor-location dropdown + difference plot ----
+      const selMon = mons.find((m) => m.id === diffMon) || mons[0];
+      const dmv = selMon ? monitorVis(selMon) : null;
+      const dRow = selMon ? rows.find((r) => r.id === selMon.id) : null;
+      let dVals = [], aVals = [], bVals = [], dVis = { min: 0, max: 1 };
+      if (selMon && dmv) {
+        aVals = genSeries(selMon.id + ':' + A.id, dmv.vis, 60);
+        bVals = genSeries(selMon.id + ':' + B.id, dmv.vis, 60);
+        dVals = aVals.map((v, i) => v - bVals[i]);
+        // Fit the plot to A, B AND Δ together (plus 0) so the absolute profiles
+        // and their difference are all visible on one axis.
+        const all = [...aVals, ...bVals, ...dVals, 0];
+        dVis = { min: Math.min(...all), max: Math.max(...all) };
+      }
+      const ddc = dRow ? (Math.abs(dRow.d) < (dRow.dec ? 0.05 : 0.5) ? 'var(--color-on-surface-subtle)' : dRow.d > 0 ? '#C2148A' : '#0E8C7E') : 'var(--color-on-surface)';
+      // Tab switch: quantitative fields (A/B/Δ) vs. geometric distortion overlay.
+      const deltaTabSeg = (
+        <div className="cmp-mode-seg" style={{ marginLeft: 0 }}>
+          <button className={'cmp-mode-btn' + (deltaTab === 'fields' ? ' sel' : '')} onClick={() => setDeltaTab('fields')}><Icon name="insights" />Fields</button>
+          <button className={'cmp-mode-btn' + (deltaTab === 'distortion' ? ' sel' : '')} onClick={() => setDeltaTab('distortion')}><Icon name="view_in_ar" />Distortion</button>
+        </div>
+      );
+      return (
+        <div className="compare-view" onClick={(e) => e.stopPropagation()}>
+          <div className="cmp-head">
+            <div className="cmp-title"><Icon name="difference" style={{ color: 'var(--color-key-primary)' }} />Delta</div>
+            <span className="cmp-sub">Δ = {A.name} − {B.name}</span>
+            {modeToggle}
+            {deltaTabSeg}
+            <button className="icon-btn" style={{ marginLeft: 0 }} title="Close" onClick={onClose}><Icon name="close" /></button>
+          </div>
+          <div className="cmp-scroll">
+            {deltaTab === 'fields' ? (
+              <>
+                <div className="cmp-panels" style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
+                  {abPanel(A, 'A')}
+                  {abPanel(B, 'B')}
+                  <div className="cmp-panel" style={{ boxShadow: 'inset 0 0 0 1px var(--color-key-primary)' }}>
+                    <div className="cmp-panel-head">
+                      <span className="cmp-ab delta">Δ</span>
+                      <span className="cmp-panel-name">Difference · A − B</span>
+                    </div>
+                    <div className="cmp-viewport-wrap">
+                      <Viewport slice={slice} ann={{ on: false }} cam={cam} setCam={setCam} colorMap="delta" sliceLabel={null} />
+                    </div>
+                    <div className="cmp-panel-foot">
+                      <span>Δ {cm.field}</span>
+                      <span className="cmp-legend-inline" style={{ marginLeft: 'auto' }}>
+                        <span style={{ fontFamily: 'Geist Mono, monospace' }}>−</span>
+                        <div className="cmp-legend-bar" style={{ width: 64, background: gradCss(dcm.stops, 'to right') }} />
+                        <span style={{ fontFamily: 'Geist Mono, monospace' }}>+</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                {rows.length && selMon ? (
+                  <div style={{ borderRadius: 6, background: 'var(--color-container-surface-low)', boxShadow: 'inset 0 0 0 1px var(--color-border-subtle)', overflow: 'hidden' }}>
+                    <div className="cmp-delta-title">
+                      <Icon name="insights" />Delta at monitor points
+                      <div className="select-native" style={{ marginLeft: 'auto', minWidth: 220 }}>
+                        <select value={selMon.id} onChange={(e) => setDiffMon(e.target.value)}>
+                          {mons.map((m) => <option key={m.id} value={m.id}>{m.label} · {m.field}</option>)}
+                        </select>
+                        <Icon name="expand_more" />
+                      </div>
+                    </div>
+                    <div className="delta-diff-body">
+                      <div className="delta-diff-stats">
+                        <div className="dd-stat"><span className="dd-k"><span className="dd-dot" style={{ background: A.color }} />A · {A.name}</span><span className="dd-v">{dRow.a.toFixed(dRow.dec)} {dRow.units}</span></div>
+                        <div className="dd-stat"><span className="dd-k"><span className="dd-dot" style={{ background: B.color }} />B · {B.name}</span><span className="dd-v">{dRow.b.toFixed(dRow.dec)} {dRow.units}</span></div>
+                        <div className="dd-stat"><span className="dd-k">Δ · {selMon.reduction}</span><span className="dd-v" style={{ color: ddc, fontWeight: 600 }}>{(dRow.d > 0 ? '+' : '') + dRow.d.toFixed(dRow.dec)} {dRow.units}</span></div>
+                        <div className="dd-stat"><span className="dd-k">Δ %</span><span className="dd-v" style={{ color: ddc }}>{(dRow.pct > 0 ? '+' : '') + dRow.pct.toFixed(1)}%</span></div>
+                      </div>
+                      <div className="delta-diff-cap"><Icon name="show_chart" />A, B and their A − B difference across the slice at <b>{selMon.label}</b></div>
+                      <ProfilePlot vis={dVis} L={dmv.L} units={dRow.units} dec={dRow.dec} diff
+                        series={[
+                          { name: 'Δ ' + selMon.field, color: '#C2148A', vals: dVals },
+                          { name: 'A · ' + A.name, color: A.color, vals: aVals },
+                          { name: 'B · ' + B.name, color: B.color, vals: bVals },
+                        ]} />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="cmp-hint"><Icon name="info" />No monitors defined for {engineType.toUpperCase()} — add monitors to quantify the delta at specific points.</div>
+                )}
+                <div className="cmp-hint"><Icon name="insights" />Pick a monitor above to plot the A − B difference along its slice. B defaults to the CFD / baseline reference.</div>
+              </>
+            ) : (
+              <>
+                <div className="cmp-panel" style={{ boxShadow: 'inset 0 0 0 1px var(--color-key-primary)' }}>
+                  <div className="cmp-panel-head">
+                    <span className="cmp-ab delta"><Icon name="view_in_ar" style={{ fontSize: 13 }} /></span>
+                    <span className="cmp-panel-name">Geometric distortion · drag to rotate</span>
+                  </div>
+                  <div className="cmp-viewport-wrap" style={{ minHeight: 380 }}>
+                    <Viewport slice={{ axis: null, showPlane: false }} ann={{ on: false }} cam={cam} setCam={setCam} colorMap={colorMap}
+                      sliceLabel={null} warp={runWarp(A.id)} ghosts={[{ warp: runWarp(B.id), color: B.color, showDisp: true }]} />
+                  </div>
+                  <div className="cmp-panel-foot">
+                    <span className="cmp-ghost-key"><span className="gk-solid" style={{ background: A.color }} />{A.name} · solid</span>
+                    <span className="cmp-ghost-key" style={{ marginLeft: 'auto' }}><span className="gk-dash" style={{ color: B.color }} />{B.name} · ghost</span>
+                  </div>
+                </div>
+                <div className="cmp-hint"><Icon name="view_in_ar" />The dashed wireframe is <b>{B.name}</b> overlaid as a ghost on the solid <b>{A.name}</b>; thin connectors show how each corner moves — the geometric distortion between the two runs.</div>
+              </>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ----- GRID MODE: side-by-side OR overlaid geometries ----- */
+    const cols = Math.min(ordered.length, 3);
+    const solid = ordered[0];
+    const overlayGhosts = ordered.slice(1).map((r) => ({ warp: runWarp(r.id), color: r.color, showDisp: ordered.length === 2 }));
+    // Side by side vs. superimposed-with-ghosts (to see geometric distortion).
+    const gridLayoutSeg = (
+      <div className="cmp-mode-seg" style={{ marginLeft: 0 }}>
+        <button className={'cmp-mode-btn' + (gridLayout === 'grid' ? ' sel' : '')} onClick={() => setGridLayout('grid')}><Icon name="grid_view" />Side by side</button>
+        <button className={'cmp-mode-btn' + (gridLayout === 'overlay' ? ' sel' : '')} onClick={() => setGridLayout('overlay')}><Icon name="layers" />Overlay</button>
+      </div>
+    );
+    return (
+      <div className="compare-view" onClick={(e) => e.stopPropagation()}>
+        <div className="cmp-head">
+          <div className="cmp-title"><Icon name="grid_view" style={{ color: 'var(--color-key-primary)' }} />View predictions</div>
+          <span className="cmp-sub">{ordered.length} predictions · drag {gridLayout === 'overlay' ? 'to rotate' : 'any panel to rotate all in unison'}</span>
+          {modeToggle}
+          {gridLayoutSeg}
+          <div className="cmp-legend-inline">
+            <div className="cmp-legend-bar" style={{ background: gradCss(cm.stops, 'to right') }} />
+            <span>{cm.field} · {cm.units}</span>
+          </div>
+          <button className="icon-btn" style={{ marginLeft: 0 }} title="Close" onClick={onClose}><Icon name="close" /></button>
+        </div>
+
+        <div className="cmp-scroll">
+          {gridLayout === 'grid' ? (
+            <>
+              <div className="cmp-panels" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
+                {ordered.map((r) => {
+                  const sweep = runIsSweep(r);
+                  return (
+                    <div key={r.id} className="cmp-panel" style={{ boxShadow: `inset 0 0 0 1px ${r.color}66` }}>
+                      <div className="cmp-panel-head">
+                        <span className="run-swatch" style={{ background: r.color, height: 14 }} />
+                        <span className="cmp-panel-name">{r.name}</span>
+                        {r.source === 'cfd'
+                          ? <span className="run-chip cfd"><Icon name="dataset" />CFD</span>
+                          : <span className="run-chip"><Icon name="auto_awesome" style={{ fontSize: 11 }} />AI</span>}
+                        {sweep && <span className="run-chip sweep"><Icon name="tune" />sweep</span>}
+                      </div>
+                      <div className="cmp-viewport-wrap">
+                        <Viewport slice={slice} ann={{ on: false }} cam={cam} setCam={setCam} colorMap={colorMap} sliceLabel={null} />
+                      </div>
+                      <div className="cmp-panel-foot">
+                        <span>{(r.engineType || 'e40').toUpperCase()}</span>
+                        <RunStatus status={r.status} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="cmp-hint"><Icon name="insights" />Compare monitor values, slice profiles and stat tables in the <b>Monitors</b> tab — or switch to <b>Overlay</b> to see geometric distortion.</div>
+            </>
+          ) : (
+            <>
+              <div className="cmp-panel" style={{ boxShadow: 'inset 0 0 0 1px var(--color-key-primary)' }}>
+                <div className="cmp-panel-head">
+                  <span className="run-swatch" style={{ background: solid.color, height: 14 }} />
+                  <span className="cmp-panel-name">Overlaid geometries · {ordered.length}</span>
+                </div>
+                <div className="cmp-viewport-wrap" style={{ minHeight: 380 }}>
+                  <Viewport slice={{ axis: null, showPlane: false }} ann={{ on: false }} cam={cam} setCam={setCam} colorMap={colorMap}
+                    sliceLabel={null} warp={runWarp(solid.id)} ghosts={overlayGhosts} />
+                </div>
+                <div className="cmp-panel-foot" style={{ flexWrap: 'wrap', gap: '6px 14px', height: 'auto', padding: '8px 10px' }}>
+                  <span className="cmp-ghost-key"><span className="gk-solid" style={{ background: solid.color }} />{solid.name} · solid</span>
+                  {ordered.slice(1).map((r) => <span key={r.id} className="cmp-ghost-key"><span className="gk-dash" style={{ color: r.color }} />{r.name} · ghost</span>)}
+                </div>
+              </div>
+              <div className="cmp-hint"><Icon name="layers" />The first run is drawn solid; every other run is overlaid as a dashed ghost wireframe so you can read the geometric change between set-ups{ordered.length === 2 ? ' (connectors show corner displacement)' : ''}.</div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  } catch (err) {
+    console.error('[CompareView] CRASH:', err.message, err.stack);
+    return (
+      <div className="compare-view" onClick={(e) => e.stopPropagation()}>
+        <div className="cmp-head"><div className="cmp-title"><Icon name="grid_view" />View predictions</div><button className="icon-btn" style={{ marginLeft: 'auto' }} onClick={onClose}><Icon name="close" /></button></div>
+        <div className="cmp-empty"><Icon name="error_outline" />Unable to render predictions.</div>
+      </div>
+    );
+  }
+}
+
+function App() {
+  // ---- RUNS: the sidebar is a list of runs; one is "open" (accordion) for setup ----
+  const [runs, setRuns] = useState(INITIAL_RUNS);
+  const [activeRunId, setActiveRunId] = useState('baseline'); // which run's setup tree is expanded
+  const [runSel, setRunSel] = useState(() => new Set());      // runs checked for comparison
+  const [compareOpen, setCompareOpen] = useState(false);      // side-by-side "view predictions" active
+  const [compareMode, setCompareMode] = useState('grid');     // 'grid' (side-by-side) | 'delta' (A−B difference)
+
+  // inner setup-tree state (only one run is open at a time, so this is shared)
+  const [expanded, setExpanded] = useState(DEFAULT_EXPANDED);
+  const [selected, setSelected] = useState('geo-file');
+
+  const activeRun = runs.find((r) => r.id === activeRunId) || null;
+  // The setup tree + config dock operate on the active run's own config.
+  const engineType = activeRun ? activeRun.engineType : 'e40';
+  const enabled = activeRun ? activeRun.enabled : defaultEnabled();
+  const bcConfig = activeRun ? activeRun.bcConfig : makeBcConfig();
+
+  const patchRun = (id, patch) => setRuns((prev) => prev.map((r) => (r.id === id ? { ...r, ...(typeof patch === 'function' ? patch(r) : patch) } : r)));
+  const patchActiveRun = (patch) => { if (activeRunId) patchRun(activeRunId, patch); };
+  const setEngineType = (t) => patchActiveRun({ engineType: t });
+  const setBC = (nid, patch) => patchActiveRun((r) => ({ bcConfig: { ...r.bcConfig, [nid]: { ...r.bcConfig[nid], ...patch } } }));
+  const bcSummaryById = Object.fromEntries(Object.entries(bcConfig).map(([id, cfg]) => [id, bcSummary(cfg)]));
+
+  // run-list actions
+  const toggleRunOpen = (id) => { setActiveRunId((cur) => (cur === id ? null : id)); setSelected('geo-file'); };
+  const toggleRunSel = (id) => setRunSel((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const addRun = () => {
+    try {
+      const id = 'run' + Date.now();
+      const color = RUN_COLORS[runs.length % RUN_COLORS.length];
+      setRuns((prev) => [...prev, { id, name: 'New run ' + (prev.length + 1), color, engineType: 'e40', status: 'draft', source: 'ai', cfd: null, kind: 'single', sweep: null, enabled: defaultEnabled(), bcConfig: makeBcConfig() }]);
+      setActiveRunId(id); setSelected('geo-file');
+    } catch (err) { console.error('[addRun] CRASH:', err.message, err.stack); }
+  };
+  const renameRun = (id, name) => patchRun(id, { name });
+  const removeRun = (id) => setRuns((prev) => { const next = prev.filter((r) => r.id !== id); if (activeRunId === id) setActiveRunId(next[0] ? next[0].id : null); setRunSel((s) => { const n = new Set(s); n.delete(id); return n; }); return next; });
+  const predictRun = (id) => patchRun(id, { status: 'predicted' });
+  // Data source: AI surrogate inference vs imported CFD/sim dataset (per run).
+  const setRunSource = (src) => patchActiveRun((r) => (src === 'cfd'
+    ? { source: 'cfd', status: r.cfd ? 'imported' : 'draft' }
+    : { source: 'ai', cfd: null, status: 'ready' }));
+  const importCfd = (meta) => patchActiveRun({ source: 'cfd', cfd: meta, status: 'imported' });
+  const clearCfd = () => patchActiveRun({ cfd: null, status: 'draft' });
+  const openCompare = () => { if (runSel.size >= 2) { setCompareMode('grid'); setCompareOpen(true); } };
+  const openDelta = () => { if (deltaOperands(runs, runSel).ok) { setCompareMode('delta'); setCompareOpen(true); } };
+
+  const [monitorsByGroup, setMonitorsByGroup] = useState({
+    'cfd-mon': [
+      { id: 'mon-press', label: 'Pressure · Mid-plane', field: 'Pressure', units: 'kPa', reduction: 'Area-weighted avg', axis: 'z', pos: 80, extent: '200×120mm', engineId: 'e40',
+        slice: { axis: 'z', pos: { x: 100, y: 60, z: 80 }, ranges: { x: [0, 200], y: [0, 120], z: [0, 160] }, flip: false, showPlane: true } },
+      { id: 'mon-vel', label: 'Velocity · Outlet', field: 'Velocity', units: 'm/s', reduction: 'Max', axis: 'x', pos: 180, extent: '120×160mm', engineId: 'e40',
+        slice: { axis: 'x', pos: { x: 180, y: 60, z: 80 }, ranges: { x: [0, 200], y: [0, 120], z: [0, 160] }, flip: false, showPlane: true } },
+      { id: 'mon-e30inlet', label: 'Pressure · Inlet', field: 'Pressure', units: 'kPa', reduction: 'Area-weighted avg', axis: 'x', pos: 20, extent: '120×160mm', engineId: 'e30',
+        slice: { axis: 'x', pos: { x: 20, y: 60, z: 80 }, ranges: { x: [0, 200], y: [0, 120], z: [0, 160] }, flip: true, showPlane: true } },
+    ],
+    'fea-results': [],
+  });
+
+  // viewer state
+  const [theme, setTheme] = useState('dark');
+  const [menu, setMenu] = useState(null);
+  const [slicerOpen, setSlicerOpen] = useState(false);
+  const [slice, setSlice] = useState(DEFAULT_SLICE);
+  const [cam, setCam] = useState({ ...DEFAULT_CAM });
+  const [colorMap, setColorMap] = useState('temperature');
+  const [views, setViews] = useState(SEED_VIEWS);
+  const [viewLibs, setViewLibs] = useState(SEED_VIEW_LIBS);
+  const [selectedView, setSelectedView] = useState(null);
+  const [selectedMonitor, setSelectedMonitor] = useState(null);
+  const [ann, setAnn] = useState({ on: false, max: true, min: true, mean: false });
+
+  useEffect(() => { document.documentElement.classList.toggle('light', theme === 'light'); }, [theme]);
+
+  const toggleExpand = (id) => setExpanded((prev) => {
+    const n = new Set(prev);
+    if (n.has(id)) n.delete(id); else n.add(id);
+    return n;
+  });
+  const toggleEnabled = (id) => patchActiveRun((r) => ({ enabled: { ...r.enabled, [id]: r.enabled[id] === false ? true : false } }));
+
+  const resolveNode = (id) => {
+    const inTree = findNode(TREE, id);
+    if (inTree) return inTree;
+    for (const g of Object.keys(monitorsByGroup)) {
+      const m = monitorsByGroup[g].find((x) => x.id === id);
+      if (m) return { id: m.id, label: m.label, icon: 'timeline', type: 'monitor', _mon: m, _group: g };
+    }
+    return null;
+  };
+  const selNode = selected ? resolveNode(selected) : null;
+  const activeMonName = selNode && selNode.type === 'monitor' ? selNode.label : null;
+
+  // When a monitor is selected, drive the viewer to its exact slice so you can
+  // see *where* on the geometry it measures.
+  useEffect(() => {
+    try {
+      const node = selected ? resolveNode(selected) : null;
+      if (node && node.type === 'monitor' && node._mon && node._mon.slice) {
+        const m = node._mon;
+        setSlice({ ...JSON.parse(JSON.stringify(m.slice)), showPlane: true });
+        setSelectedMonitor(m.id);
+        const cm = COLORMAPS.find((c) => c.field === m.field);
+        if (cm) setColorMap(cm.id);
+      }
+    } catch (err) {
+      console.error('[locateMonitor] CRASH:', err.message, err.stack);
+    }
+  }, [selected]);
+
+  // If the run's engine changes, drop a selection that no longer belongs to it.
+  useEffect(() => {
+    const node = selected ? resolveNode(selected) : null;
+    if (node && node.type === 'monitor' && node._mon && (node._mon.engineId || engineType) !== engineType) {
+      setSelected(null);
+      setSelectedMonitor(null);
+    }
+  }, [engineType]);
+
+  const addMonitor = (groupId) => {
+    try {
+      const n = (monitorsByGroup[groupId] ? monitorsByGroup[groupId].length : 0) + 1;
+      const id = 'mon' + Date.now();
+      const isFea = groupId === 'fea-results';
+      const mon = isFea
+        ? { id, label: 'Stress probe ' + n, field: 'von Mises', units: 'MPa', reduction: 'Peak', axis: 'y', pos: 60, extent: '200×160mm', engineId: engineType,
+            slice: { axis: 'y', pos: { x: 100, y: 60, z: 80 }, ranges: { x: [0, 200], y: [0, 120], z: [0, 160] }, flip: false, showPlane: true } }
+        : { id, label: 'Monitor ' + n, field: 'Pressure', units: 'kPa', reduction: 'Area-weighted avg', axis: 'z', pos: 80, extent: '200×120mm', engineId: engineType,
+            slice: { axis: 'z', pos: { x: 100, y: 60, z: 80 }, ranges: { x: [0, 200], y: [0, 120], z: [0, 160] }, flip: false, showPlane: true } };
+      setMonitorsByGroup((prev) => ({ ...prev, [groupId]: [...(prev[groupId] || []), mon] }));
+      setExpanded((prev) => new Set(prev).add(groupId));
+      setSelected(id);
+    } catch (err) {
+      console.error('[addMonitor] CRASH:', err.message, err.stack);
+    }
+  };
+  const removeMonitor = (groupId, id) => {
+    setMonitorsByGroup((prev) => ({ ...prev, [groupId]: (prev[groupId] || []).filter((m) => m.id !== id) }));
+    setSelected(null);
+  };
+  const renameMonitor = (groupId, id, name) => {
+    setMonitorsByGroup((prev) => ({ ...prev, [groupId]: (prev[groupId] || []).map((m) => (m.id === id ? { ...m, label: name } : m)) }));
+  };
+
+  // Turn the current slice into a saved monitor in the active engine's CFD library.
+  const createMonitor = () => {
+    try {
+      if (!slice.axis) return;
+      const ax = slice.axis;
+      const [o1, o2] = orthosOf(ax);
+      const w = Math.round(slice.ranges[o1][1] - slice.ranges[o1][0]);
+      const h = Math.round(slice.ranges[o2][1] - slice.ranges[o2][0]);
+      const cm = cmById(colorMap);
+      const id = 'm' + Date.now();
+      const m = {
+        id,
+        label: `${cm.field} · ${ax.toUpperCase()} @ ${Math.round(slice.pos[ax])}mm`,
+        field: cm.field,
+        units: cm.units,
+        reduction: 'Area-weighted avg',
+        axis: ax,
+        pos: Math.round(slice.pos[ax]),
+        extent: `${w}×${h}mm`,
+        engineId: engineType,
+        slice: { ...JSON.parse(JSON.stringify(slice)), showPlane: true },
+      };
+      setMonitorsByGroup((prev) => ({ ...prev, 'cfd-mon': [...(prev['cfd-mon'] || []), m] }));
+      setExpanded((prev) => new Set(prev).add('cfd-mon'));
+      setSelected(id);
+      setSelectedMonitor(id);
+    } catch (err) {
+      console.error('[createMonitor] CRASH:', err.message, err.stack);
+    }
+  };
+
+  // Selecting a monitor in the panel selects it in the tree; the locate effect
+  // then drives the viewer to its slice.
+  const applyMonitor = (id) => setSelected(id);
+
+  const applyView = (id) => {
+    const v = views.find((x) => x.id === id);
+    if (!v) return;
+    setSelectedView(id);
+    setCam({ ...v.cam });
+    setColorMap(v.colorMap);
+    setAnn({ ...v.ann });
+  };
+
+  const saveView = (name, libId) => {
+    const id = 'uv' + Date.now();
+    const v = { id, libId, name, cam: { ...cam }, colorMap, ann: { ...ann } };
+    setViews((prev) => [...prev, v]);
+    setSelectedView(id);
+  };
+
+  const deleteView = (id) => {
+    setViews((prev) => prev.filter((v) => v.id !== id));
+    if (selectedView === id) setSelectedView(null);
+  };
+
+  const createViewLib = (name) => {
+    const id = 'ul' + Date.now();
+    setViewLibs((prev) => [...prev, { id, name }]);
+    return id;
+  };
+
+  // Deleting a library also discards the views inside it.
+  const deleteViewLib = (id) => {
+    setViews((prev) => {
+      const doomed = prev.filter((v) => v.libId === id).map((v) => v.id);
+      if (doomed.includes(selectedView)) setSelectedView(null);
+      return prev.filter((v) => v.libId !== id);
+    });
+    setViewLibs((prev) => prev.filter((l) => l.id !== id));
+  };
+
+  const cycleColorMap = () => {
+    const fields = COLORMAPS.filter((c) => c.id !== 'delta'); // delta is not a selectable field map
+    const i = fields.findIndex((c) => c.id === colorMap);
+    setColorMap(fields[(i + 1) % fields.length].id);
+  };
+
+  const openSlicer = () => { setSlicerOpen(true); setMenu(null); setSlice((s) => ({ ...s, axis: s.axis ?? 'z' })); };
+  // Open the Monitors tab; optionally focus a specific monitor's results.
+  const openMonitors = (id) => { if (typeof id === 'string') setSelected(id); setMenu('monitors'); };
+  // Drive the viewer to a monitor's plane and surface the Monitors panel.
+  const locateMonitor = (m) => {
+    try {
+      if (m && m.slice) {
+        setSlice({ ...JSON.parse(JSON.stringify(m.slice)), showPlane: true });
+        const cm = COLORMAPS.find((c) => c.field === m.field);
+        if (cm) setColorMap(cm.id);
+      }
+      if (m) setSelectedMonitor(m.id);
+      setMenu('monitors');
+    } catch (err) {
+      console.error('[locateMonitor] CRASH:', err.message, err.stack);
+    }
+  };
+  const toggleMenu = (m) => setMenu((c) => (c === m ? null : m));
+  const activeCm = cmById(colorMap);
+
+  return (
+    <div className="app">
+      {/* ---------- LEFT: runs-list sidebar ---------- */}
+      <aside className="sidebar">
+        <div className="sb-header">
+          <div className="ttl-wrap">
+            <div className="ttl">Prediction runs</div>
+            <div className="ttl-sub">{runs.length} runs{runSel.size ? ` · ${runSel.size} selected` : ''} · E40 cooling study</div>
+          </div>
+          <button className="sb-icon" title="New run" onClick={addRun}><Icon name="add" /></button>
+          <button className="sb-icon" title="More"><Icon name="more_horiz" /></button>
+        </div>
+
+        <div className="runs-list">
+          {runs.map((run) => (
+            <div key={run.id} className={'run-item' + (activeRunId === run.id ? ' open' : '')}>
+              <RunRow run={run} open={activeRunId === run.id} checked={runSel.has(run.id)}
+                canDelete={runs.length > 1}
+                onToggleOpen={toggleRunOpen} onToggleSel={toggleRunSel} onDelete={removeRun} />
+              {activeRunId === run.id && (
+                <div className="run-setup">
+                  {runIsSweep(run) && (
+                    <SweepIncrements run={run} runSel={runSel} onToggleInc={toggleRunSel} />
+                  )}
+                  <div className="tree">
+                    {TREE.map((n) => (
+                      <TreeNode key={n.id} node={n} depth={0} expanded={expanded} toggleExpand={toggleExpand}
+                        selected={selected} onSelect={setSelected} enabled={enabled} toggleEnabled={toggleEnabled} disabled={false}
+                        monitorsByGroup={monitorsByGroup} onAddMonitor={addMonitor} engineType={engineType} bcSummaryById={bcSummaryById} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+          <button className="run-add-btn" onClick={addRun}><Icon name="add" />New run</button>
+        </div>
+
+        {activeRun && selNode && (
+          <div className="config-dock">
+            <div className="cfg-header">
+              <span className="cfg-chip"><Icon name={selNode.icon} /></span>
+              <div className="cfg-titles">
+                <div className="cfg-title">{selNode.label}</div>
+                <div className="cfg-caption">{activeRun.name} · {TYPE_CAPTION[selNode.type] || 'Configuration'}</div>
+              </div>
+              <button className="sb-icon" title="Close" onClick={() => setSelected(null)}><Icon name="close" /></button>
+            </div>
+            <div className="cfg-body" key={activeRunId + ':' + selected}>
+              <ConfigBody node={selNode} engineType={engineType} setEngineType={setEngineType}
+                enabled={enabled} toggleEnabled={toggleEnabled} monitorsByGroup={monitorsByGroup}
+                bcConfig={bcConfig} source={activeRun.source || 'ai'} cfd={activeRun.cfd}
+                actions={{ openMonitors, openSlicer, addMonitor, removeMonitor, locateMonitor, renameMonitor, setBC, setRunSource, importCfd, clearCfd }} />
+            </div>
+          </div>
+        )}
+
+        <div className="predict-bar">
+          {runSel.size >= 2 ? (
+            <>
+              <div className="predict-ctx">{runSel.size} runs selected{runSel.size === 2 ? ' · view side by side or take a delta' : ' · load geometries side by side'}</div>
+              <button className="predict" onClick={openCompare}><Icon name="grid_view" />View {runSel.size} predictions</button>
+              {runSel.size === 2 && (() => {
+                const dOps = deltaOperands(runs, runSel);
+                return (
+                  <button className={'predict predict-secondary' + (dOps.ok ? '' : ' predict-disabled')} disabled={!dOps.ok}
+                    title={dOps.ok ? 'A − B difference field' : dOps.reason} onClick={openDelta} style={{ marginTop: 8 }}>
+                    <Icon name="difference" />Create delta
+                  </button>
+                );
+              })()}
+            </>
+          ) : activeRun ? (() => {
+            if (activeRun.source === 'cfd') {
+              const has = !!activeRun.cfd;
+              return (
+              <>
+                <div className="predict-ctx">{activeRun.name} · {has ? 'CFD dataset' : 'CFD — no dataset'} · {activeRun.engineType.toUpperCase()}</div>
+                <button className="predict predict-disabled" disabled>
+                  <Icon name={has ? 'dataset' : 'upload_file'} />{has ? 'Imported · no prediction needed' : 'Import a CFD dataset'}
+                </button>
+              </>
+              );
+            }
+            const sb = runSweepBc(activeRun);
+            return (
+            <>
+              <div className="predict-ctx">{activeRun.name} · {sb ? sweepSummary(activeRun) : 'single point'} · {activeRun.engineType.toUpperCase()}</div>
+              <button className="predict" onClick={() => predictRun(activeRun.id)}>
+                <Icon name="bolt" />{sb ? `Predict sweep · ${incrementsOf(sb.min, sb.max, sb.steps).length} runs` : 'Predict'}
+              </button>
+            </>
+            );
+          })() : (
+            <button className="predict predict-disabled" disabled><Icon name="bolt" />Open a run to set it up</button>
+          )}
+        </div>
+      </aside>
+
+      {/* ---------- RIGHT: geometry viewer ---------- */}
+      <div className="main">
+        <div className="navbar" onClick={(e) => e.stopPropagation()}>
+          <span className="brand">PhysicsX</span><span className="brand-sub">· Evaluate</span>
+          <NavTrigger label="Parts" />
+          <div className="menu-wrap">
+            <NavTrigger label="Color Map" open={menu === 'colormap'} onClick={() => toggleMenu('colormap')}
+              leading={<span className="swatch-dot" style={{ background: gradCss(activeCm.stops, 'to right') }} />} />
+            {menu === 'colormap' && <ColorMapPanel colorMap={colorMap} onSelect={(id) => { setColorMap(id); }} />}
+          </div>
+          <div className="spacer" />
+          <div className="menu-wrap">
+            <NavTrigger label="Views" open={menu === 'views'} onClick={() => toggleMenu('views')} />
+            {menu === 'views' && (
+              <ViewsPanel views={views} libs={viewLibs} selectedView={selectedView}
+                onApply={applyView} onSaveView={saveView} onDeleteView={deleteView}
+                onCreateLib={createViewLib} onDeleteLib={deleteViewLib}
+                ann={ann} setAnn={setAnn} />
+            )}
+          </div>
+          <div className="menu-wrap">
+            <NavTrigger label="Monitors" accent open={menu === 'monitors'} onClick={() => toggleMenu('monitors')} />
+            {menu === 'monitors' && (
+              <MonitorsPanel slice={slice} monitorsByGroup={monitorsByGroup} engineType={engineType} selected={selected}
+                runs={runs} compareSel={runSel}
+                onSelect={(id) => { applyMonitor(id); }} onCreate={createMonitor} onOpenSlicer={openSlicer} />
+            )}
+          </div>
+          <button className="icon-btn" style={{ marginLeft: 8 }} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+            <Icon name={theme === 'dark' ? 'light_mode' : 'dark_mode'} />
+          </button>
+        </div>
+
+        <div className="stage" onClick={() => setMenu(null)}>
+          {compareOpen ? (
+            <CompareView runs={runs} runSel={runSel} colorMap={colorMap} slice={slice} mode={compareMode}
+              monitorsByGroup={monitorsByGroup} engineType={engineType}
+              onSetMode={setCompareMode} onClose={() => setCompareOpen(false)} />
+          ) : (
+            <>
+              <Viewport slice={slice} ann={ann} cam={cam} setCam={setCam} colorMap={colorMap} sliceLabel={activeMonName} />
+              <Legend colorMap={colorMap} />
+
+              <div className="cam-ctrl" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+                <button className="icon-btn" title="Zoom out" onClick={() => setCam((c) => ({ ...c, zoom: clamp(c.zoom * 0.85, 0.5, 4) }))}><Icon name="remove" /></button>
+                <button className="icon-btn" title="Reset view" onClick={() => setCam({ ...DEFAULT_CAM })}><Icon name="filter_center_focus" /></button>
+                <button className="icon-btn" title="Zoom in" onClick={() => setCam((c) => ({ ...c, zoom: clamp(c.zoom * 1.18, 0.5, 4) }))}><Icon name="add" /></button>
+              </div>
+
+              {slicerOpen && <SlicerPanel slice={slice} setSlice={setSlice} onSaveMonitor={createMonitor} />}
+              <div className="tools" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+                <button className={'tool' + (slicerOpen ? ' active' : '')} onClick={() => setSlicerOpen((o) => !o)}><Icon name="content_cut" />Slice</button>
+                <button className="tool" onClick={cycleColorMap} title="Cycle color map"><Icon name="palette" />{activeCm.name}</button>
+                <button className="tool"><Icon name="layers" />Parts</button>
+              </div>
+              <div className="hint">Drag to rotate · scroll to zoom.<br />Pick a <b>Color Map</b>, then <b>save a View</b>.</div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

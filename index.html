@@ -10,6 +10,7 @@
 @import url('https://cdn.jsdelivr.net/npm/geist@1/dist/fonts/geist-mono/style.css');
 
 :root {
+  --color-key-default: #ffffff;
   --color-key-primary: #578cff;
   --color-key-error: #ff5359;
   --color-key-success: #05a831;
@@ -20,34 +21,72 @@
   --color-surface-1: #191c20;
   --color-surface-2: #37393e;
   --color-surface-canvas: #111318;
+  --color-inverse-surface: #f9f9ff;
+  --color-inverse-on-surface: #111318;
+  --color-inverse-primary: #006efe;
   --color-on-surface: #ffffff;
   --color-on-surface-subtle: #aaabb1;
+  --color-on-primary-container: #ffffff;
+  --color-on-error-container: #ffedea;
   --color-container-surface: #1d2024;
   --color-container-surface-high: #32353a;
   --color-container-surface-low: #0c0e13;
   --color-container-primary: #006efe;
+  --color-container-error: #ee0033;
   --color-state-hover: #ffffff14;
   --color-state-selected: rgba(255, 255, 255, 0.16);
   --color-state-active: #00000029;
+  --color-elevation-inset: rgba(255, 255, 255, 0.16);
+  --color-elevation-02: rgba(0, 0, 0, 0.12);
+  --color-elevation-04: rgba(0, 0, 0, 0.12);
+  --color-elevation-2-shadow: rgba(0, 0, 0, 0.16);
+  --color-elevation-3-shadow: rgba(0, 0, 0, 0.32);
   --color-elevation-4-shadow: rgba(0, 0, 0, 0.48);
+  --color-elevation-5-shadow1: rgba(0, 0, 0, 0.48);
+  --color-elevation-5-shadow2: rgba(0, 0, 0, 0.48);
+
+  /* Fixed primitives (theme-invariant) — Kinetic button/checkbox/focus tokens */
+  --color-button-primary: #0F62FE;
+  --color-button-primary-hover: #226EFE;
+  --color-button-primary-active: #0043CE;
+  --color-checkbox-primary: #4589FF;
+  --color-state-focus: #0F62FE;
 }
 html.light {
+  --color-key-default: #000000;
   --color-key-primary: #006efe;
+  --color-key-error: #ee0033;
+  --color-key-success: #05a831;
+  --color-key-warning: #e96d00;
   --color-border: #45474c;
   --color-border-subtle: #d6d7dd;
   --color-surface-0: #ffffff;
   --color-surface-1: #ffffff;
   --color-surface-2: #ffffff;
   --color-surface-canvas: #f9f9ff;
+  --color-inverse-surface: #111318;
+  --color-inverse-on-surface: #f9f9ff;
+  --color-inverse-primary: #578cff;
   --color-on-surface: #111318;
   --color-on-surface-subtle: #5c5e64;
+  --color-on-primary-container: #f3f3fa;
+  --color-on-error-container: #ffedea;
   --color-container-surface: #f9f9ff;
   --color-container-surface-high: #e1e2e9;
   --color-container-surface-low: #ffffff;
+  --color-container-primary: #006efe;
+  --color-container-error: #ee0033;
   --color-state-hover: #2e36460a;
   --color-state-selected: #2e36461f;
   --color-state-active: #2e36460a;
-  --color-elevation-4-shadow: rgba(0, 0, 0, 0.12);
+  --color-elevation-inset: rgba(0, 0, 0, 0.16);
+  --color-elevation-02: rgba(255, 255, 255, 0.08);
+  --color-elevation-04: rgba(255, 255, 255, 0.08);
+  --color-elevation-2-shadow: rgba(0, 0, 0, 0.08);
+  --color-elevation-3-shadow: rgba(0, 0, 0, 0.08);
+  --color-elevation-4-shadow: rgba(0, 0, 0, 0.08);
+  --color-elevation-5-shadow1: rgba(0, 0, 0, 0.08);
+  --color-elevation-5-shadow2: rgba(0, 0, 0, 0.04);
 }
 
 * { box-sizing: border-box; scrollbar-width: thin; scrollbar-color: #525252 transparent; }
@@ -95,6 +134,9 @@ body {
 .tsummary.unset { color: var(--color-key-warning); opacity: .85; }
 .tadd { font-size: 18px; color: var(--color-on-surface-subtle); opacity: 0; flex-shrink: 0; border-radius: 4px; padding: 2px; }
 .tnode-row:hover .tadd { opacity: 1; }
+.topen { margin-left: auto; display: inline-flex; align-items: center; gap: 3px; font-size: 10.5px; font-weight: 600; color: var(--color-key-primary); background: var(--color-state-selected); border-radius: 4px; padding: 1px 6px; opacity: 0; flex-shrink: 0; transition: opacity 120ms; }
+.topen .mi { font-size: 13px; }
+.tnode-row:hover .topen, .tnode-row.sel .topen { opacity: 1; }
 .tnode-row .tadd:hover { color: var(--color-on-surface); background: var(--color-state-hover); }
 .tchildren { margin-left: 17px; border-left: 1px solid var(--color-border-subtle); padding-left: 5px; }
 
@@ -107,7 +149,7 @@ body {
 .run-item.open > .run-row { background: transparent; }
 .run-check { width: 18px; height: 18px; flex-shrink: 0; border-radius: 5px; border: none; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; padding: 0; transition: background 120ms; }
 .run-check:hover { box-shadow: inset 0 0 0 1px var(--color-on-surface-subtle); }
-.run-check.on { background: #0F62FE; box-shadow: inset 0 0 0 1px var(--color-key-primary); }
+.run-check.on { background: var(--color-checkbox-primary); box-shadow: inset 0 0 0 1px var(--color-key-primary); }
 .run-check .mi { font-size: 14px; }
 .run-swatch { width: 4px; align-self: stretch; border-radius: 2px; flex-shrink: 0; }
 .run-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
@@ -148,7 +190,7 @@ body {
 .sweep-control { display: flex; flex-direction: column; gap: 8px; padding: 9px; margin: 2px 0 8px; border-radius: 6px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
 .predict-ctx { font-size: 11px; color: var(--color-on-surface-subtle); margin-bottom: 8px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .predict-disabled { opacity: .32; cursor: default; }
-.predict-disabled:hover { background: #0F62FE; }
+.predict-disabled:hover { background: var(--color-button-primary); }
 
 /* config inspector dock */
 .config-dock { flex-shrink: 0; border-top: 1px solid var(--color-border-subtle); background: var(--color-surface-0); display: flex; flex-direction: column; max-height: 68%; }
@@ -178,7 +220,7 @@ body {
 .seg { display: flex; gap: 4px; }
 .seg-btn { flex: 1; height: 32px; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: 600; background: var(--color-container-surface); color: var(--color-on-surface); box-shadow: inset 0 0 0 1px var(--color-border-subtle); transition: background 120ms; }
 .seg-btn:hover { background: var(--color-state-hover); }
-.seg-btn.sel { background: #0F62FE; color: #fff; box-shadow: inset 0 0 0 1px var(--color-key-primary); }
+.seg-btn.sel { background: var(--color-button-primary); color: #fff; box-shadow: inset 0 0 0 1px var(--color-key-primary); }
 .lib-pills { display: flex; flex-wrap: wrap; gap: 6px; }
 .lib-pill { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 9px; border-radius: 4px; border: none; cursor: pointer; font-family: 'Geist', sans-serif; font-size: 12px; background: var(--color-container-surface); color: var(--color-on-surface-subtle); box-shadow: inset 0 0 0 1px var(--color-border-subtle); white-space: nowrap; transition: background 120ms, color 120ms; }
 .lib-pill:hover { background: var(--color-state-hover); color: var(--color-on-surface); }
@@ -202,8 +244,8 @@ body {
 .sub-head { font-size: 11px; font-weight: 600; color: var(--color-on-surface-subtle); text-transform: uppercase; letter-spacing: .04em; }
 
 .predict-bar { flex-shrink: 0; padding: 12px 14px; border-top: 1px solid var(--color-border-subtle); background: var(--color-surface-1); }
-.predict { width: 100%; height: 42px; border-radius: 4px; border: none; background: #0F62FE; color: #fff; font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: inset 0 0 0 1px var(--color-key-primary); transition: background 120ms; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-.predict:hover { background: #226EFE; }
+.predict { width: 100%; height: 42px; border-radius: 4px; border: none; background: var(--color-button-primary); color: #fff; font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: inset 0 0 0 1px var(--color-key-primary); transition: background 120ms; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.predict:hover { background: var(--color-button-primary-hover); }
 .predict .mi { font-size: 20px; }
 .predict-secondary { background: transparent; color: var(--color-on-surface); box-shadow: inset 0 0 0 1px var(--color-border, var(--color-border-subtle)); }
 .predict-secondary:hover { background: var(--color-state-hover, rgba(255,255,255,0.05)); }
@@ -215,6 +257,59 @@ body {
 .brand { font-size: 13px; font-weight: 600; letter-spacing: -0.01em; margin-right: 4px; }
 .brand-sub { font-size: 13px; color: var(--color-on-surface-subtle); margin-right: 10px; }
 .stage { flex: 1; min-height: 0; position: relative; overflow: hidden; }
+/* Tiled workspace: geometry viewer + monitors live as independent slots. */
+.workspace { position: absolute; inset: 0; display: grid; gap: 10px; padding: 10px; grid-auto-rows: minmax(0, 1fr); }
+.ws-tile { position: relative; min-width: 0; min-height: 0; display: flex; flex-direction: column; border-radius: 10px; overflow: hidden; background: var(--color-surface-0); box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.ws-tile.mon-tile { background: var(--color-container-surface); }
+.ws-tile.drop-target { box-shadow: inset 0 0 0 2px var(--color-key-primary); }
+.ws-tile-head { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-bottom: 1px solid var(--color-border-subtle); background: var(--color-surface-0); flex-shrink: 0; }
+.ws-tile.mon-tile .ws-tile-head { cursor: grab; user-select: none; }
+.ws-tile.mon-tile .ws-tile-head:active { cursor: grabbing; }
+.ws-tile-head .drag { color: var(--color-on-surface-subtle); font-size: 16px; flex-shrink: 0; }
+.ws-tile-head .ws-tile-ico { color: var(--color-on-surface-subtle); font-size: 17px; flex-shrink: 0; }
+.ws-tile-ttl { flex: 1; min-width: 0; }
+.ws-tile-ttl .t { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ws-tile-ttl .s { font-size: 11px; color: var(--color-on-surface-subtle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ws-tile-x { color: var(--color-on-surface-subtle); border-radius: 5px; padding: 2px; cursor: pointer; display: inline-flex; flex-shrink: 0; }
+.ws-tile-x:hover { color: var(--color-on-surface); background: var(--color-state-hover); }
+.ws-tile-body { position: relative; flex: 1; min-height: 0; }
+.mon-tile .ws-tile-body { padding: 10px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+.mon-tile-tag { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; font-size: 10.5px; font-weight: 600; color: var(--color-key-primary); background: var(--color-state-selected); border-radius: 4px; padding: 2px 7px; }
+.mon-tile-tag .mi { font-size: 13px; }
+.mon-cmp-chip { display: inline-flex; align-items: center; gap: 5px; font-family: 'Geist', sans-serif; font-size: 12px; color: var(--color-on-surface); background: var(--color-surface-0); border: 1px solid var(--color-border-subtle); border-radius: 6px; padding: 5px 9px; cursor: pointer; transition: background 120ms, border-color 120ms; }
+.mon-cmp-chip:hover { background: var(--color-state-hover); }
+.mon-cmp-chip.sel { border-color: var(--color-key-primary); color: var(--color-key-primary); background: var(--color-state-selected); }
+.mon-cmp-chip .mi { font-size: 15px; }
+.mon-cmp-chip .f { font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--color-on-surface-subtle); }
+.mon-cmp-chip.sel .f { color: var(--color-key-primary); }
+/* histogram tile */
+.hist-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.stat-seg { display: inline-flex; background: var(--color-surface-0); border: 1px solid var(--color-border-subtle); border-radius: 7px; padding: 2px; gap: 2px; }
+.stat-seg-btn { font-family: 'Geist', sans-serif; font-size: 11.5px; color: var(--color-on-surface-subtle); background: none; border: none; border-radius: 5px; padding: 4px 9px; cursor: pointer; }
+.stat-seg-btn:hover { color: var(--color-on-surface); }
+.stat-seg-btn.sel { background: var(--color-state-selected); color: var(--color-key-primary); font-weight: 600; }
+.hist-pick-btn { display: inline-flex; align-items: center; gap: 4px; font-family: 'Geist', sans-serif; font-size: 11.5px; color: var(--color-on-surface); background: var(--color-surface-0); border: 1px solid var(--color-border-subtle); border-radius: 7px; padding: 4px 8px; cursor: pointer; }
+.hist-pick-btn .mi { font-size: 14px; }
+.hist-pick-btn:hover { background: var(--color-state-hover); }
+.hist-pick-btn.sel { border-color: var(--color-key-primary); color: var(--color-key-primary); }
+.hist-pick-btn .n { font-family: 'Geist Mono', monospace; font-size: 10px; background: var(--color-container-surface); border-radius: 4px; padding: 0 5px; }
+.hist-checklist { border-radius: 6px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); padding: 8px; display: flex; flex-direction: column; gap: 2px; max-height: 220px; overflow-y: auto; }
+.hcl-ttl { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-on-surface-subtle); padding: 2px 4px 4px; }
+.hcl-empty { font-size: 12px; color: var(--color-on-surface-subtle); padding: 4px; }
+.hist-check { display: flex; align-items: center; gap: 7px; padding: 5px 6px; border-radius: 5px; cursor: pointer; font-size: 12.5px; }
+.hist-check:hover { background: var(--color-state-hover); }
+.hist-check.on { background: var(--color-state-selected); }
+.hist-check .cbox { display: inline-flex; color: var(--color-on-surface-subtle); }
+.hist-check.on .cbox { color: var(--color-key-primary); }
+.hist-check .cbox .mi { font-size: 18px; }
+.hist-check .lbl { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hist-check .fld { font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--color-on-surface-subtle); }
+.hist-legend { display: flex; flex-wrap: wrap; gap: '4px 12px'; gap: 4px 12px; margin-top: 6px; }
+.hist-legend .hl-item { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--color-on-surface); }
+.hist-legend .sw { width: 12px; height: 8px; border-radius: 2px; }
+.hist-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; padding: 24px 16px; border-radius: 6px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); color: var(--color-on-surface-subtle); }
+.hist-empty .mi { font-size: 30px; opacity: .6; }
+.hist-empty p { font-size: 12.5px; margin: 0; max-width: 240px; }
 
 .nav-trigger { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 8px; border-radius: 4px; border: none; background: transparent; color: var(--color-on-surface); font-family: 'Geist', sans-serif; font-size: 13px; cursor: pointer; transition: background 120ms; white-space: nowrap; }
 .nav-trigger:hover { background: var(--color-state-hover); }
@@ -224,7 +319,7 @@ body {
 .nav-trigger .swatch-dot { width: 14px; height: 14px; border-radius: 3px; box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
 .menu-wrap { position: relative; }
 
-.panel { background: var(--color-surface-1); border: 1px solid var(--color-border-subtle); border-radius: 8px; box-shadow: 0 8px 16px 0 var(--color-elevation-4-shadow); z-index: 50; padding: 12px; animation: fadeIn 130ms ease; display: flex; flex-direction: column; gap: 12px; }
+.panel { background: var(--color-surface-1); border: 1px solid var(--color-border-subtle); border-radius: 8px; box-shadow: 0 8px 16px 0 var(--color-elevation-4-shadow); z-index: 50; padding: 12px; animation: fadeIn 130ms ease; display: flex; flex-direction: column; gap: 12px; min-width: 240px; max-height: calc(100vh - 72px); overflow-y: auto; }
 .panel.dropdown { position: absolute; top: 40px; right: 0; }
 .panel.dropdown-left { position: absolute; top: 40px; left: 0; right: auto; }
 @keyframes fadeIn { from { opacity: 0; transform: scale(.97) translateY(-4px); } to { opacity: 1; transform: none; } }
@@ -255,8 +350,8 @@ body {
 .btn .mi { font-size: 18px; }
 .btn-secondary { background: var(--color-container-surface); color: var(--color-on-surface); box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
 .btn-secondary:hover { background: var(--color-state-hover); }
-.btn-primary { background: #0F62FE; color: #fff; box-shadow: inset 0 0 0 1px var(--color-key-primary); justify-content: center; }
-.btn-primary:hover { background: #226EFE; }
+.btn-primary { background: var(--color-button-primary); color: #fff; box-shadow: inset 0 0 0 1px var(--color-key-primary); justify-content: center; }
+.btn-primary:hover { background: var(--color-button-primary-hover); }
 .btn:disabled { opacity: .32; pointer-events: none; }
 
 .name-row { display: flex; gap: 6px; }
@@ -287,7 +382,7 @@ body {
 
 /* shared switch */
 .switch { width: 34px; height: 18px; border-radius: 9999px; background: var(--color-container-surface-high); position: relative; cursor: pointer; transition: background 140ms; flex-shrink: 0; box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
-.switch.on { background: var(--color-container-primary); box-shadow: none; }
+.switch.on { background: var(--color-button-primary); box-shadow: none; }
 .switch .knob { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 9999px; background: #fff; transition: left 140ms; }
 .switch.on .knob { left: 18px; }
 
@@ -295,7 +390,7 @@ body {
 .ann-body.disabled { opacity: .4; pointer-events: none; }
 .check-row { display: flex; align-items: center; gap: 8px; height: 26px; cursor: pointer; user-select: none; }
 .check { width: 15px; height: 15px; border-radius: 3px; flex-shrink: 0; box-shadow: inset 0 0 0 1.5px var(--color-on-surface-subtle); display: inline-flex; align-items: center; justify-content: center; }
-.check.on { background: var(--color-container-primary); box-shadow: none; }
+.check.on { background: var(--color-checkbox-primary); box-shadow: none; }
 .check.on .mi { font-size: 13px; color: #fff; }
 .check-row .ck-label { font-size: 13px; flex: 1; }
 .check-row .ck-val { font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--color-on-surface-subtle); }
@@ -318,7 +413,7 @@ body {
 .tools { position: absolute; left: 16px; bottom: 16px; display: flex; gap: 6px; }
 .tool { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 4px; background: var(--color-surface-1); box-shadow: inset 0 0 0 1px var(--color-border-subtle); color: var(--color-on-surface); font-size: 12px; cursor: pointer; border: none; transition: background 120ms; }
 .tool:hover { background: var(--color-state-hover); }
-.tool.active { background: var(--color-container-primary); box-shadow: none; color: #fff; }
+.tool.active { background: var(--color-button-primary); box-shadow: none; color: #fff; }
 .tool .mi { font-size: 18px; }
 .hint { position: absolute; right: 16px; bottom: 16px; font-size: 11px; color: var(--color-on-surface-subtle); max-width: 240px; text-align: right; line-height: 16px; }
 
@@ -338,6 +433,9 @@ body {
 .cmp-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 16px 20px; display: flex; flex-direction: column; gap: 10px; }
 .cmp-section-label { font-size: 11px; color: var(--color-on-surface-subtle); text-transform: uppercase; letter-spacing: 0.04em; }
 .cmp-panels { display: grid; gap: 12px; }
+.cmp-plot-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.cmp-plot-grid > div { min-width: 0; }
+@media (max-width: 980px) { .cmp-plot-grid { grid-template-columns: 1fr; } }
 .cmp-panel { display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; background: var(--color-surface-0); }
 .cmp-panel-head { display: flex; align-items: center; gap: 8px; padding: 8px 10px; }
 .cmp-panel-name { font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -386,7 +484,7 @@ body {
 .axis-group { display: flex; gap: 4px; }
 .axis-btn { flex: 1; height: 28px; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: 600; background: var(--color-container-surface); color: var(--color-on-surface); box-shadow: inset 0 0 0 1px var(--color-border-subtle); transition: background 120ms; }
 .axis-btn:hover { background: var(--color-state-hover); }
-.axis-btn.sel { background: #0F62FE; color: #fff; box-shadow: inset 0 0 0 1px var(--color-key-primary); }
+.axis-btn.sel { background: var(--color-button-primary); color: #fff; box-shadow: inset 0 0 0 1px var(--color-key-primary); }
 .slider-block { display: flex; flex-direction: column; gap: 4px; }
 .slider-head { display: flex; align-items: center; justify-content: space-between; }
 .slider-head .lbl { font-size: 12px; }
@@ -397,6 +495,80 @@ input[type=range]:disabled { opacity: .4; }
 .dual { display: flex; gap: 8px; }
 .dual .slider-block { flex: 1; }
 .sub-label { font-size: 11px; color: var(--color-on-surface-subtle); }
+
+/* ---- Geometry library + physics attribution ---- */
+.geo-chip { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 7px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: .03em; box-shadow: inset 0 0 0 1px var(--color-border-subtle); color: var(--color-on-surface-subtle); }
+.geo-chip.cfd { color: #3396FF; box-shadow: inset 0 0 0 1px rgba(51,150,255,.5); }
+.geo-chip.fea { color: #DC9E17; box-shadow: inset 0 0 0 1px rgba(220,158,23,.5); }
+.geo-chip.none { font-style: italic; }
+.geo-lib { display: flex; flex-direction: column; gap: 6px; }
+.geo-lib-row { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 6px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.gl-icon { font-size: 18px; color: var(--color-on-surface-subtle); flex-shrink: 0; }
+.gl-main { flex: 1; min-width: 0; }
+.gl-name { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gl-sub { font-size: 11px; color: var(--color-on-surface-subtle); }
+.gl-chips { display: inline-flex; gap: 4px; flex-shrink: 0; }
+.geo-pick-list { display: flex; flex-direction: column; gap: 6px; }
+.geo-pick { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 6px; cursor: pointer; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); transition: box-shadow 120ms, background 120ms; }
+.geo-pick:hover { background: var(--color-state-hover); }
+.geo-pick.on { box-shadow: inset 0 0 0 1px var(--color-key-primary); }
+.geo-pick .box { width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1px var(--color-border); color: #fff; }
+.geo-pick.on .box { background: var(--color-checkbox-primary); box-shadow: inset 0 0 0 1px var(--color-key-primary); }
+
+/* ---- Upload modal (in-viewer) ---- */
+.modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; z-index: 200; animation: fadeIn 120ms ease; }
+.modal { width: 560px; max-width: calc(100vw - 32px); max-height: calc(100vh - 32px); min-width: min(360px, calc(100vw - 32px)); min-height: min(320px, calc(100vh - 32px)); display: flex; flex-direction: column; background: var(--color-surface-1); border: 1px solid var(--color-border-subtle); border-radius: 8px; box-shadow: 0 16px 40px 0 var(--color-elevation-4-shadow); overflow: hidden; }
+.modal-head { padding: 18px 20px 8px; }
+.modal-title { font-size: 18px; font-weight: 600; }
+.modal-sub { font-size: 12px; color: var(--color-on-surface-subtle); margin-top: 4px; }
+.modal-body { padding: 8px 20px 16px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; flex: 1 1 auto; min-height: 0; }
+.modal-foot { padding: 12px 20px; display: flex; gap: 8px; justify-content: flex-end; border-top: 1px solid var(--color-border-subtle); flex-shrink: 0; }
+.field-lbl { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.field-lbl .req { color: #d41344; }
+.field-lbl .mi { font-size: 16px; color: var(--color-on-surface-subtle); }
+.radio-row { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+.radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; }
+.radio .dot { width: 18px; height: 18px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--color-border); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.radio.sel .dot { box-shadow: inset 0 0 0 1.5px var(--color-key-primary); }
+.radio.sel .dot::after { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--color-key-primary); }
+.dropzone { border: 1px dashed var(--color-border); border-radius: 8px; padding: 26px 16px; text-align: center; background: var(--color-surface-0); cursor: pointer; transition: border-color 120ms, background 120ms; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.dropzone:hover { border-color: var(--color-key-primary); background: var(--color-container-surface-low); }
+.dropzone .mi { font-size: 26px; color: var(--color-on-surface-subtle); }
+.dropzone .dz-main { font-size: 14px; }
+.dropzone .dz-link { color: var(--color-key-primary); }
+.dropzone .dz-sub { font-size: 12px; color: var(--color-on-surface-subtle); }
+.staged { display: flex; flex-direction: column; gap: 8px; }
+.staged-row { display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: 6px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.staged-top { display: flex; align-items: center; gap: 8px; }
+.staged-top .gl-name { flex: 1; }
+.staged-x { cursor: pointer; color: var(--color-on-surface-subtle); font-size: 18px; }
+.staged-x:hover { color: var(--color-on-surface); }
+.staged-attr { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.attr-lbl { font-size: 11px; color: var(--color-on-surface-subtle); }
+.chk { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; height: 28px; padding: 0 10px 0 8px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--color-border-subtle); background: var(--color-container-surface); transition: box-shadow 120ms; }
+.chk.on { box-shadow: inset 0 0 0 1px var(--color-key-primary); color: var(--color-on-surface); }
+.chk .box { width: 15px; height: 15px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1px var(--color-border); color: #fff; }
+.chk.on .box { background: var(--color-checkbox-primary); box-shadow: inset 0 0 0 1px var(--color-key-primary); }
+.toggle-inline { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.toggle-inline .ti-main { flex: 1; }
+.toggle-inline .ti-label { font-size: 13px; font-weight: 600; }
+.toggle-inline .ti-sub { font-size: 11px; color: var(--color-on-surface-subtle); }
+/* Upload-intent selector (inference vs CFD dataset) */
+.mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mode-card { display: flex; flex-direction: column; gap: 6px; padding: 13px 14px; border-radius: 8px; cursor: pointer; background: var(--color-surface-0); box-shadow: inset 0 0 0 1px var(--color-border-subtle); transition: box-shadow 120ms, background 120ms; }
+.mode-card:hover { background: var(--color-container-surface-low); }
+.mode-card.sel { box-shadow: inset 0 0 0 1.5px var(--color-key-primary); background: var(--color-container-surface-low); }
+.mode-card .mc-top { display: flex; align-items: center; gap: 8px; }
+.mode-card .mc-icon { font-size: 20px; color: var(--color-on-surface-subtle); }
+.mode-card.sel .mc-icon { color: var(--color-key-primary); }
+.mode-card .mc-title { font-size: 13px; font-weight: 600; }
+.mode-card .mc-check { margin-left: auto; font-size: 18px; color: var(--color-key-primary); }
+.mode-card .mc-sub { font-size: 11px; color: var(--color-on-surface-subtle); line-height: 1.45; }
+.dropzone-sm { padding: 16px 14px; gap: 6px; }
+.dropzone-sm .mi { font-size: 22px; }
+.dropzone-sm .dz-main { font-size: 13px; }
+.file-pill { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 6px; background: var(--color-container-surface-low); box-shadow: inset 0 0 0 1px var(--color-border-subtle); }
+.file-pill .gl-name { flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -408,7 +580,7 @@ input[type=range]:disabled { opacity: .4; }
 <script type="text/babel">
 const { useState, useRef, useEffect } = React;
 
-function Icon({ name, className, style }) { return <span className={'mi' + (className ? ' ' + className : '')} style={style}>{name}</span>; }
+function Icon({ name, className, style, onClick, title }) { return <span className={'mi' + (className ? ' ' + className : '')} style={style} onClick={onClick} title={title}>{name}</span>; }
 
 /* ====================================================================== */
 /* GEOMETRY VIEWER DOMAIN                                                  */
@@ -879,22 +1051,19 @@ const MON_GROUPS = [
   { id: 'cfd-mon', label: 'Flow · CFD' },
   { id: 'fea-results', label: 'Structural · FEA' },
 ];
+const MONITOR_LIBRARIES = [
+  { id: 'e40-standard', label: 'E40 · Standard platform' },
+  { id: 'e40-htc', label: 'E40 · HTC extended' },
+  { id: 'e20-standard', label: 'E20 · Standard platform' },
+  { id: 'project-custom', label: 'Project · Custom' },
+];
 function MonitorsPanel({ slice, monitorsByGroup, engineType, selected, onSelect, onCreate, onOpenSlicer, runs, compareSel }) {
-  // Compare mode overlays the selected runs (geometries) at this monitor. Sweep
-  // runs are excluded from the picker for now — comparison is run-to-run.
+  // Single-run inspector: shows the reference run's measured field at the
+  // selected monitor. Run-to-run comparison now happens by selecting multiple
+  // runs in the left sidebar, not from this panel.
   const allRuns = runs || RUNS;
-  const singleRuns = allRuns.filter((r) => !runIsSweep(r));
   const baseRun = allRuns.find((r) => r.isBaseline) || allRuns[0];
-  const [compare, setCompare] = useState(false);
-  // Seed the run selection from the sidebar's compare checkboxes (so the navbar
-  // inspector stays consistent with the list); fall back to all single runs.
-  // A selected sweep expands into one line per increment in the plot below.
-  const [runSel, setRunSel] = useState(() => {
-    const seed = (compareSel && compareSel.size) ? allRuns.filter((r) => compareSel.has(r.id)) : singleRuns;
-    const s = new Set(seed.map((r) => r.id));
-    if (baseRun) s.add(baseRun.id); // reference run is always shown
-    return s;
-  });
+  const [monLib, setMonLib] = useState('e40-standard');
   try {
     const inEngine = (m) => (m.engineId || engineType) === engineType;
     const grouped = MON_GROUPS.map((g) => ({ ...g, list: (monitorsByGroup[g.id] || []).filter(inEngine) }));
@@ -902,18 +1071,19 @@ function MonitorsPanel({ slice, monitorsByGroup, engineType, selected, onSelect,
     const sliceActive = !!slice.axis;
     let selM = null;
     grouped.forEach((g) => g.list.forEach((m) => { if (m.id === selected) selM = m; }));
-    const toggleRun = (id) => {
-      if (baseRun && id === baseRun.id) return; // reference run is always shown
-      setRunSel((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-    };
     return (
       <div className="panel dropdown" style={{ width: 460, maxHeight: '88vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
         <div>
           <div className="panel-title">Monitors</div>
-          <div className="panel-sub">Measured field results per monitor. Select one to view its statistics, slice profile and run-to-run comparison — and locate it on the geometry.</div>
+          <div className="panel-sub">Measured field results per monitor. Select one to view its statistics and slice profile, and locate it on the geometry. Compare runs by selecting them in the sidebar.</div>
         </div>
         <div className="lib-row">
-          <div className="select"><Icon name="bolt" style={{ fontSize: 16 }} /><span>{engineType.toUpperCase()} platform library</span></div>
+          <div className="select-native" style={{ minWidth: 220 }}>
+            <select value={monLib} onChange={(e) => setMonLib(e.target.value)}>
+              {MONITOR_LIBRARIES.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
+            </select>
+            <Icon name="expand_more" />
+          </div>
           <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--color-on-surface-subtle)' }}>{total} monitor{total === 1 ? '' : 's'}</span>
         </div>
         {total === 0 ? (
@@ -940,23 +1110,6 @@ function MonitorsPanel({ slice, monitorsByGroup, engineType, selected, onSelect,
           const { vis, units, L, dec } = monitorVis(selM);
           const baseVals = genSeries(selM.id + ':' + (baseRun ? baseRun.id : 'baseline'), vis, 60);
           const baseStats = seriesStats(baseVals);
-          const selectedRuns = allRuns.filter((r) => runSel.has(r.id));
-          // Expand any selected sweep into one distinctly-coloured line per increment;
-          // single runs contribute a single line. (P3-1/P3-2: a sweep is many lines, not one.)
-          const lines = [], statRows = [];
-          selectedRuns.forEach((r) => {
-            if (runIsSweep(r)) {
-              incrementRuns(r).forEach((ir) => {
-                const vals = genSeries(selM.id + ':' + ir.id, vis, 60);
-                lines.push({ name: ir.shortName, color: ir.color, vals });
-                statRows.push({ name: ir.shortName, color: ir.color, stats: seriesStats(vals) });
-              });
-            } else {
-              const vals = genSeries(selM.id + ':' + r.id, vis, 60);
-              lines.push({ name: r.name, color: r.color, vals });
-              statRows.push({ name: r.name, color: r.color, stats: seriesStats(vals) });
-            }
-          });
           return (
             <>
               <div className="divider" />
@@ -966,52 +1119,15 @@ function MonitorsPanel({ slice, monitorsByGroup, engineType, selected, onSelect,
                   <span style={{ fontSize: 13, fontWeight: 600 }}>{selM.label}</span>
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--color-on-surface-subtle)', marginTop: 2 }}>
-                  {selM.field} · {selM.units} · {selM.reduction} · {(selM.axis || 'z').toUpperCase()} @ {selM.pos}mm
+                  {selM.field} · {selM.units} · E40 · {(selM.axis || 'z').toUpperCase()} @ {selM.pos}mm
                 </div>
               </div>
-              <div className="seg">
-                <button className={'seg-btn' + (!compare ? ' sel' : '')} onClick={() => setCompare(false)}>This run</button>
-                <button className={'seg-btn' + (compare ? ' sel' : '')} onClick={() => setCompare(true)}>Compare runs</button>
+              <div style={{ fontSize: 11, color: 'var(--color-on-surface-subtle)' }}>
+                Reference run · {baseRun ? baseRun.name : 'Baseline'}. To compare runs at this monitor, select multiple runs in the left sidebar.
               </div>
-              {!compare ? (
-                <>
-                  <StatStrip stats={baseStats} units={units} dec={dec} />
-                  <ProfilePlot vis={vis} L={L} units={units} dec={dec} reduction={selM.reduction}
-                    series={[{ name: baseRun ? baseRun.name : 'Baseline', color: baseRun ? baseRun.color : 'var(--color-key-primary)', vals: baseVals }]} />
-                </>
-              ) : (
-                <>
-                  <div style={{ fontSize: 11, color: 'var(--color-on-surface-subtle)' }}>Select runs to overlay at this monitor position · a sweep expands into one line per increment</div>
-                  <div className="list-box" style={{ maxHeight: 200 }}>
-                    {allRuns.map((r) => {
-                      const on = runSel.has(r.id), isBase = baseRun && r.id === baseRun.id, isCfd = r.source === 'cfd', sweep = runIsSweep(r);
-                      const nInc = sweep ? incrementRuns(r).length : 0;
-                      return (
-                        <div key={r.id} className={'row' + (on ? ' selected' : '')} onClick={() => toggleRun(r.id)}
-                          style={isBase ? { cursor: 'default' } : undefined} title={isBase ? 'Reference run — always shown' : undefined}>
-                          <span className={'check' + (on ? ' on' : '')}>{on && <Icon name="check" />}</span>
-                          <span style={{ width: 4, height: 16, borderRadius: 2, background: r.color, opacity: on ? 1 : 0.4, flexShrink: 0 }} />
-                          <span className="label">{r.name}</span>
-                          {sweep
-                            ? <span className="run-chip sweep"><Icon name="tune" />{nInc}</span>
-                            : isCfd
-                              ? <span className="run-chip cfd"><Icon name="dataset" />CFD</span>
-                              : <span className="run-chip"><Icon name="auto_awesome" style={{ fontSize: 11 }} />AI</span>}
-                          {isBase && <span className="run-chip" style={{ flexShrink: 0 }}>base</span>}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  {lines.length > 0 ? (
-                    <>
-                      <ProfilePlot vis={vis} L={L} units={units} dec={dec} series={lines} />
-                      <StatTable rows={statRows} units={units} dec={dec} baselineMean={baseStats.mean} />
-                    </>
-                  ) : (
-                    <div className="list-empty">Select at least one run to overlay its profile.</div>
-                  )}
-                </>
-              )}
+              <StatStrip stats={baseStats} units={units} dec={dec} />
+              <ProfilePlot vis={vis} L={L} units={units} dec={dec} reduction={selM.reduction}
+                series={[{ name: baseRun ? baseRun.name : 'Baseline', color: baseRun ? baseRun.color : 'var(--color-key-primary)', vals: baseVals }]} />
             </>
           );
         })()}
@@ -1043,24 +1159,19 @@ function NavTrigger({ label, open, accent, onClick, leading }) {
 /* RUN-SETUP SIDEBAR                                                      */
 /* ====================================================================== */
 const TREE = [
-  { id: 'geo', label: 'Geometry', icon: 'view_in_ar', type: 'geometry', children: [
-    { id: 'geo-file', label: 'ASM-Housing_v3.2.stp', icon: 'description', type: 'geometry-file' },
-  ]},
+  { id: 'geo', label: 'Geometry', icon: 'view_in_ar', type: 'geometry', addable: true, children: [] },
   { id: 'setup', label: 'Setup', icon: 'tune', type: 'group', children: [
     { id: 'engine', label: 'Engine classification', icon: 'category', type: 'engine' },
-    { id: 'parts', label: 'Parts', icon: 'account_tree', type: 'parts', badge: '2', children: [
-      { id: 'part-housing', label: 'Housing', icon: 'view_in_ar', type: 'part', children: [
-        { id: 'mat-housing', label: 'Material · Al 6061-T6', icon: 'layers', type: 'material' },
-        { id: 'param-housing', label: 'Parametric changes', icon: 'straighten', type: 'parametric' },
-        { id: 'hole-housing', label: 'Transfer hole tuning', icon: 'adjust', type: 'holetuning' },
+    { id: 'parts', label: 'Parts', icon: 'account_tree', type: 'parts', children: [
+      { id: 'part-main', label: 'Part', icon: 'view_in_ar', type: 'part', children: [
+        { id: 'mat-main', label: 'Material · Al 6061-T6', icon: 'layers', type: 'material' },
       ]},
-      { id: 'part-cover', label: 'Cover', icon: 'view_in_ar', type: 'part', children: [
-        { id: 'mat-cover', label: 'Material · Steel 4140', icon: 'layers', type: 'material' },
-      ]},
+      { id: 'hole-sizing', label: 'Transfer hole sizing', icon: 'adjust', type: 'holetuning' },
     ]},
   ]},
   { id: 'physics', label: 'Physics analyses', icon: 'hub', type: 'physics-root', addable: true, children: [
     { id: 'cfd', label: 'CFD — Cooling', icon: 'air', type: 'analysis', toggleable: true, children: [
+      { id: 'cfd-geo', label: 'Geometry', icon: 'view_in_ar', type: 'phys-geo', analysis: 'cfd' },
       { id: 'cfd-model', label: 'Data source', icon: 'dataset', type: 'aimodel' },
       { id: 'cfd-bc', label: 'Boundary conditions', icon: 'line_axis', type: 'bc-group', badge: '6', children: [
         { id: 'bc-pump',   label: 'Pump flow rate',         icon: 'water_drop',        type: 'bc', bcKind: 'flow' },
@@ -1073,13 +1184,9 @@ const TREE = [
       { id: 'cfd-mon', label: 'Results monitoring', icon: 'insights', type: 'monitoring', addable: true },
     ]},
     { id: 'fea', label: 'FEA — Structural', icon: 'engineering', type: 'analysis', toggleable: true, children: [
+      { id: 'fea-geo', label: 'Geometry', icon: 'view_in_ar', type: 'phys-geo', analysis: 'fea' },
       { id: 'fea-model', label: 'Data source', icon: 'dataset', type: 'aimodel' },
-      { id: 'fea-loads', label: 'Loads & constraints', icon: 'compress', type: 'loads' },
-      { id: 'fea-analyses', label: 'Analyses', icon: 'tune', type: 'fea-analyses', children: [
-        { id: 'fea-thermal', label: 'Thermal', icon: 'device_thermostat', type: 'subanalysis', toggleable: true },
-        { id: 'fea-mech', label: 'Mechanical', icon: 'build', type: 'subanalysis', toggleable: true },
-        { id: 'fea-fatigue', label: 'Fatigue', icon: 'timeline', type: 'subanalysis', toggleable: true },
-      ]},
+      { id: 'fea-analyses', label: 'Analyses', icon: 'tune', type: 'fea-analyses' },
       { id: 'fea-results', label: 'Results monitoring', icon: 'insights', type: 'monitoring', addable: true, children: [
         { id: 'stress', label: 'Stress', icon: 'bolt', type: 'stress-group', children: [
           { id: 'stress-asm', label: 'Assembly stress', icon: 'grain', type: 'stress' },
@@ -1092,12 +1199,40 @@ const TREE = [
 ];
 
 const DEFAULT_EXPANDED = new Set([
-  'geo', 'setup', 'parts', 'part-housing', 'physics', 'cfd', 'cfd-bc', 'cfd-mon',
-  'fea', 'fea-analyses', 'fea-results', 'stress',
+  'geo', 'setup', 'parts', 'part-main', 'physics', 'cfd', 'cfd-bc', 'cfd-mon',
+  'fea', 'fea-results', 'stress',
 ]);
 
+/* Geometry library: many CAD files, each attributed to the physics that consumes
+ * it. CFD acts on the fluid volume, FEA on the solid structure. The mapping lives
+ * on each geometry's `physics` array (the single source of truth), so it can be
+ * edited from the upload modal, the file's own panel, or each analysis's panel. */
+const ENGINE_PLATFORMS = ['E-30', 'E-40'];
+const UPLOAD_SOURCES = [
+  { id: 'computer', label: 'From your computer' },
+  { id: 'vault', label: 'From vault' },
+  { id: 'creo', label: 'From CREO' },
+];
+const SEED_GEOMETRIES = [
+  { id: 'geo-file', fileName: 'coolant_fluid_v3.2.stp', role: 'Fluid volume', source: 'computer', engine: 'E-40', hasHoles: false, physics: ['cfd'] },
+  { id: 'geom-solid', fileName: 'housing_solid_v3.2.stp', role: 'Solid structure', source: 'computer', engine: 'E-40', hasHoles: true, physics: ['fea'] },
+];
+// Guess which physics a file feeds from its name (used to pre-fill the modal).
+function guessPhysics(name) {
+  try {
+    const n = (name || '').toLowerCase();
+    if (/(fluid|coolant|cfd|flow|water|air)/.test(n)) return ['cfd'];
+    if (/(solid|struct|housing|casting|fea|stress|block)/.test(n)) return ['fea'];
+    return ['cfd'];
+  } catch (err) { console.error('[guessPhysics] CRASH:', err.message, err.stack); return ['cfd']; }
+}
+function guessRole(name) {
+  const p = guessPhysics(name);
+  return p.includes('cfd') && !p.includes('fea') ? 'Fluid volume' : (p.includes('fea') && !p.includes('cfd') ? 'Solid structure' : 'Geometry');
+}
+
 const TYPE_CAPTION = {
-  'geometry': 'Assembly input', 'geometry-file': 'Assembly input',
+  'geometry': 'Geometry library', 'geometry-file': 'CAD file', 'phys-geo': 'Geometry binding',
   'engine': 'Setup', 'group': 'Setup', 'parts': 'Setup',
   'part': 'Part definition', 'material': 'Part definition', 'parametric': 'Part definition', 'holetuning': 'Part definition',
   'physics-root': 'Physics', 'analysis': 'Physics analysis', 'aimodel': 'Data source',
@@ -1107,12 +1242,15 @@ const TYPE_CAPTION = {
   'stress-group': 'Results monitoring', 'stress': 'Stress result', 'loads': 'FEA inputs',
 };
 
-function TreeNode({ node, depth, expanded, toggleExpand, selected, onSelect, enabled, toggleEnabled, disabled, monitorsByGroup, onAddMonitor, engineType, bcSummaryById }) {
+function TreeNode({ node, depth, expanded, toggleExpand, selected, onSelect, enabled, toggleEnabled, disabled, monitorsByGroup, onAddMonitor, onUploadGeometry, geometries, engineType, bcSummaryById }) {
   try {
     const dynMons = (node.type === 'monitoring' && monitorsByGroup && monitorsByGroup[node.id])
       ? monitorsByGroup[node.id].filter((m) => (m.engineId || engineType) === engineType) : [];
     const monNodes = dynMons.map((m) => ({ id: m.id, label: m.label, icon: 'timeline', type: 'monitor' }));
-    const allChildren = [...(node.children || []), ...monNodes];
+    // Geometry files are a dynamic library, rendered as children of the Geometry node.
+    const geomNodes = (node.type === 'geometry' && geometries)
+      ? geometries.map((g) => ({ id: g.id, label: g.fileName, icon: 'view_in_ar', type: 'geometry-file', _geom: g })) : [];
+    const allChildren = [...(node.children || []), ...monNodes, ...geomNodes];
     const hasChildren = allChildren.length > 0;
     const isOpen = expanded.has(node.id);
     const isToggle = !!node.toggleable;
@@ -1120,7 +1258,12 @@ function TreeNode({ node, depth, expanded, toggleExpand, selected, onSelect, ena
     const childDisabled = disabled || (isToggle && !isOn);
     const accent = node.type === 'physics-root' || node.type === 'analysis';
     const isRoot = depth === 0;
-    const badge = node.type === 'monitoring' ? (dynMons.length ? String(dynMons.length) : null) : node.badge;
+    const physGeoCount = (node.type === 'phys-geo' && geometries) ? geometries.filter((g) => (g.physics || []).includes(node.analysis)).length : 0;
+    const isGeomUploader = node.type === 'geometry';
+    const badge = node.type === 'monitoring' ? (dynMons.length ? String(dynMons.length) : null)
+      : node.type === 'geometry' ? (geomNodes.length ? String(geomNodes.length) : null)
+      : node.type === 'phys-geo' ? (physGeoCount ? String(physGeoCount) : null)
+      : node.badge;
 
     return (
       <div className="tnode">
@@ -1134,12 +1277,13 @@ function TreeNode({ node, depth, expanded, toggleExpand, selected, onSelect, ena
           <Icon name={node.icon} className="ticon" />
           <span className="tlabel">{node.label}</span>
           {node.type === 'bc' && bcSummaryById && bcSummaryById[node.id] && (
-            <span className={'tsummary' + (bcSummaryById[node.id] === 'no curve' ? ' unset' : '')}>{bcSummaryById[node.id]}</span>
+            <span className={'tsummary' + (bcSummaryById[node.id] === 'Not applied' ? ' unset' : '')}>{bcSummaryById[node.id]}</span>
           )}
           {badge && <span className="tbadge">{badge}</span>}
+          {node.type === 'monitor' && <span className="topen"><Icon name="open_in_new" />Open</span>}
           {node.addable && (
-            <Icon name="add" className="tadd" title="New monitor"
-              onClick={(e) => { e.stopPropagation(); onAddMonitor && onAddMonitor(node.id); }} />
+            <Icon name={isGeomUploader ? 'upload' : 'add'} className="tadd" title={isGeomUploader ? 'Upload geometry' : 'New monitor'}
+              onClick={(e) => { e.stopPropagation(); isGeomUploader ? (onUploadGeometry && onUploadGeometry()) : (onAddMonitor && onAddMonitor(node.id)); }} />
           )}
           {isToggle && (
             <div className={'switch' + (isOn ? ' on' : '')} onClick={(e) => { e.stopPropagation(); toggleEnabled(node.id); }}>
@@ -1152,7 +1296,8 @@ function TreeNode({ node, depth, expanded, toggleExpand, selected, onSelect, ena
             {allChildren.map((c) => (
               <TreeNode key={c.id} node={c} depth={depth + 1} expanded={expanded} toggleExpand={toggleExpand}
                 selected={selected} onSelect={onSelect} enabled={enabled} toggleEnabled={toggleEnabled} disabled={childDisabled}
-                monitorsByGroup={monitorsByGroup} onAddMonitor={onAddMonitor} engineType={engineType} bcSummaryById={bcSummaryById} />
+                monitorsByGroup={monitorsByGroup} onAddMonitor={onAddMonitor} onUploadGeometry={onUploadGeometry} geometries={geometries}
+                engineType={engineType} bcSummaryById={bcSummaryById} />
             ))}
           </div>
         )}
@@ -1184,9 +1329,9 @@ function makeBcConfig(overrides) {
       'bc-pump':   { kind: 'flow', mode: 'single', value: 7.42, min: 6.0, max: 9.0, steps: 7 },
       'bc-aux':    { kind: 'flow', mode: 'single', value: 2.10, min: 1.2, max: 3.0, steps: 5 },
       'bc-thermo': { kind: 'thermostat', on: true },
-      'bc-rad':    { kind: 'restriction', fileName: 'radiator_dp_curve.csv', curve: sampleCurve(0.18) },
-      'bc-egr':    { kind: 'restriction', fileName: null, curve: null },
-      'bc-oil':    { kind: 'restriction', fileName: 'oil_cooler_dp.csv', curve: sampleCurve(0.42) },
+      'bc-rad':    { kind: 'restriction', on: true,  fileName: 'radiator_dp_curve.csv', curve: sampleCurve(0.18) },
+      'bc-egr':    { kind: 'restriction', on: false, fileName: null, curve: null },
+      'bc-oil':    { kind: 'restriction', on: true,  fileName: 'oil_cooler_dp.csv', curve: sampleCurve(0.42) },
     };
     if (overrides) for (const k of Object.keys(overrides)) base[k] = { ...base[k], ...overrides[k] };
     return base;
@@ -1220,7 +1365,7 @@ const INITIAL_RUNS = [
     kind: 'sweep', sweep: { param: 'Pump flow rate', bcId: 'bc-pump', units: 'l/s', min: 6.0, max: 9.0, steps: 7 },
     enabled: defaultEnabled(), bcConfig: makeBcConfig({ 'bc-pump': { mode: 'sweep' } }) },
   { id: 'run-egr', name: 'EGR-restricted variant', color: RUN_COLORS[4], engineType: 'e40', status: 'draft',
-    kind: 'single', sweep: null, enabled: defaultEnabled(), bcConfig: makeBcConfig({ 'bc-egr': { fileName: 'egr_dp.csv', curve: sampleCurve(0.30) } }) },
+    kind: 'single', sweep: null, enabled: defaultEnabled(), bcConfig: makeBcConfig({ 'bc-egr': { on: true, fileName: 'egr_dp.csv', curve: sampleCurve(0.30) } }) },
 ];
 
 // Back-compat alias for surfaces not yet threaded to live state.
@@ -1297,6 +1442,7 @@ function seriesStats(vals) {
 
 /* Physical range + plot colour per field — used to scale the slice profile. */
 const FIELD_VIS = {
+  'HTC':         { min: 800, max: 4500, units: 'W/m²K', color: '#3396ff' },
   'Pressure':    { min: 98,  max: 104, units: 'kPa', color: '#3396ff' },
   'Velocity':    { min: 0,   max: 18,  units: 'm/s', color: '#07c2ac' },
   'Temperature': { min: 388, max: 412, units: 'K',   color: '#dc9e17' },
@@ -1474,7 +1620,7 @@ function bcSummary(cfg) {
     return cfg.mode === 'sweep' ? `${f(cfg.min)}–${f(cfg.max)} l/s · ${cfg.steps} steps` : `${f(cfg.value)} l/s`;
   }
   if (cfg.kind === 'thermostat') return cfg.on ? 'On' : 'Off';
-  if (cfg.kind === 'restriction') return cfg.curve ? `curve · ${cfg.curve.length} pts` : 'no curve';
+  if (cfg.kind === 'restriction') return cfg.on ? 'Applied' : 'Not applied';
   return null;
 }
 
@@ -1607,6 +1753,252 @@ function StatStrip({ stats, units, dec }) {
       ))}
     </div>
   );
+}
+
+/* ---------------------------------------------------------------------- *
+ * MONITOR TILE                                                           *
+ * A monitor opened as its own independent slot in the workspace grid,    *
+ * a peer of the geometry viewer (not floating on top of it). Drag a       *
+ * tile's header onto another to reorder the grid. When the active run is  *
+ * a parametric sweep, every increment is drawn on one plot for direct     *
+ * comparison; otherwise the active run (plus any other selected runs) is  *
+ * overlaid.                                                              *
+ * ---------------------------------------------------------------------- */
+function MonitorTile({ win, monitor, run, runs, runSel, onClose, onReorder }) {
+  const [over, setOver] = React.useState(false);
+  try {
+    const { vis, units, L, dec } = monitorVis(monitor);
+    const isSweep = runIsSweep(run);
+
+    let series = [], band = null, stats, tag;
+    if (isSweep) {
+      const sweep = runSweepDescriptor(run);
+      const incs = incrementRuns(run);
+      series = incs.map((ir) => ({ name: ir.shortName, color: ir.color, vals: genSeries(monitor.id + ':' + sweep.id + '#' + ir.incIndex, vis, 60) }));
+      band = { ...sweepBand(monitor, vis, sweep), color: run.color };
+      stats = seriesStats(band.median);
+      tag = <span className="mon-tile-tag"><Icon name="stacked_line_chart" />Sweep · {incs.length} increments · {sweep.param}</span>;
+    } else {
+      // Active run, plus any other runs ticked in the sidebar, overlaid.
+      const ids = [...(run ? [run.id] : []), ...[...(runSel || [])]];
+      const seen = new Set();
+      const ops = ids.map((id) => resolveRunId(runs, id)).filter((r) => r && !seen.has(r.id) && seen.add(r.id));
+      series = ops.map((r) => ({ name: r.name, color: r.color, vals: genSeries(monitor.id + ':' + r.id, vis, 60) }));
+      stats = series.length ? seriesStats(series[0].vals) : { min: 0, max: 0, mean: 0, median: 0 };
+      tag = series.length > 1
+        ? <span className="mon-tile-tag"><Icon name="compare_arrows" />{series.length} runs overlaid</span>
+        : <span className="mon-tile-tag"><Icon name="timeline" />{run ? run.name : 'No run open'}</span>;
+    }
+
+    return (
+      <div className={'ws-tile mon-tile' + (over ? ' drop-target' : '')}
+        onClick={(e) => e.stopPropagation()}
+        onDragOver={(e) => { e.preventDefault(); setOver(true); }}
+        onDragLeave={() => setOver(false)}
+        onDrop={(e) => { e.preventDefault(); setOver(false); const from = e.dataTransfer.getData('text/mon-win'); if (from) onReorder(from, win.id); }}>
+        <div className="ws-tile-head" draggable
+          onDragStart={(e) => { e.dataTransfer.setData('text/mon-win', win.id); e.dataTransfer.effectAllowed = 'move'; }}>
+          <Icon name="drag_indicator" className="drag" />
+          <div className="ws-tile-ttl">
+            <div className="t">{monitor.label}</div>
+            <div className="s">{monitor.field} · {units} · E40 · {(monitor.axis || 'z').toUpperCase()} @ {monitor.pos}mm</div>
+          </div>
+          <span className="ws-tile-x" title="Close monitor" onClick={onClose}><Icon name="close" /></span>
+        </div>
+        <div className="ws-tile-body">
+          {tag}
+          {series.length ? (
+            <>
+              <StatStrip stats={stats} units={units} dec={dec} />
+              <ProfilePlot vis={vis} L={L} units={units} dec={dec} reduction={monitor.reduction}
+                series={series} band={band} />
+            </>
+          ) : (
+            <div className="hist-empty"><Icon name="timeline" /><p>Open a run in the sidebar to plot this monitor.</p></div>
+          )}
+        </div>
+      </div>
+    );
+  } catch (err) {
+    console.error('[MonitorTile] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+
+/* ---------------------------------------------------------------------- *
+ * HISTOGRAM TILE                                                         *
+ * A second monitor-window type: a grouped bar chart comparing a single    *
+ * scalar statistic (mean / median / min / max) across explicitly-chosen   *
+ * monitor locations. Each monitor is a group on the x-axis; each selected  *
+ * run (sweep increments expanded) is a coloured bar within the group, so   *
+ * field performance can be compared across both location AND run. Lives    *
+ * in the same workspace grid as monitor tiles and the geometry viewer.     *
+ * ---------------------------------------------------------------------- */
+const HIST_STATS = [['mean', 'Mean'], ['median', 'Median'], ['min', 'Min'], ['max', 'Max']];
+const statLabelOf = (k) => (HIST_STATS.find((s) => s[0] === k) || HIST_STATS[0])[1];
+/* Expand a list of run-like objects for a histogram: each sweep contributes one
+   bar per increment, single-point runs contribute one bar. */
+function expandHistRuns(runObjs) {
+  const out = [];
+  (runObjs || []).forEach((r) => {
+    if (!r) return;
+    if (runIsSweep(r)) incrementRuns(r).forEach((ir) => out.push({ ...ir, _label: ir.shortName }));
+    else out.push({ ...r, _label: r.name });
+  });
+  return out;
+}
+
+/* Pure grouped-bar chart: one x-axis group per monitor, one coloured bar per
+   (already-expanded) run, height = the chosen scalar statistic. Returns null
+   when there's nothing to draw so the host can show its own empty state. */
+function HistogramChart({ monitors, runs, stat }) {
+  try {
+    const selMons = monitors || [];
+    const expanded = runs || [];
+    if (!selMons.length || !expanded.length) return null;
+    const statLabel = (HIST_STATS.find((s) => s[0] === stat) || HIST_STATS[0])[1];
+    const statVal = (mon, run) => {
+      const { vis } = monitorVis(mon);
+      return seriesStats(genSeries(mon.id + ':' + run.id, vis, 60))[stat];
+    };
+    const unitsSet = new Set(selMons.map((m) => monitorVis(m).units));
+    const axisUnits = unitsSet.size === 1 ? [...unitsSet][0] : '';
+    let maxV = 0;
+    selMons.forEach((m) => expanded.forEach((r) => { maxV = Math.max(maxV, statVal(m, r)); }));
+    const axisMax = maxV * 1.08 || 1;
+    const dec = axisMax < 10 ? 1 : 0;
+    const VW = 360, VH = 184, left = 46, right = 352, top = 12, bottom = 150;
+    const G = Math.max(1, selMons.length), B = Math.max(1, expanded.length);
+    const gw = (right - left) / G;
+    const groupInner = gw * 0.82, bw = groupInner / B;
+    const Y = (v) => bottom - (v / axisMax) * (bottom - top);
+    const hTicks = Array.from({ length: 5 }, (_, k) => (k / 4) * axisMax);
+    return (
+      <div style={{ borderRadius: 6, background: 'var(--color-container-surface-low)', boxShadow: 'inset 0 0 0 1px var(--color-border-subtle)', padding: '8px 10px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--color-on-surface-subtle)', marginBottom: 4 }}>
+          <span>{statLabel} per monitor</span>
+          <span>0–{axisMax.toFixed(dec)} {axisUnits}</span>
+        </div>
+        <svg viewBox={`0 0 ${VW} ${VH}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
+          {hTicks.map((v, k) => (
+            <g key={'h' + k}>
+              <line x1={left} y1={Y(v)} x2={right} y2={Y(v)} stroke="var(--color-border-subtle)" strokeWidth="0.5" />
+              <text x={left - 5} y={Y(v) + 3} textAnchor="end" fontSize="8" fill="var(--color-on-surface-subtle)" fontFamily="Geist Mono, monospace">{v.toFixed(dec)}</text>
+            </g>
+          ))}
+          {selMons.map((m, gi) => {
+            const gx = left + gi * gw + (gw - groupInner) / 2;
+            return (
+              <g key={m.id}>
+                {expanded.map((r, bi) => {
+                  const v = statVal(m, r);
+                  const x = gx + bi * bw;
+                  return (
+                    <rect key={r.id} x={x + bw * 0.08} y={Y(v)} width={bw * 0.84} height={Math.max(0, bottom - Y(v))}
+                      fill={r.color} rx="1.5">
+                      <title>{m.label} · {r._label}: {v.toFixed(dec)} {monitorVis(m).units}</title>
+                    </rect>
+                  );
+                })}
+                <text x={gx + groupInner / 2} y={bottom + 12} textAnchor="middle" fontSize="8" fill="var(--color-on-surface-subtle)" fontFamily="Geist Mono, monospace">
+                  {m.label.length > 14 ? m.label.slice(0, 13) + '…' : m.label}
+                </text>
+              </g>
+            );
+          })}
+          <text x={(left + right) / 2} y={VH - 2} textAnchor="middle" fontSize="8.5" fill="var(--color-on-surface-subtle)">Monitor location</text>
+        </svg>
+        <div className="hist-legend">
+          {expanded.map((r) => (
+            <span key={r.id} className="hl-item"><span className="sw" style={{ background: r.color }} />{r._label}</span>
+          ))}
+        </div>
+      </div>
+    );
+  } catch (err) {
+    console.error('[HistogramChart] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+
+/* ---------------------------------------------------------------------- *
+ * HISTOGRAM TILE                                                         *
+ * A second monitor-window type: grouped bars comparing one scalar stat    *
+ * (mean / median / min / max) across explicitly-chosen monitor locations. *
+ * The RUNS shown are driven by the sidebar selection (active run + any     *
+ * ticked runs); sweeps expand to one bar per increment. Lives in the same  *
+ * workspace grid as monitor tiles and the geometry viewer.                 *
+ * ---------------------------------------------------------------------- */
+function HistogramTile({ win, hist, monitors, run, runs, runSel, onClose, onChange }) {
+  const [pick, setPick] = React.useState(false);
+  try {
+    const selMons = (hist.monIds || []).map((id) => monitors.find((m) => m.id === id)).filter(Boolean);
+    // Runs come straight from the sidebar selection — active run plus any ticked.
+    const ids = [...(run ? [run.id] : []), ...[...(runSel || [])]];
+    const seen = new Set();
+    const selRuns = ids.map((id) => resolveRunId(runs, id)).filter((r) => r && !seen.has(r.id) && seen.add(r.id));
+    const expanded = expandHistRuns(selRuns);
+    const statLabel = (HIST_STATS.find((s) => s[0] === hist.stat) || HIST_STATS[0])[1];
+
+    return (
+      <div className="ws-tile mon-tile hist-tile" onClick={(e) => e.stopPropagation()}>
+        <div className="ws-tile-head">
+          <Icon name="bar_chart" className="ws-tile-ico" />
+          <div className="ws-tile-ttl">
+            <div className="t">Histogram · {statLabel}</div>
+            <div className="s">{selMons.length} monitor{selMons.length === 1 ? '' : 's'} · {expanded.length} bar{expanded.length === 1 ? '' : 's'} per group · runs from sidebar</div>
+          </div>
+          <span className="ws-tile-x" title="Close histogram" onClick={onClose}><Icon name="close" /></span>
+        </div>
+        <div className="ws-tile-body">
+          <div className="hist-toolbar">
+            <div className="stat-seg">
+              {HIST_STATS.map(([k, lbl]) => (
+                <button key={k} className={'stat-seg-btn' + (hist.stat === k ? ' sel' : '')}
+                  onClick={() => onChange({ stat: k })}>{lbl}</button>
+              ))}
+            </div>
+            <button className={'hist-pick-btn' + (pick ? ' sel' : '')} style={{ marginLeft: 'auto' }} onClick={() => setPick((p) => !p)}>
+              <Icon name="place" />Monitors<span className="n">{selMons.length}</span>
+            </button>
+          </div>
+
+          {pick && (
+            <div className="hist-checklist">
+              <div className="hcl-ttl">Pick monitors to compare</div>
+              {monitors.length ? monitors.map((m) => {
+                const on = (hist.monIds || []).includes(m.id);
+                return (
+                  <label key={m.id} className={'hist-check' + (on ? ' on' : '')}
+                    onClick={() => onChange({ monIds: on ? hist.monIds.filter((x) => x !== m.id) : [...(hist.monIds || []), m.id] })}>
+                    <span className="cbox"><Icon name={on ? 'check_box' : 'check_box_outline_blank'} /></span>
+                    <span className="lbl">{m.label}</span><span className="fld">{m.field}</span>
+                  </label>
+                );
+              }) : <div className="hcl-empty">No monitors in this engine yet.</div>}
+            </div>
+          )}
+
+          {selMons.length && expanded.length ? (
+            <HistogramChart monitors={selMons} runs={expanded} stat={hist.stat} />
+          ) : (
+            <div className="hist-empty">
+              <Icon name="bar_chart" />
+              <p>{selMons.length
+                ? 'Select runs in the sidebar (tick runs or open one) to populate the bars.'
+                : 'Pick monitors to compare their ' + statLabel.toLowerCase() + ' side by side.'}</p>
+              {!selMons.length && (
+                <button className="btn btn-secondary" onClick={() => setPick(true)}><Icon name="checklist" />Choose monitors</button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  } catch (err) {
+    console.error('[HistogramTile] CRASH:', err.message, err.stack);
+    return null;
+  }
 }
 
 /* Per-run statistics table with Δ-vs-baseline on the mean (row 0 = baseline). */
@@ -1786,18 +2178,131 @@ function findNode(nodes, id) {
   return null;
 }
 
-function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, actions, monitorsByGroup, bcConfig, source, cfd }) {
+function MonitoringConfig({ node, engineType, actions, monitorsByGroup }) {
+  const [monLib, setMonLib] = useState('e40-standard');
+  try {
+    const mons = ((monitorsByGroup && monitorsByGroup[node.id]) || []).filter((m) => (m.engineId || engineType) === engineType);
+    return (<>
+      <Field label="Monitor library">
+        <div className="select-native">
+          <select value={monLib} onChange={(e) => setMonLib(e.target.value)}>
+            {MONITOR_LIBRARIES.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
+          </select>
+          <Icon name="expand_more" />
+        </div>
+      </Field>
+      <Info>Each monitor measures a field over a saved slice or probe, sampled across solve iterations. Monitors are scoped to the selected library and engine.</Info>
+      <Readouts rows={[['Monitors', String(mons.length)], ['Engine scope', engineType.toUpperCase()]]} />
+      <button className="btn-sm" style={{ width: '100%' }} onClick={() => actions.addMonitor(node.id)}><Icon name="add" />New monitor</button>
+      <button className="btn-sm" style={{ width: '100%' }} disabled={!mons.length} onClick={() => mons.forEach((m) => actions.openMonitorWindow(m))}><Icon name="open_in_new" />Open all monitors</button>
+      <button className="btn-sm btn-primary" style={{ width: '100%' }} disabled={!mons.length} onClick={() => actions.createHistogram([])}><Icon name="bar_chart" />Create histogram</button>
+      <Info>A histogram compares one scalar statistic (mean / median / min / max) across the monitors and runs you pick, as side-by-side bars.</Info>
+    </>);
+  } catch (err) {
+    console.error('[MonitoringConfig] CRASH:', err.message, err.stack);
+    return null;
+  }
+}
+
+const PHYSICS_META = {
+  cfd: { label: 'CFD — Cooling', noun: 'fluid volume', icon: 'air' },
+  fea: { label: 'FEA — Structural', noun: 'solid structure', icon: 'engineering' },
+};
+function PhysicsChips({ physics }) {
+  const list = physics || [];
+  if (!list.length) return <span className="geo-chip none">Unassigned</span>;
+  return (<>{list.map((p) => (
+    <span key={p} className={'geo-chip ' + p}><Icon name={(PHYSICS_META[p] || {}).icon || 'category'} style={{ fontSize: 13 }} />{p.toUpperCase()}</span>
+  ))}</>);
+}
+
+function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, actions, monitorsByGroup, bcConfig, source, cfd, geometries }) {
   try {
     const t = node.type;
-    if (t === 'geometry' || t === 'geometry-file') {
+    const geoms = geometries || [];
+    // Geometry library overview: every uploaded CAD file + which physics consumes it.
+    if (t === 'geometry') {
+      return (<>
+        <Info>Upload one or more CAD files and attribute each to the physics that consumes it. CFD runs on the fluid volume; FEA on the solid structure. One file can feed both.</Info>
+        {geoms.length === 0 ? (
+          <div className="locked">
+            <div className="head"><Icon name="view_in_ar" /><p>No geometry uploaded yet. Add a CAD file to begin, then attribute it to CFD and/or FEA.</p></div>
+            <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => actions.openUpload()}><Icon name="upload" />Upload geometry</button>
+          </div>
+        ) : (
+          <div className="geo-lib">
+            {geoms.map((g) => (
+              <div key={g.id} className="geo-lib-row">
+                <Icon name="view_in_ar" className="gl-icon" />
+                <div className="gl-main">
+                  <div className="gl-name">{g.fileName}</div>
+                  <div className="gl-sub">{g.role}</div>
+                </div>
+                <div className="gl-chips"><PhysicsChips physics={g.physics} /></div>
+              </div>
+            ))}
+          </div>
+        )}
+        <Readouts rows={[['Files', String(geoms.length)], ['Feeding CFD', String(geoms.filter((g) => (g.physics || []).includes('cfd')).length)], ['Feeding FEA', String(geoms.filter((g) => (g.physics || []).includes('fea')).length)]]} />
+        {geoms.length > 0 && <button className="btn-sm" style={{ width: '100%' }} onClick={() => actions.openUpload()}><Icon name="upload" />Upload geometry</button>}
+      </>);
+    }
+    // A single CAD file: rename its role, set which physics consume it, remove it.
+    if (t === 'geometry-file') {
+      const g = node._geom || {};
+      const srcLabel = (UPLOAD_SOURCES.find((s) => s.id === g.source) || {}).label || 'From your computer';
       return (<>
         <Field label="File" required>
           <div className="input-row">
-            <input className="input" defaultValue="ASM-Housing_v3.2.stp" />
-            <button className="btn-sm">Replace</button>
+            <div className="fake-select" style={{ flex: 1, cursor: 'default' }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><Icon name="description" style={{ fontSize: 16 }} />{g.fileName}</span></div>
+            <button className="btn-sm" onClick={() => actions.openUpload()}>Replace</button>
           </div>
         </Field>
-        <Info>Accepted: .stp · .step · .iges. One assembly file per prediction.</Info>
+        <Field label="Role">
+          <input className="input" defaultValue={g.role || ''} placeholder="e.g. Fluid volume"
+            onBlur={(e) => actions.setGeometryRole(g.id, e.target.value)} />
+        </Field>
+        <div className="sub-head">Applied to physics</div>
+        <ToggleField label="CFD — Cooling" sub={(g.physics || []).includes('cfd') ? 'Used as the fluid volume for CFD' : 'Not used by CFD'}
+          on={(g.physics || []).includes('cfd')} onChange={() => actions.toggleGeometryPhysics(g.id, 'cfd')} />
+        <ToggleField label="FEA — Structural" sub={(g.physics || []).includes('fea') ? 'Used as the solid structure for FEA' : 'Not used by FEA'}
+          on={(g.physics || []).includes('fea')} onChange={() => actions.toggleGeometryPhysics(g.id, 'fea')} />
+        <Readouts rows={(g.kind === 'dataset'
+          ? [['Source', srcLabel], ['Engine platform', g.engine || 'E-40'], ['CFD dataset', g.cfdFile || '—'], ['Setup / BCs', g.bcFile || '—']]
+          : [['Source', srcLabel], ['Engine platform', g.engine || 'E-40'], ['Transfer holes', g.hasHoles ? 'Present in geometry' : 'To be inserted']])} />
+        <button className="btn-sm" style={{ width: '100%' }} onClick={() => actions.removeGeometry(g.id)}><Icon name="close" />Remove file</button>
+      </>);
+    }
+    // Per-analysis geometry binding: pick which files this analysis consumes.
+    if (t === 'phys-geo') {
+      const analysis = node.analysis;
+      const meta = PHYSICS_META[analysis] || { label: analysis, noun: 'geometry' };
+      const bound = geoms.filter((g) => (g.physics || []).includes(analysis));
+      return (<>
+        <Info>Select which uploaded geometries feed {meta.label}. It runs on the {meta.noun} — toggle the files this analysis should use.</Info>
+        {geoms.length === 0 ? (
+          <div className="locked">
+            <div className="head"><Icon name="view_in_ar" /><p>No geometry uploaded yet. Upload a CAD file, then bind it to {meta.label}.</p></div>
+            <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => actions.openUpload()}><Icon name="upload" />Upload geometry</button>
+          </div>
+        ) : (
+          <div className="geo-pick-list">
+            {geoms.map((g) => {
+              const on = (g.physics || []).includes(analysis);
+              return (
+                <div key={g.id} className={'geo-pick' + (on ? ' on' : '')} onClick={() => actions.toggleGeometryPhysics(g.id, analysis)}>
+                  <span className="box">{on && <Icon name="check" style={{ fontSize: 13 }} />}</span>
+                  <Icon name="view_in_ar" className="gl-icon" />
+                  <div className="gl-main">
+                    <div className="gl-name">{g.fileName}</div>
+                    <div className="gl-sub">{g.role}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <Readouts rows={[['Bound files', String(bound.length)], ['Analysis', meta.label]]} />
       </>);
     }
     if (t === 'engine') {
@@ -1814,14 +2319,14 @@ function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, a
     }
     if (t === 'parts') {
       return (<>
-        <Readouts rows={[['Parts detected', '2'], ['Assigned materials', '2 / 2']]} />
+        <Readouts rows={[['Parts detected', '1'], ['Assigned materials', '1 / 1']]} />
         <button className="btn-sm" style={{ width: '100%' }}>Re-detect parts from geometry</button>
       </>);
     }
     if (t === 'part') {
       return (<>
         <Field label="Part name"><input className="input" defaultValue={node.label} /></Field>
-        <Field label="Material"><FakeSelect value={node.label === 'Cover' ? 'Steel 4140' : 'Aluminium 6061-T6'} /></Field>
+        <Field label="Material"><FakeSelect value="Aluminium 6061-T6" /></Field>
         <Info>Material is defined per part here, then consumed by FEA thermal & mechanical analyses.</Info>
       </>);
     }
@@ -1833,12 +2338,6 @@ function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, a
           ? [['Density', '7850 kg/m³'], ['Young’s modulus', '205 GPa'], ['Yield strength', '655 MPa']]
           : [['Density', '2700 kg/m³'], ['Young’s modulus', '68.9 GPa'], ['Yield strength', '276 MPa']]} />
         <Info>Drives FEA results. Not used by CFD.</Info>
-      </>);
-    }
-    if (t === 'parametric') {
-      return (<>
-        <Field label="Wall thickness (mm)"><input className="input" defaultValue="4.0" /></Field>
-        <Field label="Fillet radius (mm)"><input className="input" defaultValue="2.5" /></Field>
       </>);
     }
     if (t === 'holetuning') {
@@ -1864,14 +2363,13 @@ function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, a
       // choice is per-run (`source`); importing keeps everything local.
       const isFea = node.id === 'fea-model';
       const datasetNoun = isFea ? 'FEA dataset' : 'CFD dataset';
-      const accept = isFea ? '.vtu,.vtk,.csv' : '.vtu,.vtk,.cgns,.csv';
-      const sampleFile = isFea ? 'fea_results_e40.vtu' : 'cfd_baseline_e40.vtu';
-      const sampleField = isFea ? 'von Mises stress' : 'Temperature';
+      const accept = '.csv,text/csv';
+      const sampleField = isFea ? 'von Mises stress' : 'HTC';
       const today = '2026-05-31';
       const onFile = (e) => {
         try {
           const f = e.target.files && e.target.files[0]; if (!f) return;
-          // Field exports are large binary files — register locally (no upload).
+          // CSV is registered locally (no upload).
           actions.importCfd({ fileName: f.name, field: sampleField, importedAt: today, cells: '—' });
           e.target.value = '';
         } catch (err) { console.error('[aimodel.onFile] CRASH:', err.message, err.stack); }
@@ -1883,28 +2381,22 @@ function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, a
             <button className={'seg-btn' + (source === 'cfd' ? ' sel' : '')} onClick={() => actions.setRunSource('cfd')}>{datasetNoun}</button>
           </div>
         </Field>
-        {source !== 'cfd' ? (<>
-          <Field label="Surrogate model"><FakeSelect value={isFea ? 'FEA Surrogate v2' : 'CFD Surrogate v4'} /></Field>
-          <Field label="Version"><FakeSelect value={isFea ? '2025.4 (stable)' : '2026.1 (stable)'} /></Field>
-          <Readouts rows={[['Validation MAE', isFea ? '3.4%' : '2.1%'], ['Trained on', isFea ? '8.9k runs' : '12.4k runs']]} />
-          <Info>The surrogate predicts the {isFea ? 'structural' : 'flow'} field from the boundary conditions below. Switch to {datasetNoun} to bring in measured / simulated ground truth instead.</Info>
-        </>) : cfd ? (<>
+        {source !== 'cfd' ? (
+          <Field label="AI model"><FakeSelect value={isFea ? 'FEA Surrogate v2' : 'CFD Surrogate v4'} /></Field>
+        ) : cfd ? (<>
           <Field label={datasetNoun}>
             <div className="input-row">
-              <div className="fake-select" style={{ flex: 1, cursor: 'default' }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><Icon name="dataset" style={{ fontSize: 16 }} />{cfd.fileName}</span></div>
+              <div className="fake-select" style={{ flex: 1, cursor: 'default' }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><Icon name="description" style={{ fontSize: 16 }} />{cfd.fileName}</span></div>
               <label className="btn-sm" style={{ cursor: 'pointer' }}>Replace<input type="file" accept={accept} style={{ display: 'none' }} onChange={onFile} /></label>
             </div>
           </Field>
-          <Readouts rows={[['Field', cfd.field || sampleField], ['Imported', cfd.importedAt || today], ['Mesh cells', cfd.cells || '—']]} />
-          <Info>The boundary conditions below are the operating point this dataset was simulated at — they define what this run is compared against. Edit them to record the as-run setup.</Info>
+          <Readouts rows={[['Field', cfd.field || sampleField], ['Imported', cfd.importedAt || today], ['Rows', cfd.cells || '—']]} />
+          <Info>The boundary conditions below are the operating point this CSV was simulated at — they define what this run is compared against. Edit them to record the as-run setup.</Info>
           <button className="btn-sm" style={{ width: '100%' }} onClick={() => actions.clearCfd()}><Icon name="close" />Remove dataset</button>
         </>) : (
           <div className="locked">
-            <div className="head"><Icon name="dataset" /><p>No {datasetNoun} imported. Upload a field export to use real simulation data for this run instead of an AI prediction.</p></div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <label className="btn btn-primary" style={{ cursor: 'pointer', width: 'auto', padding: '0 14px' }}>Upload dataset<input type="file" accept={accept} style={{ display: 'none' }} onChange={onFile} /></label>
-              <button className="btn btn-secondary" style={{ width: 'auto', padding: '0 14px' }} onClick={() => actions.importCfd({ fileName: sampleFile, field: sampleField, importedAt: today, cells: '4.2M' })}>Load sample</button>
-            </div>
+            <div className="head"><Icon name="dataset" /><p>Upload a CSV containing the field values and the boundary conditions the simulation was run at. Each row is one mesh location or operating point with its field output (e.g. {sampleField}) and the BC values used.</p></div>
+            <label className="btn btn-primary" style={{ cursor: 'pointer', width: '100%' }}>Upload CSV<input type="file" accept={accept} style={{ display: 'none' }} onChange={onFile} /></label>
           </div>
         )}
       </>);
@@ -1913,7 +2405,7 @@ function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, a
       const bcs = (node.children || []).map((c) => bcSummary(bcConfig[c.id]) ? c.label : null).filter(Boolean);
       return (<>
         <Readouts rows={[['Conditions', String((node.children || []).length)], ['Sweeps', String((node.children || []).filter((c) => (bcConfig[c.id] || {}).mode === 'sweep').length)]]} />
-        <Info>Flow-rate conditions can run a single value or a sweep across a range. Restrictions are defined from an uploaded ΔP-vs-flow curve. Each condition shows its current setting beside its name.</Info>
+        <Info>Flow-rate conditions can run a single value or a sweep across a range. Restrictions are toggled on or off per run. Each condition shows its current setting beside its name.</Info>
       </>);
     }
     if (t === 'bc') {
@@ -1943,7 +2435,6 @@ function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, a
               <SweepPreview min={cfg.min} max={cfg.max} steps={cfg.steps} units="l/s" />
             </>
           )}
-          <Field label="Applied surface"><FakeSelect value={node.id === 'bc-pump' ? 'Coolant pump inlet' : 'Auxiliary loop inlet'} /></Field>
         </>);
       }
       if (node.bcKind === 'thermostat') {
@@ -1952,7 +2443,7 @@ function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, a
           <ToggleField label="Thermostat" sub={cfg.on ? 'Open — coolant circulates through radiator' : 'Closed — radiator loop bypassed'} on={!!cfg.on} onChange={() => setBC({ on: !cfg.on })} />
         </>);
       }
-      // restriction
+      // restriction — apply toggle + CSV upload with DeltaP-vs-flow plot preview
       const onFile = (e) => {
         const f = e.target.files && e.target.files[0]; if (!f) return;
         const reader = new FileReader();
@@ -1960,7 +2451,11 @@ function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, a
         reader.readAsText(f); e.target.value = '';
       };
       return (<>
-        <Info>Upload a CSV of coolant flow rate vs. pressure drop (ΔP). The component’s hydraulic restriction is interpolated from this curve during inference. Two columns: flow rate (l/s), ΔP (kPa).</Info>
+        <Info>Controls whether the {node.label.toLowerCase()} is applied during inference. When active, its hydraulic pressure drop is accounted for at this boundary, interpolated from the uploaded flow-vs-ΔP curve.</Info>
+        <ToggleField label="Apply restriction"
+          sub={cfg.on ? 'Restriction active — pressure drop applied' : 'Not applied — free-flow assumed at this boundary'}
+          on={!!cfg.on} onChange={() => setBC({ on: !cfg.on })} />
+        <div className="sub-head">Restriction curve</div>
         {cfg.curve ? (<>
           <Field label="Restriction data">
             <div className="input-row">
@@ -1969,11 +2464,10 @@ function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, a
             </div>
           </Field>
           <RestrictionPlot curve={cfg.curve} />
-          <Readouts rows={[['Points', String(cfg.curve.length)], ['Flow range', `${cfg.curve[0].q.toFixed(1)}–${cfg.curve[cfg.curve.length - 1].q.toFixed(1)} l/s`], ['ΔP at max flow', `${cfg.curve[cfg.curve.length - 1].dp.toFixed(1)} kPa`]]} />
           <button className="btn-sm" style={{ width: '100%' }} onClick={() => setBC({ fileName: null, curve: null })}><Icon name="close" />Clear curve</button>
         </>) : (
           <div className="locked">
-            <div className="head"><Icon name="filter_alt" /><p>No restriction curve for {node.label}. Upload a CSV to define the ΔP-vs-flow relationship.</p></div>
+            <div className="head"><Icon name="filter_alt" /><p>No restriction curve for {node.label}. Upload a CSV to define the ΔP-vs-flow relationship. Two columns: flow rate (l/s), ΔP (kPa).</p></div>
             <div style={{ display: 'flex', gap: 8 }}>
               <label className="btn btn-primary" style={{ cursor: 'pointer', width: 'auto', padding: '0 14px' }}>Upload CSV<input type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={onFile} /></label>
               <button className="btn btn-secondary" style={{ width: 'auto', padding: '0 14px' }} onClick={() => setBC({ fileName: 'sample_curve.csv', curve: sampleCurve(0.3) })}>Load sample</button>
@@ -1983,13 +2477,7 @@ function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, a
       </>);
     }
     if (t === 'monitoring') {
-      const mons = (monitorsByGroup && monitorsByGroup[node.id]) || [];
-      return (<>
-        <Info>Each monitor measures a field over a saved slice or probe, sampled across solve iterations. Monitors are scoped to the run’s engine.</Info>
-        <Readouts rows={[['Monitors', String(mons.length)], ['Engine scope', engineType.toUpperCase()]]} />
-        <button className="btn-sm" style={{ width: '100%' }} onClick={() => actions.addMonitor(node.id)}><Icon name="add" />New monitor</button>
-        <button className="btn-sm" style={{ width: '100%' }} onClick={() => actions.openMonitors()}>Open monitors panel</button>
-      </>);
+      return <MonitoringConfig node={node} engineType={engineType} actions={actions} monitorsByGroup={monitorsByGroup} />;
     }
     if (t === 'monitor') {
       const m = node._mon || {};
@@ -1997,41 +2485,29 @@ function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, a
         <Field label="Name" required>
           <NameField value={m.label} onCommit={(name) => actions.renameMonitor(node._group, m.id, name)} />
         </Field>
-        <Field label="Field"><FakeSelect value={`${m.field} · ${m.units}`} /></Field>
-        <Field label="Reduction"><FakeSelect value={m.reduction} /></Field>
+        <Field label="Field"><FakeSelect value="HTC · W/m²K" /></Field>
         <div className="sub-head">Location</div>
         <Readouts rows={[
           ['Slice plane', `${(m.axis || 'z').toUpperCase()} @ ${m.pos}mm`],
           ['In-plane extent', m.extent],
-          ['Engine scope', (m.engineId || engineType).toUpperCase()],
+          ['Engine scope', 'E40'],
         ]} />
         <button className="btn-sm" style={{ width: '100%' }} onClick={() => actions.locateMonitor(m)}><Icon name="place" />Show location on geometry</button>
-        <Info>This panel defines the monitor request. Measured values, statistics and run-to-run comparison live in the Monitors tab.</Info>
-        <button className="btn-sm btn-primary" style={{ width: '100%' }} onClick={() => actions.openMonitors(m.id)}><Icon name="insights" />View results</button>
+        <Info>This panel defines the monitor request. Open the monitor to inspect measured values, statistics and the slice profile in its own workspace slot — open as many as you like and drag them to rearrange the grid.</Info>
+        <button className="btn-sm btn-primary" style={{ width: '100%' }} onClick={() => actions.openMonitorWindow(m)}><Icon name="open_in_new" />Open Monitor</button>
         <button onClick={() => actions.removeMonitor(node._group, m.id)}
           style={{ background: 'none', border: 'none', color: 'var(--color-key-error)', fontSize: 12, cursor: 'pointer', padding: '2px 0', textAlign: 'left', fontFamily: 'Geist, sans-serif' }}>Remove monitor</button>
       </>);
     }
     if (t === 'fea-analyses') {
       return (<>
-        <Info>Toggle each physics independently. Any combination can run in a single prediction.</Info>
-        <Readouts rows={[
-          ['Thermal', enabled['fea-thermal'] !== false ? 'On' : 'Off'],
-          ['Mechanical', enabled['fea-mech'] !== false ? 'On' : 'Off'],
-          ['Fatigue', enabled['fea-fatigue'] !== false ? 'On' : 'Off'],
-        ]} />
-      </>);
-    }
-    if (t === 'subanalysis') {
-      const subs = {
-        'fea-thermal': 'Steady-state temperature field across the assembly.',
-        'fea-mech': 'Mechanical loads & constraints driving deformation and stress.',
-        'fea-fatigue': 'Cyclic-life estimate. Requires mechanical (and optionally thermal) results.',
-      };
-      return (<>
-        <ToggleField label={`Run ${node.label.toLowerCase()} analysis`} sub="Independent on/off"
-          on={enabled[node.id] !== false} onChange={() => toggleEnabled(node.id)} />
-        <Info>{subs[node.id]}</Info>
+        <Info>Toggle each analysis type independently. Any combination can run in a single prediction.</Info>
+        <ToggleField label="Thermal" sub="Steady-state temperature field across the assembly"
+          on={enabled['fea-thermal'] !== false} onChange={() => toggleEnabled('fea-thermal')} />
+        <ToggleField label="Mechanical" sub="Deformation and stress from applied loads"
+          on={enabled['fea-mech'] !== false} onChange={() => toggleEnabled('fea-mech')} />
+        <ToggleField label="Fatigue" sub="Cyclic-life estimate, requires mechanical results"
+          on={enabled['fea-fatigue'] !== false} onChange={() => toggleEnabled('fea-fatigue')} />
       </>);
     }
     if (t === 'stress-group') {
@@ -2047,12 +2523,6 @@ function ConfigBody({ node, engineType, setEngineType, enabled, toggleEnabled, a
         <Field label="Quantity"><FakeSelect value="von Mises (max)" /></Field>
         <Readouts rows={[['Units', 'MPa'], ['Reported', 'Peak + field']]} />
         <Info>{src[node.id]}</Info>
-      </>);
-    }
-    if (t === 'loads') {
-      return (<>
-        <Field label="Fixed support"><FakeSelect value="Mounting flange" /></Field>
-        <Field label="Applied load"><div className="input-row"><input className="input" defaultValue="1500" /><span className="unit">N</span></div></Field>
       </>);
     }
     return <Info>Select an item in the tree to configure it.</Info>;
@@ -2223,6 +2693,8 @@ function CompareView({ runs, runSel, colorMap, slice, mode, monitorsByGroup, eng
   const [gridLayout, setGridLayout] = useState('grid');   // 'grid' (side by side) | 'overlay' (superimposed ghosts)
   const [deltaTab, setDeltaTab] = useState('fields');     // 'fields' (A/B/Δ) | 'distortion' (geometry overlay)
   const [diffMon, setDiffMon] = useState(null);           // selected monitor id for the delta difference plot
+  const [cmpMon, setCmpMon] = useState(null);             // selected monitor id for the grid comparison plot
+  const [histStat, setHistStat] = useState('mean');       // statistic for the comparison histogram
   try {
     // Resolve every selected id — including synthetic sweep increments (run#i) —
     // into a run-like object, preserving selection order.
@@ -2465,7 +2937,68 @@ function CompareView({ runs, runSel, colorMap, slice, mode, monitorsByGroup, eng
                   );
                 })}
               </div>
-              <div className="cmp-hint"><Icon name="insights" />Compare monitor values, slice profiles and stat tables in the <b>Monitors</b> tab — or switch to <b>Overlay</b> to see geometric distortion.</div>
+              <div className="cmp-plot-grid">
+              {(() => {
+                // Monitors available for this engine — pick one to overlay every
+                // selected run's slice profile at that location.
+                const availMons = MON_GROUPS.flatMap((g) => (monitorsByGroup[g.id] || []).filter((m) => (m.engineId || engineType) === engineType));
+                if (!availMons.length) {
+                  return <div className="cmp-hint"><Icon name="info" />No monitors defined for {engineType.toUpperCase()} — add monitors in the run setup to compare values across runs. Switch to <b>Overlay</b> to see geometric distortion.</div>;
+                }
+                const selMon = availMons.find((m) => m.id === cmpMon) || availMons[0];
+                const { vis, units, L, dec } = monitorVis(selMon);
+                const cmpSeries = ordered.map((r) => {
+                  if (runIsSweep(r)) {
+                    const sweep = runSweepDescriptor(r);
+                    return { name: r.name + ' · median', color: r.color, vals: sweepBand(selMon, vis, sweep).median };
+                  }
+                  return { name: r.name, color: r.color, vals: genSeries(selMon.id + ':' + r.id, vis, 60) };
+                });
+                return (
+                  <div style={{ borderRadius: 6, background: 'var(--color-container-surface-low)', boxShadow: 'inset 0 0 0 1px var(--color-border-subtle)', overflow: 'hidden' }}>
+                    <div className="cmp-delta-title">
+                      <Icon name="insights" />Monitors available for comparison
+                      <span style={{ fontSize: 11, color: 'var(--color-on-surface-subtle)', fontWeight: 400, marginLeft: 6 }}>{availMons.length} · {engineType.toUpperCase()}</span>
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '0 12px 10px' }}>
+                      {availMons.map((m) => (
+                        <button key={m.id} className={'mon-cmp-chip' + (m.id === selMon.id ? ' sel' : '')} onClick={() => setCmpMon(m.id)}>
+                          <Icon name="timeline" />{m.label}<span className="f">{m.field}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <div className="delta-diff-body">
+                      <div className="delta-diff-cap"><Icon name="show_chart" />{ordered.length} runs overlaid across the slice at <b>{selMon.label}</b> · {selMon.field} ({units})</div>
+                      <ProfilePlot vis={vis} L={L} units={units} dec={dec} reduction={selMon.reduction} series={cmpSeries} />
+                    </div>
+                  </div>
+                );
+              })()}
+              {(() => {
+                // Comparison histogram: every available monitor as a group, every
+                // selected run (sweep increments expanded) as a bar.
+                const availMons = MON_GROUPS.flatMap((g) => (monitorsByGroup[g.id] || []).filter((m) => (m.engineId || engineType) === engineType));
+                if (!availMons.length) return null;
+                const expanded = expandHistRuns(ordered);
+                return (
+                  <div style={{ borderRadius: 6, background: 'var(--color-container-surface-low)', boxShadow: 'inset 0 0 0 1px var(--color-border-subtle)', overflow: 'hidden' }}>
+                    <div className="cmp-delta-title">
+                      <Icon name="bar_chart" />Statistic histogram
+                      <div className="stat-seg" style={{ marginLeft: 'auto' }}>
+                        {HIST_STATS.map(([k, lbl]) => (
+                          <button key={k} className={'stat-seg-btn' + (histStat === k ? ' sel' : '')} onClick={() => setHistStat(k)}>{lbl}</button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="delta-diff-body">
+                      <div className="delta-diff-cap"><Icon name="bar_chart" />{statLabelOf(histStat)} across {availMons.length} monitor{availMons.length === 1 ? '' : 's'} · {expanded.length} bar{expanded.length === 1 ? '' : 's'} per group</div>
+                      <HistogramChart monitors={availMons} runs={expanded} stat={histStat} />
+                    </div>
+                  </div>
+                );
+              })()}
+              </div>
+              <div className="cmp-hint"><Icon name="insights" />Pick a monitor above to overlay every selected run's profile, compare scalar stats in the histogram — or switch to <b>Overlay</b> to see geometric distortion.</div>
             </>
           ) : (
             <>
@@ -2498,6 +3031,204 @@ function CompareView({ runs, runSel, colorMap, slice, mode, monitorsByGroup, eng
       </div>
     );
   }
+}
+
+/* Upload modal (rendered over the viewer). Stages one or more CAD files and
+ * attributes each to the physics that consumes it before committing them to the
+ * geometry library. Mirrors the product wireframe (source / dropzone / transfer
+ * holes / engine platform) plus per-file physics assignment. */
+/* Single-file dropzone used by the CFD-dataset flow: shows a compact dropzone
+ * until a file is chosen, then a removable pill. Records the file name only. */
+function FileSlot({ label, hint, accept, icon, fileName, onPick, onClear }) {
+  const ref = useRef(null);
+  const take = (fl) => { const f = fl && fl[0]; if (f && f.name) onPick(f.name); };
+  return (
+    <div>
+      <div className="field-lbl">{label} <span className="req">*</span><Icon name="info" /></div>
+      {fileName ? (
+        <div className="file-pill">
+          <Icon name={icon} className="gl-icon" />
+          <span className="gl-name">{fileName}</span>
+          <Icon name="close" className="staged-x" onClick={onClear} />
+        </div>
+      ) : (
+        <div className="dropzone dropzone-sm" onClick={() => ref.current && ref.current.click()}
+          onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); take(e.dataTransfer && e.dataTransfer.files); }}>
+          <Icon name={icon} />
+          <div className="dz-main">Drag and drop or <span className="dz-link">choose file</span></div>
+          <div className="dz-sub">{hint}</div>
+          <input ref={ref} type="file" accept={accept} style={{ display: 'none' }}
+            onChange={(e) => { take(e.target.files); e.target.value = ''; }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function UploadModal({ onClose, onAdd }) {
+  const [mode, setMode] = useState('inference'); // 'inference' | 'dataset'
+  const [source, setSource] = useState('computer');
+  const [engine, setEngine] = useState('E-40');
+  const [hasHoles, setHasHoles] = useState(false);
+  const [staged, setStaged] = useState([]);
+  // CFD-dataset flow: a solved geometry plus its H5 results and YAML setup/BCs.
+  const [dsGeom, setDsGeom] = useState('');
+  const [dsCfd, setDsCfd] = useState('');
+  const [dsBc, setDsBc] = useState('');
+  const [dsRole, setDsRole] = useState('');
+  const inputRef = useRef(null);
+
+  const addFiles = (fileList) => {
+    try {
+      const names = Array.from(fileList || []).map((f) => f.name).filter(Boolean);
+      if (!names.length) return;
+      setStaged((prev) => [...prev, ...names.map((fileName, i) => ({
+        key: 'st' + Date.now() + '_' + (prev.length + i),
+        fileName, role: guessRole(fileName), physics: guessPhysics(fileName),
+      }))]);
+    } catch (err) { console.error('[UploadModal.addFiles] CRASH:', err.message, err.stack); }
+  };
+  const onPick = (e) => { addFiles(e.target.files); e.target.value = ''; };
+  const onDrop = (e) => { e.preventDefault(); addFiles(e.dataTransfer && e.dataTransfer.files); };
+  const togglePhysics = (key, p) => setStaged((prev) => prev.map((s) => (s.key === key
+    ? { ...s, physics: s.physics.includes(p) ? s.physics.filter((x) => x !== p) : [...s.physics, p] } : s)));
+  const setRole = (key, role) => setStaged((prev) => prev.map((s) => (s.key === key ? { ...s, role } : s)));
+  const removeStaged = (key) => setStaged((prev) => prev.filter((s) => s.key !== key));
+
+  const dsReady = !!(dsGeom && dsCfd && dsBc);
+  const canCommit = mode === 'inference' ? staged.length > 0 : dsReady;
+  const commit = () => {
+    if (mode === 'inference') {
+      onAdd(staged.map((s) => ({ fileName: s.fileName, role: s.role, physics: s.physics, source, engine, hasHoles })));
+    } else {
+      onAdd([{
+        fileName: dsGeom, role: dsRole || guessRole(dsGeom), physics: ['cfd'],
+        source, engine, hasHoles: false, kind: 'dataset', cfdFile: dsCfd, bcFile: dsBc,
+      }]);
+    }
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose} onMouseDown={(e) => e.stopPropagation()}>
+      <div className="modal" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+        <div className="modal-head">
+          <div className="modal-title">Upload files</div>
+          <div className="modal-sub">{mode === 'inference'
+            ? 'Upload one or more CAD files and attribute each to the physics that uses it — CFD on the fluid volume, FEA on the solid structure.'
+            : 'Import a solved case: a geometry plus its CFD results (H5) and the setup / boundary conditions (YAML) it was run with.'}</div>
+        </div>
+        <div className="modal-body">
+          <div>
+            <div className="field-lbl">What are you uploading? <span className="req">*</span></div>
+            <div className="mode-grid">
+              <div className={'mode-card' + (mode === 'inference' ? ' sel' : '')} onClick={() => setMode('inference')}>
+                <div className="mc-top">
+                  <Icon name="bolt" className="mc-icon" />
+                  <span className="mc-title">File for inference</span>
+                  {mode === 'inference' && <Icon name="check_circle" className="mc-check" />}
+                </div>
+                <div className="mc-sub">CAD geometry to predict on. PhysicsX runs the model — no results needed.</div>
+              </div>
+              <div className={'mode-card' + (mode === 'dataset' ? ' sel' : '')} onClick={() => setMode('dataset')}>
+                <div className="mc-top">
+                  <Icon name="dataset" className="mc-icon" />
+                  <span className="mc-title">CFD dataset</span>
+                  {mode === 'dataset' && <Icon name="check_circle" className="mc-check" />}
+                </div>
+                <div className="mc-sub">A solved geometry with its CFD results (H5) and setup / BC file (YAML).</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="field-lbl">Upload from <span className="req">*</span><Icon name="info" /></div>
+            <div className="radio-row">
+              {UPLOAD_SOURCES.map((s) => (
+                <div key={s.id} className={'radio' + (source === s.id ? ' sel' : '')} onClick={() => setSource(s.id)}>
+                  <span className="dot" />{s.label}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {mode === 'inference' ? (<>
+            <div>
+              <div className="field-lbl">CAD file <span className="req">*</span><Icon name="info" /></div>
+              <div className="dropzone" onClick={() => inputRef.current && inputRef.current.click()}
+                onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
+                <Icon name="upload" />
+                <div className="dz-main">Drag and drop your file or <span className="dz-link">choose file</span> to upload</div>
+                <div className="dz-sub">Supported formats: .stp, .step, .stl, .asm (max 2048mb)</div>
+                <input ref={inputRef} type="file" multiple accept=".stp,.step,.stl,.asm" style={{ display: 'none' }} onChange={onPick} />
+              </div>
+            </div>
+            {staged.length > 0 && (
+              <div className="staged">
+                {staged.map((s) => (
+                  <div key={s.key} className="staged-row">
+                    <div className="staged-top">
+                      <Icon name="view_in_ar" className="gl-icon" />
+                      <span className="gl-name">{s.fileName}</span>
+                      <Icon name="close" className="staged-x" onClick={() => removeStaged(s.key)} />
+                    </div>
+                    <input className="input" value={s.role} placeholder="Role (e.g. Fluid volume)" onChange={(e) => setRole(s.key, e.target.value)} />
+                    <div className="staged-attr">
+                      <span className="attr-lbl">Apply to</span>
+                      {['cfd', 'fea'].map((p) => (
+                        <div key={p} className={'chk' + (s.physics.includes(p) ? ' on' : '')} onClick={() => togglePhysics(s.key, p)}>
+                          <span className="box">{s.physics.includes(p) && <Icon name="check" style={{ fontSize: 12 }} />}</span>
+                          {PHYSICS_META[p].label}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="toggle-inline">
+              <div className="ti-main">
+                <div className="ti-label">Geometry already has transfer holes</div>
+                <div className="ti-sub">If enabled, skip transfer hole insertion.</div>
+              </div>
+              <div className={'switch' + (hasHoles ? ' on' : '')} onClick={() => setHasHoles((v) => !v)}><span className="knob" /></div>
+            </div>
+          </>) : (<>
+            <FileSlot label="Geometry file" icon="view_in_ar" fileName={dsGeom}
+              hint="Supported formats: .stp, .step, .stl, .asm (max 2048mb)" accept=".stp,.step,.stl,.asm"
+              onPick={(n) => { setDsGeom(n); if (!dsRole) setDsRole(guessRole(n)); }} onClear={() => setDsGeom('')} />
+            <FileSlot label="CFD data set (H5)" icon="dataset" fileName={dsCfd}
+              hint="Field results from the solved CFD case. Supported: .h5, .hdf5" accept=".h5,.hdf5"
+              onPick={setDsCfd} onClear={() => setDsCfd('')} />
+            <FileSlot label="Setup / boundary conditions (YAML)" icon="tune" fileName={dsBc}
+              hint="The case setup and BCs it was run at. Supported: .yaml, .yml" accept=".yaml,.yml,.yaml,application/x-yaml"
+              onPick={setDsBc} onClear={() => setDsBc('')} />
+            <div>
+              <div className="field-lbl">Role</div>
+              <input className="input" value={dsRole} placeholder="e.g. Fluid volume" onChange={(e) => setDsRole(e.target.value)} />
+            </div>
+          </>)}
+
+          <div>
+            <div className="field-lbl">Engine Platform <span className="req">*</span></div>
+            <div className="select-native" style={{ width: '100%' }}>
+              <select value={engine} onChange={(e) => setEngine(e.target.value)}>
+                {ENGINE_PLATFORMS.map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+              <span className="mi">expand_more</span>
+            </div>
+            <div className="sub-label" style={{ marginTop: 6 }}>Engine platforms will have monitor locations associated to them.</div>
+          </div>
+        </div>
+        <div className="modal-foot">
+          <button className="btn btn-secondary" style={{ width: 'auto', padding: '0 14px', justifyContent: 'center' }} onClick={onClose}>Cancel</button>
+          <button className="btn btn-primary" style={{ width: 'auto', padding: '0 16px' }} disabled={!canCommit} onClick={commit}>
+            {mode === 'inference'
+              ? <><Icon name="check" />Add {staged.length ? staged.length + ' ' : ''}{staged.length === 1 ? 'file' : 'files'}</>
+              : <><Icon name="check" />Add dataset</>}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function App() {
@@ -2549,11 +3280,11 @@ function App() {
 
   const [monitorsByGroup, setMonitorsByGroup] = useState({
     'cfd-mon': [
-      { id: 'mon-press', label: 'Pressure · Mid-plane', field: 'Pressure', units: 'kPa', reduction: 'Area-weighted avg', axis: 'z', pos: 80, extent: '200×120mm', engineId: 'e40',
+      { id: 'mon-press', label: 'HTC · Mid-plane', field: 'HTC', units: 'W/m²K', reduction: 'Area-weighted avg', axis: 'z', pos: 80, extent: '200×120mm', engineId: 'e40',
         slice: { axis: 'z', pos: { x: 100, y: 60, z: 80 }, ranges: { x: [0, 200], y: [0, 120], z: [0, 160] }, flip: false, showPlane: true } },
-      { id: 'mon-vel', label: 'Velocity · Outlet', field: 'Velocity', units: 'm/s', reduction: 'Max', axis: 'x', pos: 180, extent: '120×160mm', engineId: 'e40',
+      { id: 'mon-vel', label: 'HTC · Outlet', field: 'HTC', units: 'W/m²K', reduction: 'Max', axis: 'x', pos: 180, extent: '120×160mm', engineId: 'e40',
         slice: { axis: 'x', pos: { x: 180, y: 60, z: 80 }, ranges: { x: [0, 200], y: [0, 120], z: [0, 160] }, flip: false, showPlane: true } },
-      { id: 'mon-e30inlet', label: 'Pressure · Inlet', field: 'Pressure', units: 'kPa', reduction: 'Area-weighted avg', axis: 'x', pos: 20, extent: '120×160mm', engineId: 'e30',
+      { id: 'mon-e30inlet', label: 'HTC · Inlet', field: 'HTC', units: 'W/m²K', reduction: 'Area-weighted avg', axis: 'x', pos: 20, extent: '120×160mm', engineId: 'e30',
         slice: { axis: 'x', pos: { x: 20, y: 60, z: 80 }, ranges: { x: [0, 200], y: [0, 120], z: [0, 160] }, flip: true, showPlane: true } },
     ],
     'fea-results': [],
@@ -2571,6 +3302,14 @@ function App() {
   const [selectedView, setSelectedView] = useState(null);
   const [selectedMonitor, setSelectedMonitor] = useState(null);
   const [ann, setAnn] = useState({ on: false, max: true, min: true, mean: false });
+  const [geometries, setGeometries] = useState(SEED_GEOMETRIES);
+  const [uploadOpen, setUploadOpen] = useState(false);
+  // Floating monitor windows — each lives at the same level as the geometry
+  // viewer and can be dragged freely around the stage, canvas-style.
+  const [monitorWindows, setMonitorWindows] = useState([]);
+  // Histogram windows — a second window type comparing a scalar statistic
+  // across explicitly-chosen monitors (and runs / sweep increments).
+  const [histograms, setHistograms] = useState([]);
 
   useEffect(() => { document.documentElement.classList.toggle('light', theme === 'light'); }, [theme]);
 
@@ -2584,6 +3323,8 @@ function App() {
   const resolveNode = (id) => {
     const inTree = findNode(TREE, id);
     if (inTree) return inTree;
+    const geom = geometries.find((g) => g.id === id);
+    if (geom) return { id: geom.id, label: geom.fileName, icon: 'view_in_ar', type: 'geometry-file', _geom: geom };
     for (const g of Object.keys(monitorsByGroup)) {
       const m = monitorsByGroup[g].find((x) => x.id === id);
       if (m) return { id: m.id, label: m.label, icon: 'timeline', type: 'monitor', _mon: m, _group: g };
@@ -2627,7 +3368,7 @@ function App() {
       const mon = isFea
         ? { id, label: 'Stress probe ' + n, field: 'von Mises', units: 'MPa', reduction: 'Peak', axis: 'y', pos: 60, extent: '200×160mm', engineId: engineType,
             slice: { axis: 'y', pos: { x: 100, y: 60, z: 80 }, ranges: { x: [0, 200], y: [0, 120], z: [0, 160] }, flip: false, showPlane: true } }
-        : { id, label: 'Monitor ' + n, field: 'Pressure', units: 'kPa', reduction: 'Area-weighted avg', axis: 'z', pos: 80, extent: '200×120mm', engineId: engineType,
+        : { id, label: 'HTC monitor ' + n, field: 'HTC', units: 'W/m²K', reduction: 'Area-weighted avg', axis: 'z', pos: 80, extent: '200×120mm', engineId: engineType,
             slice: { axis: 'z', pos: { x: 100, y: 60, z: 80 }, ranges: { x: [0, 200], y: [0, 120], z: [0, 160] }, flip: false, showPlane: true } };
       setMonitorsByGroup((prev) => ({ ...prev, [groupId]: [...(prev[groupId] || []), mon] }));
       setExpanded((prev) => new Set(prev).add(groupId));
@@ -2644,6 +3385,38 @@ function App() {
     setMonitorsByGroup((prev) => ({ ...prev, [groupId]: (prev[groupId] || []).map((m) => (m.id === id ? { ...m, label: name } : m)) }));
   };
 
+  /* ---- Geometry library actions ----------------------------------------- *
+   * `physics` on each geometry is the single source of truth for the
+   * geometry-to-analysis mapping, edited from the modal, the file panel, or
+   * the per-analysis "Geometry" panel. */
+  const openUpload = () => { setUploadOpen(true); setMenu(null); };
+  const addGeometries = (items) => {
+    try {
+      if (!items || !items.length) { setUploadOpen(false); return; }
+      const created = items.map((it, i) => ({
+        id: 'geom' + Date.now() + '_' + i,
+        fileName: it.fileName, role: it.role || guessRole(it.fileName),
+        source: it.source || 'computer', engine: it.engine || 'E-40',
+        hasHoles: !!it.hasHoles, physics: it.physics && it.physics.length ? it.physics : ['cfd'],
+        kind: it.kind || 'inference', cfdFile: it.cfdFile || null, bcFile: it.bcFile || null,
+      }));
+      setGeometries((prev) => [...prev, ...created]);
+      setExpanded((prev) => new Set(prev).add('geo'));
+      setSelected(created[0].id);
+      setUploadOpen(false);
+    } catch (err) { console.error('[addGeometries] CRASH:', err.message, err.stack); }
+  };
+  const removeGeometry = (id) => {
+    setGeometries((prev) => prev.filter((g) => g.id !== id));
+    setSelected('geo');
+  };
+  const toggleGeometryPhysics = (id, analysis) => setGeometries((prev) => prev.map((g) => (
+    g.id === id
+      ? { ...g, physics: (g.physics || []).includes(analysis) ? g.physics.filter((p) => p !== analysis) : [...(g.physics || []), analysis] }
+      : g
+  )));
+  const setGeometryRole = (id, role) => setGeometries((prev) => prev.map((g) => (g.id === id ? { ...g, role } : g)));
+
   // Turn the current slice into a saved monitor in the active engine's CFD library.
   const createMonitor = () => {
     try {
@@ -2652,13 +3425,12 @@ function App() {
       const [o1, o2] = orthosOf(ax);
       const w = Math.round(slice.ranges[o1][1] - slice.ranges[o1][0]);
       const h = Math.round(slice.ranges[o2][1] - slice.ranges[o2][0]);
-      const cm = cmById(colorMap);
       const id = 'm' + Date.now();
       const m = {
         id,
-        label: `${cm.field} · ${ax.toUpperCase()} @ ${Math.round(slice.pos[ax])}mm`,
-        field: cm.field,
-        units: cm.units,
+        label: `HTC · ${ax.toUpperCase()} @ ${Math.round(slice.pos[ax])}mm`,
+        field: 'HTC',
+        units: 'W/m²K',
         reduction: 'Area-weighted avg',
         axis: ax,
         pos: Math.round(slice.pos[ax]),
@@ -2739,6 +3511,54 @@ function App() {
       console.error('[locateMonitor] CRASH:', err.message, err.stack);
     }
   };
+  // Resolve a monitor id to its object across every library group.
+  const monById = (id) => {
+    for (const g of Object.keys(monitorsByGroup)) {
+      const m = monitorsByGroup[g].find((x) => x.id === id);
+      if (m) return m;
+    }
+    return null;
+  };
+
+  // ---- Monitor tiles ----
+  // Open a monitor as its own slot in the workspace grid (a peer of the
+  // geometry viewer). Already-open monitors aren't duplicated.
+  const openMonitorWindow = (m) => {
+    if (!m) return;
+    setMonitorWindows((prev) => (prev.some((w) => w.monId === m.id)
+      ? prev
+      : [...prev, { id: 'win' + Date.now() + '_' + m.id, monId: m.id }]));
+  };
+  const closeMonitorWindow = (id) => setMonitorWindows((prev) => prev.filter((w) => w.id !== id));
+  // Drag-reorder: move the dragged tile to the dropped-on tile's grid slot.
+  const reorderMonitorWindow = (fromId, toId) => setMonitorWindows((prev) => {
+    if (fromId === toId) return prev;
+    const arr = [...prev];
+    const fi = arr.findIndex((w) => w.id === fromId), ti = arr.findIndex((w) => w.id === toId);
+    if (fi < 0 || ti < 0) return prev;
+    const [m] = arr.splice(fi, 1);
+    arr.splice(ti, 0, m);
+    return arr;
+  });
+
+  // Drop any open tiles whose monitor no longer exists or left the active engine.
+  useEffect(() => {
+    setMonitorWindows((prev) => prev.filter((w) => {
+      const m = monById(w.monId);
+      return m && (m.engineId || engineType) === engineType;
+    }));
+  }, [monitorsByGroup, engineType]);
+
+  // ---- Histogram windows ----
+  // Open a new histogram. Seeded empty so the user explicitly picks monitors
+  // (no implicit "show all"); the active run is pre-selected as one series.
+  // Runs are driven by the sidebar selection, not stored on the histogram.
+  const createHistogram = (monIds) => setHistograms((prev) => [
+    ...prev, { id: 'hist' + Date.now(), monIds: monIds || [], stat: 'mean' },
+  ]);
+  const closeHistogram = (id) => setHistograms((prev) => prev.filter((h) => h.id !== id));
+  const updateHistogram = (id, patch) => setHistograms((prev) => prev.map((h) => (h.id === id ? { ...h, ...patch } : h)));
+
   const toggleMenu = (m) => setMenu((c) => (c === m ? null : m));
   const activeCm = cmById(colorMap);
 
@@ -2770,7 +3590,8 @@ function App() {
                     {TREE.map((n) => (
                       <TreeNode key={n.id} node={n} depth={0} expanded={expanded} toggleExpand={toggleExpand}
                         selected={selected} onSelect={setSelected} enabled={enabled} toggleEnabled={toggleEnabled} disabled={false}
-                        monitorsByGroup={monitorsByGroup} onAddMonitor={addMonitor} engineType={engineType} bcSummaryById={bcSummaryById} />
+                        monitorsByGroup={monitorsByGroup} onAddMonitor={addMonitor} onUploadGeometry={openUpload} geometries={geometries}
+                        engineType={engineType} bcSummaryById={bcSummaryById} />
                     ))}
                   </div>
                 </div>
@@ -2793,8 +3614,8 @@ function App() {
             <div className="cfg-body" key={activeRunId + ':' + selected}>
               <ConfigBody node={selNode} engineType={engineType} setEngineType={setEngineType}
                 enabled={enabled} toggleEnabled={toggleEnabled} monitorsByGroup={monitorsByGroup}
-                bcConfig={bcConfig} source={activeRun.source || 'ai'} cfd={activeRun.cfd}
-                actions={{ openMonitors, openSlicer, addMonitor, removeMonitor, locateMonitor, renameMonitor, setBC, setRunSource, importCfd, clearCfd }} />
+                bcConfig={bcConfig} source={activeRun.source || 'ai'} cfd={activeRun.cfd} geometries={geometries}
+                actions={{ openMonitors, openMonitorWindow, createHistogram, openSlicer, addMonitor, removeMonitor, locateMonitor, renameMonitor, setBC, setRunSource, importCfd, clearCfd, openUpload, removeGeometry, toggleGeometryPhysics, setGeometryRole }} />
             </div>
           </div>
         )}
@@ -2861,14 +3682,6 @@ function App() {
                 ann={ann} setAnn={setAnn} />
             )}
           </div>
-          <div className="menu-wrap">
-            <NavTrigger label="Monitors" accent open={menu === 'monitors'} onClick={() => toggleMenu('monitors')} />
-            {menu === 'monitors' && (
-              <MonitorsPanel slice={slice} monitorsByGroup={monitorsByGroup} engineType={engineType} selected={selected}
-                runs={runs} compareSel={runSel}
-                onSelect={(id) => { applyMonitor(id); }} onCreate={createMonitor} onOpenSlicer={openSlicer} />
-            )}
-          </div>
           <button className="icon-btn" style={{ marginLeft: 8 }} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
             <Icon name={theme === 'dark' ? 'light_mode' : 'dark_mode'} />
           </button>
@@ -2879,26 +3692,51 @@ function App() {
             <CompareView runs={runs} runSel={runSel} colorMap={colorMap} slice={slice} mode={compareMode}
               monitorsByGroup={monitorsByGroup} engineType={engineType}
               onSetMode={setCompareMode} onClose={() => setCompareOpen(false)} />
-          ) : (
-            <>
-              <Viewport slice={slice} ann={ann} cam={cam} setCam={setCam} colorMap={colorMap} sliceLabel={activeMonName} />
-              <Legend colorMap={colorMap} />
+          ) : (() => {
+            // Geometry viewer + each open monitor + each histogram are equal slots.
+            const availMons = MON_GROUPS.flatMap((g) => (monitorsByGroup[g.id] || []).filter((m) => (m.engineId || engineType) === engineType));
+            const tileCount = 1 + monitorWindows.length + histograms.length;
+            const cols = Math.min(3, Math.ceil(Math.sqrt(tileCount)));
+            return (
+            <div className="workspace" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
+              <div className="ws-tile viewer-tile">
+                <div className="ws-tile-head">
+                  <Icon name="view_in_ar" className="ws-tile-ico" />
+                  <div className="ws-tile-ttl"><div className="t">Geometry viewer</div></div>
+                </div>
+                <div className="ws-tile-body">
+                  <Viewport slice={slice} ann={ann} cam={cam} setCam={setCam} colorMap={colorMap} sliceLabel={activeMonName} />
+                  <Legend colorMap={colorMap} />
 
-              <div className="cam-ctrl" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
-                <button className="icon-btn" title="Zoom out" onClick={() => setCam((c) => ({ ...c, zoom: clamp(c.zoom * 0.85, 0.5, 4) }))}><Icon name="remove" /></button>
-                <button className="icon-btn" title="Reset view" onClick={() => setCam({ ...DEFAULT_CAM })}><Icon name="filter_center_focus" /></button>
-                <button className="icon-btn" title="Zoom in" onClick={() => setCam((c) => ({ ...c, zoom: clamp(c.zoom * 1.18, 0.5, 4) }))}><Icon name="add" /></button>
-              </div>
+                  <div className="cam-ctrl" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+                    <button className="icon-btn" title="Zoom out" onClick={() => setCam((c) => ({ ...c, zoom: clamp(c.zoom * 0.85, 0.5, 4) }))}><Icon name="remove" /></button>
+                    <button className="icon-btn" title="Reset view" onClick={() => setCam({ ...DEFAULT_CAM })}><Icon name="filter_center_focus" /></button>
+                    <button className="icon-btn" title="Zoom in" onClick={() => setCam((c) => ({ ...c, zoom: clamp(c.zoom * 1.18, 0.5, 4) }))}><Icon name="add" /></button>
+                  </div>
 
-              {slicerOpen && <SlicerPanel slice={slice} setSlice={setSlice} onSaveMonitor={createMonitor} />}
-              <div className="tools" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
-                <button className={'tool' + (slicerOpen ? ' active' : '')} onClick={() => setSlicerOpen((o) => !o)}><Icon name="content_cut" />Slice</button>
-                <button className="tool" onClick={cycleColorMap} title="Cycle color map"><Icon name="palette" />{activeCm.name}</button>
-                <button className="tool"><Icon name="layers" />Parts</button>
+                  {slicerOpen && <SlicerPanel slice={slice} setSlice={setSlice} onSaveMonitor={createMonitor} />}
+                  <div className="tools" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+                    <button className={'tool' + (slicerOpen ? ' active' : '')} onClick={() => setSlicerOpen((o) => !o)}><Icon name="content_cut" />Slice</button>
+                    <button className="tool" onClick={cycleColorMap} title="Cycle color map"><Icon name="palette" />{activeCm.name}</button>
+                    <button className="tool"><Icon name="layers" />Parts</button>
+                  </div>
+                  <div className="hint">Drag to rotate · scroll to zoom.<br />Pick a <b>Color Map</b>, then <b>save a View</b>.</div>
+                </div>
               </div>
-              <div className="hint">Drag to rotate · scroll to zoom.<br />Pick a <b>Color Map</b>, then <b>save a View</b>.</div>
-            </>
-          )}
+              {monitorWindows.map((w) => {
+                const mon = monById(w.monId);
+                if (!mon) return null;
+                return <MonitorTile key={w.id} win={w} monitor={mon} run={activeRun} runs={runs} runSel={runSel}
+                  onClose={() => closeMonitorWindow(w.id)} onReorder={reorderMonitorWindow} />;
+              })}
+              {histograms.map((h) => (
+                <HistogramTile key={h.id} win={h} hist={h} monitors={availMons} runs={runs} run={activeRun} runSel={runSel}
+                  onClose={() => closeHistogram(h.id)} onChange={(patch) => updateHistogram(h.id, patch)} />
+              ))}
+            </div>
+            );
+          })()}
+          {uploadOpen && <UploadModal onClose={() => setUploadOpen(false)} onAdd={addGeometries} />}
         </div>
       </div>
     </div>
